@@ -7,5 +7,5 @@ export interface IAuthController {
     resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>
     signin(req: Request, res: Response, next: NextFunction): Promise<void>
     passwordResetRequest(req: Request, res: Response, next:NextFunction): Promise<void>
-
+    resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>
 }

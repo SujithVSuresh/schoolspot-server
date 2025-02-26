@@ -75,6 +75,19 @@ async passwordResetRequest(req: Request, res: Response, next: NextFunction): Pro
         next(err)
     }
 }
+
+
+async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+        const {token, password} = req.body
+        const resetEmail = await this._authService.passwordReset(token, password)
+        res.status(HttpStatus.OK).json({
+            email: resetEmail
+        })
+    }catch(err){
+        next(err)
+    }
+}
   
   }
   
