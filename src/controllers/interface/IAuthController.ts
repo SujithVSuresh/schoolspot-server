@@ -5,4 +5,6 @@ export interface IAuthController {
     signup(req: Request, res: Response, next: NextFunction): Promise<void>
     verify(req: Request, res: Response, next: NextFunction): Promise<void>
     resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>
+    signin(req: Request, res: Response, next: NextFunction): Promise<void>
+
 }
