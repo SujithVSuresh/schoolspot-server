@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import dotenv from 'dotenv'
 import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
+import { errorHandler } from "./middlewares/ErrorHandler";
 
 
 dotenv.config();
@@ -14,12 +15,23 @@ class App {
 
 
     this.intitalizeStorage()
+    this.initializeMiddleware()
+    this.initializeRouter()
   }
 
 
   private intitalizeStorage(): void {
     connectDB();
     connectRedis()
+  }
+
+  private initializeMiddleware(): void {
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+  }
+
+  private initializeRouter(): void {
+    this.app.use(errorHandler);
   }
 
 
