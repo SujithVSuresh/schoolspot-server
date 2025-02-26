@@ -53,6 +53,68 @@ export class AuthService implements IAuthService {
     
         return user.email;
     }
+
+
+    async verify(otpCode: number, email: string): Promise<Partial<UserType>> {
+        const otpResponse = await redisClient.get(`otp-${email}`);
+        if (!otpResponse) {
+          throw new CustomError(Messages.OTP_EXPIRY, HttpStatus.FORBIDDEN);
+        }
+    
+        const { otp } = JSON.parse(otpResponse);
+    
+        if (String(otpCode) != String(otp)) {
+          throw new CustomError(Messages.INVALID_OTP, HttpStatus.UNAUTHORIZED);
+        }
+    
+        const dataResponse = await redisClient.get(`userData-${email}`);
+    
+        if (!otpResponse) {
+          throw new CustomError("Your session has expired. Signup again to continue", HttpStatus.FORBIDDEN);
+        }
+    
+        const { user } = JSON.parse(dataResponse as string);
+    
+        let userData = await this._userRepository.createUser({
+          ...user,
+          role: "admin",
+          status: "active",
+        });
+    
+        return {
+          _id: userData._id,
+          email: userData.email,
+          role: userData.role,
+          status: userData.status,
+        };
+      }
+
+
+      async resendOtp(email: string): Promise<string> {
+        const getUser = await redisClient.get(`userData-${email}`);
+        if (!getUser) {
+          throw new CustomError("Your session has expired. Signup again to continue", HttpStatus.FORBIDDEN);
+        }
+    
+        const otpCode = generateOtp();
+        
+        await sendOtpEmail(email, otpCode);
+    
+        const setUser = await redisClient.setEx(
+          `otp-${email}`,
+          60,
+          JSON.stringify(otpCode)
+        );
+    
+        if (!setUser) {
+          throw new CustomError(
+            Messages.SERVER_ERROR,
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+        }
+    
+        return email
+      }
 }
 
 
