@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
 import { errorHandler } from "./middlewares/ErrorHandler";
-
+import authRouter from "./routes/AuthRouter";
 
 dotenv.config();
 
@@ -31,6 +31,7 @@ class App {
   }
 
   private initializeRouter(): void {
+    this.app.use("/auth", authRouter)
     this.app.use(errorHandler);
   }
 
