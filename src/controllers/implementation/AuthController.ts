@@ -62,6 +62,19 @@ export class AuthController implements IAuthController {
         next(err);
     }
 }
+
+async passwordResetRequest(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+        const {email} = req.body
+        const resetEmail = await this._authService.passwordResetRequest(email)
+        res.status(HttpStatus.OK).json({
+            email: resetEmail
+        })
+
+    }catch(err){
+        next(err)
+    }
+}
   
   }
   
