@@ -1,5 +1,7 @@
 import express, { Application } from "express";
 import dotenv from 'dotenv'
+import connectDB from "./config/db";
+
 
 dotenv.config();
 
@@ -8,6 +10,14 @@ class App {
 
   constructor() {
     this.app = express();
+
+
+    this.intitalizeStorage()
+  }
+
+
+  private intitalizeStorage(): void {
+    connectDB();
   }
 
 
