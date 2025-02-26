@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
 import { ObjectId } from 'mongoose'
-import { PayloadType } from '../Types/types'
+import { PayloadType } from '../types/types'
+
 
 class AuthToken {
     private _accessTokenSecret: string

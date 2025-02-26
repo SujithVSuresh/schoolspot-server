@@ -9,7 +9,9 @@ import { redisClient } from "../../config/redis";
 import { hashPassword } from "../../utils/PasswordHash";
 import { sendOtpEmail } from "../../utils/SendEmail";
 import generateOtp from "../../utils/GenerateOTP";
-
+import authToken from "../../utils/AuthToken";
+import { comparePassword } from "../../utils/PasswordHash";
+import { LoginResponseType } from "../../types/types";
 
 
 export class AuthService implements IAuthService {
@@ -114,6 +116,49 @@ export class AuthService implements IAuthService {
         }
     
         return email
+      }
+
+
+
+      async signin(email: string, password: string): Promise<LoginResponseType> {
+        const user = await this._userRepository.findByEmail(email);
+    
+        if (!user) {
+          throw new CustomError(
+            Messages.ACCOUNT_NOT_FOUND,
+            HttpStatus.UNAUTHORIZED
+          );
+        }
+    
+        const pwMatch = await comparePassword(password, user.password as string);
+    
+        if (!pwMatch) {
+          throw new CustomError(
+            Messages.ACCOUNT_NOT_FOUND,
+            HttpStatus.UNAUTHORIZED
+          );
+        }
+    
+        const accessToken = authToken.generateAccessToken({
+          userId: String(user._id),
+          role: "admin",
+          iat: Date.now(),
+        });
+    
+        const refreshToken = authToken.generateRefreshToken({
+          userId: String(user._id),
+          role: "admin",
+          iat: Date.now(),
+        });
+    
+        return {
+          _id: String(user._id),
+          email: user.email,
+          role: user.role,
+          status: user.status,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        };
       }
 }
 

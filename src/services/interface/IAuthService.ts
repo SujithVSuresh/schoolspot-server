@@ -1,10 +1,10 @@
 import { UserType } from "../../types/types";
-
+import { LoginResponseType } from "../../types/types";
 
 
 export interface IAuthService{
     signup(user: UserType): Promise<string>
     verify(otpCode: number, email: string): Promise<Partial<UserType>>
     resendOtp(email: string): Promise<string>
-
+    signin(email:string, password:string): Promise<LoginResponseType>
 }
