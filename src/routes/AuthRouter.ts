@@ -17,6 +17,7 @@ authRouter.get("/test", () => {
 authRouter.post("/signup", authController.signup.bind(authController));
 authRouter.post("/verify", authController.verify.bind(authController));
 authRouter.post("/resend-otp", authController.resendOtp.bind(authController));
+authRouter.post("/signin", authController.signin.bind(authController));
 
 
 export default authRouter;
