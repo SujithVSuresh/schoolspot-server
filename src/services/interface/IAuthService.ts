@@ -8,4 +8,5 @@ export interface IAuthService{
     resendOtp(email: string): Promise<string>
     signin(email:string, password:string): Promise<LoginResponseType>
     passwordResetRequest(email: string): Promise<string>
+    passwordReset(token: string, password: string): Promise<string>
 }

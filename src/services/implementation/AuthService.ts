@@ -171,6 +171,30 @@ export class AuthService implements IAuthService {
     
         return email;
       }
+
+
+      async passwordReset(token: string, password: string): Promise<string> {
+        const response = await redisClient.get(`token-${token}`);
+    
+        if (!response) {
+          throw new CustomError(Messages.TOKEN_EXPIRED, HttpStatus.UNAUTHORIZED);
+        }
+    
+        const user = await this._userRepository.findByEmail(JSON.parse(response));
+    
+        if (!user) {
+          throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+    
+        user.password = await hashPassword(password);
+    
+        const updateUser = await this._userRepository.updateUser(
+          String(user?._id),
+          user
+        );
+    
+        return updateUser?.email as string;
+      }
 }
 
 
