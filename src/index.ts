@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import dotenv from 'dotenv'
 import connectDB from "./config/db";
+import { connectRedis } from "./config/redis";
 
 
 dotenv.config();
@@ -18,6 +19,7 @@ class App {
 
   private intitalizeStorage(): void {
     connectDB();
+    connectRedis()
   }
 
 
