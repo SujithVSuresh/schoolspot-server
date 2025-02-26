@@ -3,4 +3,6 @@ import { Request, Response,NextFunction } from "express";
 
 export interface IAuthController {
     signup(req: Request, res: Response, next: NextFunction): Promise<void>
+    verify(req: Request, res: Response, next: NextFunction): Promise<void>
+    resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>
 }
