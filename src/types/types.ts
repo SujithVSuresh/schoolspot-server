@@ -10,6 +10,17 @@ export interface UserType {
     updatedAt?: Date;
 }
 
+export interface AdminProfileType {
+    _id?: mongoose.Types.ObjectId;
+    fullName: string;
+    phoneNumber: string;
+    role: "principal" | "it_admin" | "vice_principal" | "other";
+    userId: mongoose.Types.ObjectId;
+    schoolId?: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 
 export interface PayloadType {
     userId: string,
