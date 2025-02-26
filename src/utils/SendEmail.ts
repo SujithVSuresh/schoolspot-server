@@ -31,3 +31,33 @@ export const sendOtpEmail = async (email: string, otp: number) => {
     }
 
 }
+
+
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+    try{
+
+        const mailOptions = {
+            from: 'sujithforcoding@gmail.com',
+            to: email,
+            subject: 'SchoolSpot Password Reset',
+            html: `
+            <h1>Password Reset</h1>
+            <p>Please click the button below to reset your password:</p><br />
+            <a href="http://localhost:5173/signin/reset-password?token=${token}">Reset password</a><br />
+            <p>If you did not request, you can ignore this email.</p>
+            <p>~ SchoolSpot</p>
+          `,
+        }
+    
+        const info = await transporter.sendMail(mailOptions)
+        console.log("password reset mail send successfully", info.response)
+    }catch(err){
+        console.error('Error sending verification email:', err);
+        throw new CustomError(
+            Messages.SERVER_ERROR,
+            HttpStatus.INTERNAL_SERVER_ERROR
+          );
+    }
+
+}
