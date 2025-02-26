@@ -1,4 +1,3 @@
-
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { UserType } from "../../types/types";
 import { IAuthService } from "../interface/IAuthService";
@@ -12,6 +11,8 @@ import generateOtp from "../../utils/GenerateOTP";
 import authToken from "../../utils/AuthToken";
 import { comparePassword } from "../../utils/PasswordHash";
 import { LoginResponseType } from "../../types/types";
+import { generateToken } from "../../utils/TokenGenerator";
+import { sendPasswordResetEmail } from "../../utils/SendEmail";
 
 
 export class AuthService implements IAuthService {
@@ -159,6 +160,16 @@ export class AuthService implements IAuthService {
           accessToken: accessToken,
           refreshToken: refreshToken,
         };
+      }
+
+      async passwordResetRequest(email: string): Promise<string> {
+        const token = await generateToken(32);
+    
+        await redisClient.setEx(`token-${token}`, 500, JSON.stringify(email));
+    
+        await sendPasswordResetEmail(email, token);
+    
+        return email;
       }
 }
 

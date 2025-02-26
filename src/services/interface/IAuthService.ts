@@ -7,4 +7,5 @@ export interface IAuthService{
     verify(otpCode: number, email: string): Promise<Partial<UserType>>
     resendOtp(email: string): Promise<string>
     signin(email:string, password:string): Promise<LoginResponseType>
+    passwordResetRequest(email: string): Promise<string>
 }
