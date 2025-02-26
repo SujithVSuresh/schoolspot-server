@@ -15,6 +15,8 @@ authRouter.get("/test", () => {
 
 // Use .bind(this) when passing class methods as callbacks to keep this referring to the correct instance.
 authRouter.post("/signup", authController.signup.bind(authController));
+authRouter.post("/verify", authController.verify.bind(authController));
+authRouter.post("/resend-otp", authController.resendOtp.bind(authController));
 
 
 export default authRouter;
