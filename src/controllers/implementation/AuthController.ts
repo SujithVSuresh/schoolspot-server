@@ -14,6 +14,29 @@ export class AuthController implements IAuthController {
         next(err);
       }
     }
+
+
+    
+  async verify(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {otp, email} = req.body
+      const verifiedUser = await this._adminService.verify(otp, email)
+      res.status(HttpStatus.CREATED).json(verifiedUser)
+    }catch(err){
+      next(err)
+    }
+  }
+
+
+  async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {email} = req.body
+      const userEmail = await this._adminService.resendOtp(email)
+      res.status(HttpStatus.OK).json({email: userEmail})
+    }catch(err){
+      next(err)
+    }
+  }
   
   }
   
