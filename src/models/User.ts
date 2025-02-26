@@ -2,7 +2,7 @@ import mongoose, {Schema} from "mongoose";
 import { UserType } from "../types/types";
 
 
-const UserSchema = new Schema({
+const User = new Schema({
     email: {
         type: String,
         require: true,
@@ -28,5 +28,5 @@ const UserSchema = new Schema({
     timestamps: true
 })
 
-export default mongoose.model<UserType>('User', UserSchema, "Users")
+export default mongoose.model<UserType>('User', User, "Users")
 
