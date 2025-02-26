@@ -1,12 +1,29 @@
-import express, { Request, Response } from 'express';
+import express, { Application } from "express";
+import dotenv from 'dotenv'
 
-const app = express();
-const port = process.env.PORT || 3000;
+dotenv.config();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, TypeScript with Express!');
-});
+class App {
+  public app: Application;
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  constructor() {
+    this.app = express();
+  }
+
+
+  public listen(): void {
+    this.app.listen(process.env.PORT, () => {
+      console.log(
+        `🔥 Authentication service listening to port ${process.env.PORT}`
+      );
+    });
+  }
+}
+
+
+
+const app = new App();
+app.listen();
+
+
+
