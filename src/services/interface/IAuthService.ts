@@ -9,4 +9,5 @@ export interface IAuthService{
     signin(email:string, password:string): Promise<LoginResponseType>
     passwordResetRequest(email: string): Promise<string>
     passwordReset(token: string, password: string): Promise<string>
+    googleAuth(credential: string, credentialId: string): Promise<LoginResponseType>
 }

@@ -13,6 +13,7 @@ import { comparePassword } from "../../utils/PasswordHash";
 import { LoginResponseType } from "../../types/types";
 import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
+import { OAuth2Client, TokenPayload } from "google-auth-library";
 
 
 export class AuthService implements IAuthService {
@@ -192,6 +193,59 @@ export class AuthService implements IAuthService {
         );
     
         return updateUser?.email as string;
+      }
+
+
+      async googleAuth(credential: string, clientId: string): Promise<LoginResponseType> {
+
+        const client = new OAuth2Client();
+
+        const ticket = await client.verifyIdToken({
+          idToken: credential,
+          audience: clientId,
+        });
+
+        const payload = ticket.getPayload() as TokenPayload;
+        const userid = payload['sub'];
+
+        if(payload.email){
+        let userData = await this._userRepository.findByEmail(payload.email);
+
+
+
+        if(!userData){
+          userData = await this._userRepository.createUser({
+            email: payload.email,
+            role: "admin",
+            status: "active",
+          });
+        }
+
+ 
+          let accessToken = authToken.generateAccessToken({
+            userId: String(userData?._id),
+            role: "admin",
+            iat: Date.now(),
+          });
+      
+          let refreshToken = authToken.generateRefreshToken({
+            userId: String(userData?._id),
+            role: "admin",
+            iat: Date.now(),
+          });
+        
+
+        return {
+          _id: String(userData._id),
+          email: userData.email,
+          role: userData.role,
+          status: userData.status,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        };
+        }else{
+          throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+        }     
       }
 }
 
