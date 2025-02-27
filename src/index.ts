@@ -4,6 +4,7 @@ import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
 import { errorHandler } from "./middlewares/ErrorHandler";
 import authRouter from "./routes/AuthRouter";
+import cors from 'cors';
 
 dotenv.config();
 
@@ -26,6 +27,13 @@ class App {
   }
 
   private initializeMiddleware(): void {
+    this.app.use(
+      cors({
+        origin: ["http://localhost:3000", "http://localhost:5173"],
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        credentials: true,
+      })
+  );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
   }
