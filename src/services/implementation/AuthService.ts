@@ -18,8 +18,6 @@ import { sendPasswordResetEmail } from "../../utils/SendEmail";
 export class AuthService implements IAuthService {
     constructor(private _userRepository: IUserRepository) {}
 
-
-
     async signup(user: UserType): Promise<string> {
         const existingUser = await this._userRepository.findByEmail(user.email);
         if (existingUser) {
