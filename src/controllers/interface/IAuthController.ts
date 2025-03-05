@@ -9,4 +9,6 @@ export interface IAuthController {
     passwordResetRequest(req: Request, res: Response, next:NextFunction): Promise<void>
     resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>
     googleAuth(req: Request, res: Response, next:NextFunction): Promise<void>
+    createUser(req: Request, res: Response, next:NextFunction): Promise<void>
+    getAllStudents(req: Request, res: Response, next: NextFunction): Promise<void>
 }

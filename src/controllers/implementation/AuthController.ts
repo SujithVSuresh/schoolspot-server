@@ -142,4 +142,37 @@ export class AuthController implements IAuthController {
       next(err);
     }
   }
+
+
+  async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {email, password, role, status} = req.body
+
+      const user = await this._authService.createUser({email, password, role, status})
+
+      console.log("hey this is the new user", user)
+
+      res.status(HttpStatus.CREATED).json({
+        _id: user._id,
+        email: user.email,
+        role: user.email,
+        status: user.status,
+      });
+
+    }catch(err){
+      next(err)
+    }
+  }
+
+  async getAllStudents(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+
+      const users = await this._authService.getAllStudents()
+
+      res.status(HttpStatus.CREATED).json(users);
+
+    }catch(err){
+      next(err)
+    }
+  }
 }

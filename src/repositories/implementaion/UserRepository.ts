@@ -46,9 +46,9 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
     }
 
 
-    async listAllStudents(): Promise<UserType[] | null> {
+    async listAllStudents(): Promise<UserType[]> {
         try {
-          return await this.findByQuery({role: "student"});
+          return await this.findByQuery({role: "student"}, {password: 0});
         } catch (err) {
           console.log("Error updating student profile");
           throw new Error("Error updating student profile");

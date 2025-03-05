@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { AuthResponseType, UserType } from "../../types/types";
+import { UserResponseType, UserType } from "../../types/types";
 import { IAuthService } from "../interface/IAuthService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -13,8 +13,7 @@ import { comparePassword } from "../../utils/PasswordHash";
 import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
 import { OAuth2Client, TokenPayload } from "google-auth-library";
-import { access } from "fs";
-
+import mongoose from "mongoose";
 
 export class AuthService implements IAuthService {
     constructor(private _userRepository: IUserRepository) {}
@@ -57,7 +56,7 @@ export class AuthService implements IAuthService {
     }
 
 
-    async verify(otpCode: number, email: string): Promise<AuthResponseType> {
+    async verify(otpCode: number, email: string): Promise<UserResponseType> {
         const otpResponse = await redisClient.get(`otp-${email}`);
         if (!otpResponse) {
           throw new CustomError(Messages.OTP_EXPIRY, HttpStatus.FORBIDDEN);
@@ -105,6 +104,27 @@ export class AuthService implements IAuthService {
         };
       }
 
+      async createUser(user: UserType): Promise<UserResponseType> {
+        const existingUser = await this._userRepository.findByEmail(user.email);
+        if (existingUser) {
+          throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
+        }
+        user.password = await hashPassword(user.password as string);
+
+        let userData = await this._userRepository.createUser({
+          ...user,
+          status: "inactive"
+        });
+
+        return {
+          _id: String(userData._id),
+          email: userData.email,
+          role: userData.role,
+          status: userData.status,
+        };
+        
+      }
+
 
       async resendOtp(email: string): Promise<string> {
         const getUser = await redisClient.get(`userData-${email}`);
@@ -134,7 +154,7 @@ export class AuthService implements IAuthService {
 
 
 
-      async signin(email: string, password: string): Promise<AuthResponseType> {
+      async signin(email: string, password: string): Promise<UserResponseType> {
         const user = await this._userRepository.findByEmail(email);
     
         if (!user) {
@@ -210,7 +230,7 @@ export class AuthService implements IAuthService {
       }
 
 
-      async googleAuth(credential: string, clientId: string): Promise<AuthResponseType> {
+      async googleAuth(credential: string, clientId: string): Promise<UserResponseType> {
 
         const client = new OAuth2Client();
 
@@ -260,6 +280,14 @@ export class AuthService implements IAuthService {
         }else{
           throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
         }     
+      }
+
+
+      async getAllStudents(): Promise<UserType[]> {
+
+        const students = await this._userRepository.listAllStudents();
+
+        return students ?? [];
       }
 }
 

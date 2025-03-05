@@ -21,6 +21,8 @@ authRouter.post("/signin", authController.signin.bind(authController));
 authRouter.post("/password-reset-request", authController.passwordResetRequest.bind(authController))
 authRouter.post("/password-reset", authController.resetPassword.bind(authController))
 authRouter.post("/google-auth", authController.googleAuth.bind(authController))
+authRouter.post("/create-user", authController.createUser.bind(authController))
+authRouter.get("/get-students", authController.getAllStudents.bind(authController))
 
 
 export default authRouter;

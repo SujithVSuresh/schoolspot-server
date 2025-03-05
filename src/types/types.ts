@@ -1,17 +1,49 @@
 import mongoose from "mongoose";
 
-export interface UserType {
-    _id?: mongoose.Types.ObjectId;
+export interface BaseUser {
     email: string;
-    password?: string;
     role: "superadmin" | "admin" | "teacher" | "student";
     status: "active" | "inactive" | "deleted" | "blocked";
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-export interface AdminProfileType {
+
+export interface UserType extends BaseUser {
     _id?: mongoose.Types.ObjectId;
+    password?: string;
+}
+
+export interface UserResponseType extends BaseUser {
+    _id?: string;
+    accessToken?: string;
+    refreshToken?: string;
+}
+
+export interface BaseAdminProfileType {
+    fullName: string;
+    phoneNumber: string;
+    role: "principal" | "it_admin" | "vice_principal" | "other";
+    userId: mongoose.Types.ObjectId;
+    schoolId?: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+
+export interface AdminProfileType extends BaseAdminProfileType {
+    _id?: mongoose.Types.ObjectId;
+    fullName: string;
+    phoneNumber: string;
+    role: "principal" | "it_admin" | "vice_principal" | "other";
+    userId: mongoose.Types.ObjectId;
+    schoolId?: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface AdminProfileResponseType extends BaseAdminProfileType {
+    _id?: string;
     fullName: string;
     phoneNumber: string;
     role: "principal" | "it_admin" | "vice_principal" | "other";
@@ -30,12 +62,4 @@ export interface PayloadType {
 }
 
 
-export interface AuthResponseType {
-    _id?: string;
-    email: string;
-    role: "admin" | "student" | "teacher" | "superadmin";
-    status: "active" | "inactive" | "deleted" | "blocked";
-    accessToken: string | null;
-    refreshToken?: string
-    profilePicture?: string;
-}
+

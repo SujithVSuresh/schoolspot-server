@@ -20,8 +20,8 @@ export class BaseRepository<T> implements IBaseRepository<T> {
         return this.model.find()
     }
 
-    async findByQuery(query: FilterQuery<T>): Promise<T[]> {
-        return this.model.find(query)
+    async findByQuery(query: FilterQuery<T>, projection: FilterQuery<T>={}): Promise<T[]> {
+        return this.model.find(query, projection)
     }
 
     async findOne(query: FilterQuery<T>): Promise<T | null> {
