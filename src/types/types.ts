@@ -30,8 +30,8 @@ export interface PayloadType {
 }
 
 
-export interface LoginResponseType {
-    _id: string;
+export interface AuthResponseType {
+    _id?: string;
     email: string;
     role: "admin" | "student" | "teacher" | "superadmin";
     status: "active" | "inactive" | "deleted" | "blocked";

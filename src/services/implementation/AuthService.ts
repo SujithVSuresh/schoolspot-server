@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { UserType } from "../../types/types";
+import { AuthResponseType, UserType } from "../../types/types";
 import { IAuthService } from "../interface/IAuthService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -10,10 +10,10 @@ import { sendOtpEmail } from "../../utils/SendEmail";
 import generateOtp from "../../utils/GenerateOTP";
 import authToken from "../../utils/AuthToken";
 import { comparePassword } from "../../utils/PasswordHash";
-import { LoginResponseType } from "../../types/types";
 import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
 import { OAuth2Client, TokenPayload } from "google-auth-library";
+import { access } from "fs";
 
 
 export class AuthService implements IAuthService {
@@ -57,7 +57,7 @@ export class AuthService implements IAuthService {
     }
 
 
-    async verify(otpCode: number, email: string): Promise<Partial<UserType>> {
+    async verify(otpCode: number, email: string): Promise<AuthResponseType> {
         const otpResponse = await redisClient.get(`otp-${email}`);
         if (!otpResponse) {
           throw new CustomError(Messages.OTP_EXPIRY, HttpStatus.FORBIDDEN);
@@ -82,12 +82,26 @@ export class AuthService implements IAuthService {
           role: "admin",
           status: "active",
         });
+
+        const accessToken = authToken.generateAccessToken({
+          userId: String(userData._id),
+          role: "admin",
+          iat: Date.now(),
+        });
+    
+        const refreshToken = authToken.generateRefreshToken({
+          userId: String(userData._id),
+          role: "admin",
+          iat: Date.now(),
+        });
     
         return {
-          _id: userData._id,
+          _id: String(userData._id),
           email: userData.email,
           role: userData.role,
           status: userData.status,
+          accessToken,
+          refreshToken
         };
       }
 
