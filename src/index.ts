@@ -4,6 +4,7 @@ import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
 import { errorHandler } from "./middlewares/ErrorHandler";
 import authRouter from "./routes/AuthRouter";
+import studentRouter from "./routes/StudentRouter";
 import cors from 'cors';
 
 dotenv.config();
@@ -40,6 +41,7 @@ class App {
 
   private initializeRouter(): void {
     this.app.use("/auth", authRouter)
+    this.app.use("/student", studentRouter)
     this.app.use(errorHandler);
   }
 
