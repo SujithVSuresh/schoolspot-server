@@ -134,7 +134,7 @@ export class AuthService implements IAuthService {
 
 
 
-      async signin(email: string, password: string): Promise<LoginResponseType> {
+      async signin(email: string, password: string): Promise<AuthResponseType> {
         const user = await this._userRepository.findByEmail(email);
     
         if (!user) {
@@ -210,7 +210,7 @@ export class AuthService implements IAuthService {
       }
 
 
-      async googleAuth(credential: string, clientId: string): Promise<LoginResponseType> {
+      async googleAuth(credential: string, clientId: string): Promise<AuthResponseType> {
 
         const client = new OAuth2Client();
 
