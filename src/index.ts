@@ -6,6 +6,9 @@ import { errorHandler } from "./middlewares/ErrorHandler";
 import authRouter from "./routes/AuthRouter";
 import studentRouter from "./routes/StudentRouter";
 import cors from 'cors';
+import { consoleLogger } from "./middlewares/Logger";
+import { fileLogger } from "./middlewares/Logger";
+
 
 dotenv.config();
 
@@ -37,6 +40,8 @@ class App {
   );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(consoleLogger)
+    this.app.use(fileLogger)
   }
 
   private initializeRouter(): void {

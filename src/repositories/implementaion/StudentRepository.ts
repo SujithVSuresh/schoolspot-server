@@ -3,7 +3,7 @@ import { StudentProfileType, StudentUserProfileType } from "../../types/types";
 import { IStudentRepository } from "../interface/IStudentRepository";
 import Student from "../../models/Student";
 import { GetParamsType } from "../../types/types";
-
+import { GetStudentsResponseType } from "../../types/types";
 
 
 class StudentRepository extends BaseRepository<StudentProfileType> implements IStudentRepository {
@@ -20,12 +20,23 @@ class StudentRepository extends BaseRepository<StudentProfileType> implements IS
         }
     }
 
-    async getAllStudents({page, limit}: GetParamsType): Promise<any> {
+    async getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType): Promise<GetStudentsResponseType> {
         try{
-            const pageNumber = page || 1; 
-            const pageSize = limit || 10;  
-            const skip = (pageNumber - 1) * pageSize;
+            console.log(search, sortBy, sortOrder, "this is the search...")
+      
+            const skip = (page as number - 1) * (limit as number);
 
+            const matchQuery: any = {}
+
+            if(search){
+                matchQuery.fullName = {$regex: search, $options: "i"}
+            }
+
+            if(status){
+                matchQuery["userDetails.status"] = status; 
+            }
+
+            const totalStudents = await Student.countDocuments(matchQuery);
 
             const students = await Student.aggregate([
                 {
@@ -38,38 +49,37 @@ class StudentRepository extends BaseRepository<StudentProfileType> implements IS
                 },
                 { $unwind: "$userDetails" },
                 {
+                    $match: matchQuery
+                },
+                {
                     $project: {
                       _id: 1,
                       fullName: 1,
                       class: 1,
                       section: 1,
                       profilePhoto: 1,
-                      gender: 1,
-                      dob: 1,
-                      address: 1,
-                      fatherName: 1,
-                      motherName: 1,
-                      contactNumber: 1,
                       schoolId: 1,
                       createdAt: 1,
-                      updatedAt: 1,
                       user: {
                         _id: "$userDetails._id",
                         email: "$userDetails.email",
-                        role: "$userDetails.role",
                         status: "$userDetails.status",
-                        createdAt: "$userDetails.createdAt",
-                        updatedAt: "$userDetails.updatedAt"
                       }
                     }
                 },
+                { $sort: { [sortBy as string]: sortOrder === "asc" ? 1 : -1 } },
                 { $skip: skip },
-                { $limit: pageSize }
+                { $limit: limit as number }
             ])
 
             console.log(students, "lalala")
 
-            return students
+            return {
+                students,
+                totalStudents,
+                totalPages: Math.ceil(totalStudents / (limit as number)),
+                currentPage: page as number,
+            }
 
         }catch(error){
             console.error("Error fetching student data", error);

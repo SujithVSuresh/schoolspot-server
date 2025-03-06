@@ -1,12 +1,15 @@
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { StudentUserProfileType } from "../../types/types";
+import { GetStudentsResponseType, StudentUserProfileType } from "../../types/types";
 import { IStudentService } from "../interface/IStudentService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { hashPassword } from "../../utils/PasswordHash";
 import { GetParamsType } from "../../types/types";
+import cloudinary from "../../config/cloudinary";
+import { UploadApiResponse } from "cloudinary";
+
 
 
 export class StudentService implements IStudentService {
@@ -16,7 +19,7 @@ export class StudentService implements IStudentService {
     ) {}
 
 
-    async addStudent(data: StudentUserProfileType): Promise<string> {
+    async addStudent(data: StudentUserProfileType, file: Express.Multer.File): Promise<string> {
         const existingUser = await this._userRepository.findByEmail(data.email);
         if (existingUser) {
           throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
@@ -30,6 +33,35 @@ export class StudentService implements IStudentService {
             status: "active",
         });
 
+        let profilePhotoURL = null;
+
+        if (file) {
+            console.log("Uploading image to Cloudinary...");
+      
+            const uploadResult: UploadApiResponse = await new Promise(
+              (resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                  { folder: "student_profiles" },
+                  (error, result) => {
+                    if (error) {
+                      reject(error); // Reject in case of error
+                    } else if (result) {
+                      resolve(result); // Resolve with Cloudinary result
+                    } else {
+                      reject(new Error("Cloudinary upload failed"));
+                    }
+                  }
+                );
+      
+                stream.end(file.buffer); // Send file buffer to Cloudinary
+              }
+            );
+      
+            profilePhotoURL = uploadResult.secure_url;
+          }   
+
+          console.log(profilePhotoURL, "blenlennle")
+
         let studentProfile = await this._studentRepository.createStudentProfile({
             fullName: data.fullName,
             class: data.class,
@@ -40,7 +72,7 @@ export class StudentService implements IStudentService {
             fatherName: data.fatherName,
             motherName: data.motherName,
             contactNumber: data.contactNumber,
-            profilePhoto: data.profilePhoto,
+            profilePhoto: profilePhotoURL as string,
             userId: user._id
         })
 
@@ -48,8 +80,15 @@ export class StudentService implements IStudentService {
 
     }
 
-    async getStudents(data: GetParamsType): Promise<any> {
-        const students = this._studentRepository.getAllStudents({limit: data.limit as number, page: data.page as number})
+    async getStudents(data: GetParamsType): Promise<GetStudentsResponseType> {
+        const students = await this._studentRepository.getAllStudents({
+            limit: data.limit ? Number(data.limit) : 3, 
+            page: data.page ? Number(data.page) : 1, 
+            search: data.search ? data.search : "",
+            sortBy: data.sortBy ? data.sortBy : "createdAt",
+            sortOrder: data.sortOrder ? data.sortOrder : "desc",
+            status: data.status ? data.status : ""
+        });        
         console.log(students, "all students data")
 
         return students

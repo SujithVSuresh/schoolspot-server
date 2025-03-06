@@ -1,12 +1,9 @@
 import { StudentProfileType } from "../../types/types";
-
-interface GetParamsType {
-    page: number,
-    limit: number
-}
+import { GetParamsType } from "../../types/types";
+import { GetStudentsResponseType } from "../../types/types";
 
 export interface IStudentRepository {
     createStudentProfile(data: StudentProfileType): Promise<StudentProfileType>;
-    getAllStudents({page, limit}: GetParamsType): Promise<null> 
+    getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType): Promise<GetStudentsResponseType> 
 }
 

@@ -27,6 +27,8 @@ export class StudentController implements IStudentController {
                 password
               } = req.body;
 
+              const file = req.file
+
               const student = await this._studentService.addStudent({
                 fullName,
                 class: studentClass,
@@ -40,7 +42,7 @@ export class StudentController implements IStudentController {
                 contactNumber,
                 email,
                 password
-              })
+              }, file as  Express.Multer.File)
 
               res.status(HttpStatus.CREATED).json({email: student})
               
@@ -54,15 +56,12 @@ export class StudentController implements IStudentController {
     async getStudents(req: Request, res: Response, next: NextFunction): Promise<void> {
         try{
 
-            console.log("query", req.query)
+            const students = await this._studentService.getStudents(req.query)
 
-            const student = this._studentService.getStudents({limit:3, page: 1})
+            console.log(students, "holo this is the student data..")
 
-            console.log(student, "holo this is the student data..")
-
-            //   res.status(HttpStatus.OK).json({email: student.email})
+              res.status(HttpStatus.OK).json(students)
               
-
         }catch(err){
             next(err)
         }

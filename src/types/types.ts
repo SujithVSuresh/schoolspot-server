@@ -43,10 +43,10 @@ export interface AdminProfileResponseType extends BaseAdminProfileType {
 
 
 export interface PayloadType {
-    userId: string,
-    role: string,
-    iat: number
-    exp?: number
+    userId: string;
+    role: string;
+    iat: number;
+    exp?: number;
 }
 
 
@@ -55,7 +55,7 @@ export interface StudentProfileType {
     fullName: string;
     class: string;
     section: string;
-    profilePhoto: string;
+    profilePhoto?: string;
     gender: "male" | "female";
     dob: Date;
     address: string;
@@ -67,12 +67,39 @@ export interface StudentProfileType {
 }
 
 export interface StudentUserProfileType extends StudentProfileType {
-    email: string,
-    password?: string
+    email: string;
+    password?: string;
 }
 
 export interface GetParamsType {
-    page?: number,
-    limit?: number
+    page?: number;
+    limit?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    status?: "active" | "inactive" | "deleted" | "blocked" | "";
+}
+
+export interface StudentDataResponseType {
+    _id?: mongoose.Types.ObjectId;
+    fullName: string;
+    class: string;
+    section: string;
+    profilePhoto: string;
+    schoolId?: mongoose.Types.ObjectId;
+    user: {
+        _id: mongoose.Types.ObjectId
+        email: string,
+        status: "active" | "inactive" | "deleted" | "blocked";
+    }
+
+}
+
+export interface GetStudentsResponseType {
+    totalStudents: number,
+    totalPages: number,
+    currentPage: number,
+    students: StudentDataResponseType[]
+
 }
 
