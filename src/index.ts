@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import dotenv from 'dotenv'
+dotenv.config();
 import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
 import { errorHandler } from "./middlewares/ErrorHandler";
@@ -8,9 +9,11 @@ import studentRouter from "./routes/StudentRouter";
 import cors from 'cors';
 import { consoleLogger } from "./middlewares/Logger";
 import { fileLogger } from "./middlewares/Logger";
+import cookieParser from "cookie-parser";
+import teacherRouter from "./routes/TeacherRouter";
 
 
-dotenv.config();
+
 
 class App {
   public app: Application;
@@ -40,6 +43,7 @@ class App {
   );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
     this.app.use(consoleLogger)
     this.app.use(fileLogger)
   }
@@ -47,6 +51,7 @@ class App {
   private initializeRouter(): void {
     this.app.use("/auth", authRouter)
     this.app.use("/student", studentRouter)
+    this.app.use('/teacher', teacherRouter)
     this.app.use(errorHandler);
   }
 

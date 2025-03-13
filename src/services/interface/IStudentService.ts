@@ -3,6 +3,6 @@ import { GetParamsType, GetStudentsResponseType, StudentUserProfileType, UserRes
 
 
 export interface IStudentService{
-    addStudent(data: StudentUserProfileType, file: Express.Multer.File): Promise<string>
-    getStudents(data: GetParamsType): Promise<GetStudentsResponseType>
+    addStudent(data: StudentUserProfileType, file: Express.Multer.File, schoolId: string): Promise<string>
+    getStudents(data: GetParamsType, schoolId: string): Promise<GetStudentsResponseType>
 }

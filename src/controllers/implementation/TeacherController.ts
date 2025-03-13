@@ -1,0 +1,62 @@
+import { Request, Response, NextFunction } from "express";
+import HttpStatus from "../../constants/StatusConstants";
+import { ITeacherService } from "../../services/interface/ITeacherService";
+import { ITeacherController } from "../interface/ITeacherController";
+import { CustomRequest, PayloadType } from "../../types/types";
+
+
+
+export class TeacherController implements ITeacherController {
+    constructor(private _teacherService: ITeacherService) {}
+
+    async addTeacher(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {
+                fullName,
+                phoneNumber,
+                subjectSpecialized,
+                qualification,
+                experience,
+                email,
+                password
+              } = req.body;
+
+              const {schoolId} = req.user as PayloadType
+
+              const file = req.file
+
+              const student = await this._teacherService.addTeacher({
+                fullName,
+                phoneNumber,
+                subjectSpecialized,
+                qualification,
+                experience,
+                email,
+                password,
+                
+              }, file as  Express.Multer.File, schoolId)
+
+              res.status(HttpStatus.CREATED).json({email: student})
+              
+
+        }catch(err){
+            next(err)
+        }
+    }
+
+
+    async getTeachers(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {schoolId} = req.user as PayloadType
+
+            const teachers = await this._teacherService.getTeachers(req.query, schoolId)
+
+            console.log(teachers, "holo this is the teacher data..")
+
+              res.status(HttpStatus.OK).json(teachers)
+              
+        }catch(err){
+            next(err)
+        }
+    }
+}

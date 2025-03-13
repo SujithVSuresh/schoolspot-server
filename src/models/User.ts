@@ -23,6 +23,10 @@ const User = new Schema({
         required: true,
         enum: ['active', 'inactive', 'deleted', 'blocked'],
         default: 'inactive'
+    },
+    schoolId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "School"
     }
 }, {
     timestamps: true

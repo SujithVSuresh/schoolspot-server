@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import { Request } from "express";
 
 export interface BaseUser {
     email: string;
     role: "superadmin" | "admin" | "teacher" | "student";
     status: "active" | "inactive" | "deleted" | "blocked";
+    schoolId?: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -21,9 +23,9 @@ export interface UserResponseType extends BaseUser {
 }
 
 export interface BaseAdminProfileType {
-    fullName: string;
-    phoneNumber: string;
-    role: "principal" | "it_admin" | "vice_principal" | "other";
+    fullName?: string;
+    phoneNumber?: string;
+    role?: "principal" | "it_admin" | "vice_principal" | "other";
     userId: mongoose.Types.ObjectId;
     schoolId?: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -47,8 +49,13 @@ export interface PayloadType {
     role: string;
     iat: number;
     exp?: number;
+    schoolId: string;
 }
 
+
+export interface CustomRequest extends Request {
+    user?: PayloadType;
+}
 
 export interface StudentProfileType {
     _id?: mongoose.Types.ObjectId;
@@ -102,4 +109,83 @@ export interface GetStudentsResponseType {
     students: StudentDataResponseType[]
 
 }
+
+
+export interface SchoolProfileBaseType {
+    _id?: mongoose.Types.ObjectId;
+    schoolName: string;
+    email?: string;
+    phoneNumber: string;
+    regNumber: string;
+    yearEstablished: number;
+    principalName: string;
+    websiteUrl: string;
+    totalStudents: number;
+    totalTeachers: number;
+    board: string;
+}
+
+export interface SchoolProfileType extends SchoolProfileBaseType {
+    address: {
+        city: string;
+        state: string;
+        country: string;
+        postalCode: string;
+    };
+}
+
+export interface SchoolProfileReqType extends SchoolProfileBaseType {
+
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+
+}
+
+
+export interface TeacherProfileType {
+    fullName: string;
+    phoneNumber: string;
+    subjectSpecialized: string;
+    qualification: string;
+    experience: string;
+    profilePhoto?: string;
+    userId?: mongoose.Types.ObjectId;
+    schoolId?: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  }
+
+  export interface TeacherUserProfileType extends TeacherProfileType {
+    email: string;
+    password?: string;
+  }
+
+
+  export interface TeacherDataResponseType {
+    _id?: mongoose.Types.ObjectId;
+    fullName: string;
+    subjectSpecialized: string;
+    qualification: string;
+    profilePhoto: string;
+    schoolId?: mongoose.Types.ObjectId;
+    user: {
+        _id: mongoose.Types.ObjectId
+        email: string,
+        status: "active" | "inactive" | "deleted" | "blocked";
+    }
+}
+
+
+    export interface GetTeacherResponseType {
+        totalTeachers: number,
+        totalPages: number,
+        currentPage: number,
+        teachers: TeacherDataResponseType[]
+    
+    }
+
+
+
 

@@ -1,5 +1,4 @@
 import jwt, { SignOptions } from 'jsonwebtoken'
-import { ObjectId } from 'mongoose'
 import { PayloadType } from '../types/types'
 
 
@@ -10,8 +9,8 @@ class AuthToken {
     private _refreshTokenExpiry: string 
 
     constructor(){
-        this._accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "default_access_token"
-        this._refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "default_refresh_token"
+        this._accessTokenSecret = process.env.ACCESS_TOKEN_SECRET as string
+        this._refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string
         this._accessTokenExpiry = "15m"
         this._refreshTokenExpiry = "7d"
     }
@@ -34,10 +33,19 @@ class AuthToken {
         return refreshToken
     }
 
-    verifyToken(token: string): PayloadType{
+    verifyAccessToken(token: string): PayloadType{
         const decoded = jwt.verify(
             token,
             this._accessTokenSecret
+        ) as PayloadType
+
+        return decoded
+    }
+
+    verifyRefreshToken(token: string): PayloadType{
+        const decoded = jwt.verify(
+            token,
+            this._refreshTokenSecret
         ) as PayloadType
 
         return decoded

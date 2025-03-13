@@ -4,6 +4,7 @@ import { IStudentRepository } from "../interface/IStudentRepository";
 import Student from "../../models/Student";
 import { GetParamsType } from "../../types/types";
 import { GetStudentsResponseType } from "../../types/types";
+import mongoose from "mongoose";
 
 
 class StudentRepository extends BaseRepository<StudentProfileType> implements IStudentRepository {
@@ -20,13 +21,16 @@ class StudentRepository extends BaseRepository<StudentProfileType> implements IS
         }
     }
 
-    async getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType): Promise<GetStudentsResponseType> {
+    async getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetStudentsResponseType> {
         try{
-            console.log(search, sortBy, sortOrder, "this is the search...")
+
+
       
             const skip = (page as number - 1) * (limit as number);
 
             const matchQuery: any = {}
+
+            matchQuery.schoolId = new mongoose.Types.ObjectId(schoolId)
 
             if(search){
                 matchQuery.fullName = {$regex: search, $options: "i"}
@@ -72,7 +76,6 @@ class StudentRepository extends BaseRepository<StudentProfileType> implements IS
                 { $limit: limit as number }
             ])
 
-            console.log(students, "lalala")
 
             return {
                 students,

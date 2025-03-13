@@ -9,6 +9,7 @@ import { hashPassword } from "../../utils/PasswordHash";
 import { GetParamsType } from "../../types/types";
 import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
+import mongoose from "mongoose";
 
 
 
@@ -19,7 +20,7 @@ export class StudentService implements IStudentService {
     ) {}
 
 
-    async addStudent(data: StudentUserProfileType, file: Express.Multer.File): Promise<string> {
+    async addStudent(data: StudentUserProfileType, file: Express.Multer.File, schoolId: string): Promise<string> {
         const existingUser = await this._userRepository.findByEmail(data.email);
         if (existingUser) {
           throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
@@ -73,14 +74,15 @@ export class StudentService implements IStudentService {
             motherName: data.motherName,
             contactNumber: data.contactNumber,
             profilePhoto: profilePhotoURL as string,
-            userId: user._id
+            userId: user._id,
+            schoolId: new mongoose.Types.ObjectId(schoolId)
         })
 
         return user.email
 
     }
 
-    async getStudents(data: GetParamsType): Promise<GetStudentsResponseType> {
+    async getStudents(data: GetParamsType, schoolId: string): Promise<GetStudentsResponseType> {
         const students = await this._studentRepository.getAllStudents({
             limit: data.limit ? Number(data.limit) : 3, 
             page: data.page ? Number(data.page) : 1, 
@@ -88,8 +90,7 @@ export class StudentService implements IStudentService {
             sortBy: data.sortBy ? data.sortBy : "createdAt",
             sortOrder: data.sortOrder ? data.sortOrder : "desc",
             status: data.status ? data.status : ""
-        });        
-        console.log(students, "all students data")
+        }, schoolId);        
 
         return students
     }

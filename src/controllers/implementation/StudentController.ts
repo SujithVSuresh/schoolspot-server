@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { IStudentService } from "../../services/interface/IStudentService";
 import { IStudentController } from "../interface/IStudentController";
 import HttpStatus from "../../constants/StatusConstants";
-
+import { CustomRequest } from "../../types/types";
+import { PayloadType } from "../../types/types";
 
 
 
@@ -10,7 +11,7 @@ export class StudentController implements IStudentController {
     constructor(private _studentService: IStudentService) {}
 
 
-    async addStudent(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async addStudent(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
         try{
             const {
                 fullName,
@@ -26,6 +27,9 @@ export class StudentController implements IStudentController {
                 email,
                 password
               } = req.body;
+              
+
+              const {schoolId} = req.user as PayloadType
 
               const file = req.file
 
@@ -42,7 +46,7 @@ export class StudentController implements IStudentController {
                 contactNumber,
                 email,
                 password
-              }, file as  Express.Multer.File)
+              }, file as  Express.Multer.File, schoolId)
 
               res.status(HttpStatus.CREATED).json({email: student})
               
@@ -53,10 +57,11 @@ export class StudentController implements IStudentController {
     }
 
 
-    async getStudents(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getStudents(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
         try{
+            const {schoolId} = req.user as PayloadType
 
-            const students = await this._studentService.getStudents(req.query)
+            const students = await this._studentService.getStudents(req.query, schoolId)
 
             console.log(students, "holo this is the student data..")
 

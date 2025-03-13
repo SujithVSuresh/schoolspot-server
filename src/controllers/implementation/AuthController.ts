@@ -2,13 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { IAuthController } from "../interface/IAuthController";
 import { IAuthService } from "../../services/interface/IAuthService";
 import HttpStatus from "../../constants/StatusConstants";
+import Messages from "../../constants/MessageConstants";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const email = await this._authService.signup(req.body);
+      const {schoolData, userData} = req.body
+      const email = await this._authService.signup(userData, schoolData);
       res.status(HttpStatus.OK).json({ email });
     } catch (err) {
       next(err);
@@ -120,10 +122,10 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { credential, clientId } = req.body;
-      console.log(credential, clientId, "dadada");
+      const { credential, clientId } = req.body.payload;
+      const schoolData = req.body.schoolData
       const { _id, email, role, status, accessToken, refreshToken } =
-        await this._authService.googleAuth(credential, clientId);
+        await this._authService.googleAuth(credential, clientId, schoolData);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -140,6 +142,26 @@ export class AuthController implements IAuthController {
       });
     } catch (err) {
       next(err);
+    }
+  }
+
+  async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if(!req.cookies) {
+        res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
+        return;
+      }
+
+      const refreshToken = req.cookies.refreshToken;
+
+      if(!refreshToken) {
+        res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
+        return;
+      }
+      const response = await this._authService.refreshToken(refreshToken)
+      res.status(HttpStatus.OK).json(response)
+    } catch (err) {
+      next(err)
     }
   }
 
@@ -170,6 +192,21 @@ export class AuthController implements IAuthController {
       const users = await this._authService.getAllStudents()
 
       res.status(HttpStatus.CREATED).json(users);
+
+    }catch(err){
+      next(err)
+    }
+  }
+
+  async changeAccountStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {status, userId} = req.body
+
+      console.log(userId, "idd")
+
+      const response = await this._authService.changeAccountStatus(userId, status)
+
+      res.status(HttpStatus.OK).json(response);
 
     }catch(err){
       next(err)
