@@ -12,7 +12,7 @@ import authToken from "../../utils/AuthToken";
 import { comparePassword } from "../../utils/PasswordHash";
 import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
-import { OAuth2Client, TokenPayload } from "google-auth-library";
+import { OAuth2Client, TokenPayload, UserRefreshClient } from "google-auth-library";
 import { ISchoolRepository } from "../../repositories/interface/ISchoolRepository";
 import { IAdminRepository } from "../../repositories/interface/IAdminRepository";
 import mongoose from "mongoose";
@@ -163,10 +163,17 @@ export class AuthService implements IAuthService {
 
 
 
-      async signin(email: string, password: string): Promise<UserResponseType> {
+      async signin(email: string, password: string, role: string): Promise<UserResponseType> {
         const user = await this._userRepository.findByEmail(email);
     
-        if (!user) {
+        if (!user || (user && !user.password)) {
+          throw new CustomError(
+            Messages.ACCOUNT_NOT_FOUND,
+            HttpStatus.UNAUTHORIZED
+          );
+        }
+
+        if(user && user.role != role){
           throw new CustomError(
             Messages.ACCOUNT_NOT_FOUND,
             HttpStatus.UNAUTHORIZED

@@ -56,7 +56,7 @@ export class AuthController implements IAuthController {
 
   async signin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, password } = req.body;
+      const { email, password, role:userRole } = req.body;
       const {
         _id,
         email: userEmail,
@@ -64,14 +64,15 @@ export class AuthController implements IAuthController {
         status,
         accessToken,
         refreshToken,
-      } = await this._authService.signin(email, password);
+      } = await this._authService.signin(email, password, userRole);
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie(`${role}RefreshToken`, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
+
       res.status(HttpStatus.OK).json({
         _id,
         email: userEmail,

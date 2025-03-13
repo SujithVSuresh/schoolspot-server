@@ -5,7 +5,7 @@ export interface IAuthService{
     signup(user: UserType, school: SchoolProfileType): Promise<string>
     verify(otpCode: number, email: string): Promise<UserResponseType>
     resendOtp(email: string): Promise<string>
-    signin(email:string, password:string): Promise<UserResponseType>
+    signin(email:string, password:string, role: string): Promise<UserResponseType>
     passwordResetRequest(email: string): Promise<string>
     passwordReset(token: string, password: string): Promise<string>
     googleAuth(credential: string, credentialId: string, schoolData: SchoolProfileReqType): Promise<UserResponseType>
