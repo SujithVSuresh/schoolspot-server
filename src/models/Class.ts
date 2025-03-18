@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import { ClassEntityType } from "../types/types";
 
 const ClassSchema = new Schema({
     name: {
@@ -6,7 +7,8 @@ const ClassSchema = new Schema({
         required: true
     },
     section: {
-        type: String
+        type: String,
+        required: true
     },
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,10 +27,12 @@ const ClassSchema = new Schema({
     subjects: [
         {
             name: {
-                type: String
+                type: String,
+                required: true
             },
             teacher: {
                 type: mongoose.Schema.Types.ObjectId,
+                required: true,
                 ref: 'User'
             }
         }
@@ -39,4 +43,4 @@ const ClassSchema = new Schema({
 })
 
 
-export default mongoose.model('Class', ClassSchema, 'Classes')
+export default mongoose.model<ClassEntityType>('Class', ClassSchema, 'Classes')

@@ -61,11 +61,24 @@ export class StudentController implements IStudentController {
         try{
             const {schoolId} = req.user as PayloadType
 
-            const students = await this._studentService.getStudents(req.query, schoolId)
+            const classfilter = req.query.classfilter ? decodeURIComponent(req.query.classfilter as string).split(",") : []
+            const students = await this._studentService.getStudents({...req.query, classfilter}, schoolId)
 
-            console.log(students, "holo this is the student data..")
+            res.status(HttpStatus.OK).json(students)
+              
+        }catch(err){
+            next(err)
+        }
+    }
 
-              res.status(HttpStatus.OK).json(students)
+    async getStudentProfile(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            // const {schoolId} = req.user as PayloadType
+            const userId = req.params.userId
+
+            const students = await this._studentService.getStudentById(userId)
+
+            res.status(HttpStatus.OK).json(students)
               
         }catch(err){
             next(err)

@@ -179,6 +179,13 @@ export class AuthService implements IAuthService {
             HttpStatus.UNAUTHORIZED
           );
         }
+
+        if(user && user.status == "blocked"){
+          throw new CustomError(
+            "Your account has been blocked",
+            HttpStatus.UNAUTHORIZED
+          );
+        }
     
         const pwMatch = await comparePassword(password, user.password as string);
     

@@ -15,7 +15,7 @@ const studentRouter = Router();
 
 studentRouter.post("/add-student", protectRoute("admin"), upload.single("profilePhoto"), studentController.addStudent.bind(studentController));
 studentRouter.get("/get-students", protectRoute("admin"), studentController.getStudents.bind(studentController));
-
+studentRouter.get("/get-student/:userId", protectRoute("admin"), studentController.getStudentProfile.bind(studentController))
 
 
 export default studentRouter;

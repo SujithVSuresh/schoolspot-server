@@ -11,6 +11,9 @@ const StudentSchema = new mongoose.Schema(
          type: String, 
          required: true 
         },
+    roll: {
+        type: Number,
+    },
     section: { 
         type: String, 
         required: true 

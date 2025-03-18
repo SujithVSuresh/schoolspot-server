@@ -51,8 +51,6 @@ export class TeacherController implements ITeacherController {
 
             const teachers = await this._teacherService.getTeachers(req.query, schoolId)
 
-            console.log(teachers, "holo this is the teacher data..")
-
               res.status(HttpStatus.OK).json(teachers)
               
         }catch(err){

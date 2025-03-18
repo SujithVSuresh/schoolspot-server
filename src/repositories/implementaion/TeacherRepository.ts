@@ -1,5 +1,5 @@
 import { BaseRepository } from "./BaseRepository";
-import { GetTeacherResponseType, TeacherProfileType } from "../../types/types";
+import { GetTeacherParamsType, GetTeacherResponseType, TeacherProfileType } from "../../types/types";
 import { IStudentRepository } from "../interface/IStudentRepository";
 import { GetParamsType } from "../../types/types";
 import { GetStudentsResponseType } from "../../types/types";
@@ -22,9 +22,8 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
         }
     }
 
-    async getAllTeachers({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetTeacherResponseType> {
+    async getAllTeachers({page, limit, search, sortBy, sortOrder, status}: GetTeacherParamsType, schoolId: string): Promise<GetTeacherResponseType> {
         try{
-            console.log(schoolId, "ssstriii")
       
             const skip = (page as number - 1) * (limit as number);
 
@@ -77,9 +76,6 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
                 { $skip: skip },
                 { $limit: limit as number }
             ])
-
-            console.log("tttttt", teachers)
-
 
             return {
                 teachers,

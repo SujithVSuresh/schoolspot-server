@@ -16,7 +16,8 @@ const Messages = {
     ACCESS_NOT_ALLOWED: "Access denied, No token provided",
     JWT_TOKEN_EXPIRED: "Authentication token has expired",
     INVALID_TOKEN: "Token is invalid",
-    NO_TOKEN: "No token provided"
+    NO_TOKEN: "No token provided",
+    CLASS_EXIST: "Class already exist"
   };
 
   export default Messages

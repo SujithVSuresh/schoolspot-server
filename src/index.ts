@@ -11,6 +11,7 @@ import { consoleLogger } from "./middlewares/Logger";
 import { fileLogger } from "./middlewares/Logger";
 import cookieParser from "cookie-parser";
 import teacherRouter from "./routes/TeacherRouter";
+import classRouter from "./routes/ClassRoute";
 
 
 
@@ -52,6 +53,7 @@ class App {
     this.app.use("/auth", authRouter)
     this.app.use("/student", studentRouter)
     this.app.use('/teacher', teacherRouter)
+    this.app.use('/class', classRouter)
     this.app.use(errorHandler);
   }
 
