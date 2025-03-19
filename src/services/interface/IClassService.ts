@@ -1,6 +1,6 @@
-import { ClassResponseDTO, CreateClassDTO } from "../../dto/ClassDTO"
+import { AnnouncementResponseDTO, ClassResponseDTO, CreateAnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO"
 import ClassRepository from "../../repositories/implementaion/ClassRepository"
-import { SubjectEntityType } from "../../types/types"
+import { AnnouncementEntityType, SubjectEntityType } from "../../types/types"
 import { SubjectDTO } from "../../dto/ClassDTO"
 
 export interface IClassService{
@@ -9,6 +9,7 @@ export interface IClassService{
     findClassById(id: string): Promise<ClassResponseDTO>
     addSubject(data: SubjectDTO, classId: string): Promise<SubjectDTO>
     removeSubject(subjectId: string, classId: string): Promise<string>
+    addAnnouncement(data: CreateAnnouncementDTO): Promise<AnnouncementResponseDTO>
 }
 
 export default IClassService

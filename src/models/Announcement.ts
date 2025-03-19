@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { AdminProfileType } from "../types/types";
+import { AnnouncementEntityType } from "../types/types";
 
 const AnnouncementSchema = new Schema({
     title: {
@@ -18,9 +18,14 @@ const AnnouncementSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Class"
         }
-    ]
+    ],
+    schoolId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    }
+
 }, {
     timestamps: true
 })
 
-export default mongoose.model<AdminProfileType>('Announcement', AnnouncementSchema, 'Announcements')
+export default mongoose.model<AnnouncementEntityType>('Announcement', AnnouncementSchema, 'Announcements')

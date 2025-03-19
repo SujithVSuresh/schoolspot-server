@@ -10,4 +10,16 @@ class AnnouncementRepository extends BaseRepository<AnnouncementEntityType> impl
     constructor(){
         super(Announcement)
     }
+    
+
+    async addAnnouncement(data: AnnouncementEntityType): Promise<AnnouncementEntityType>{
+        try {
+            return await this.create(data);
+          } catch (error) {
+            console.error("Error creating announcement", error);
+            throw new Error("Error creating announcement");
+          }
+    }
 }
+
+export default new AnnouncementRepository()

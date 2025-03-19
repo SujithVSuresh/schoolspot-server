@@ -18,8 +18,30 @@ export interface ClassResponseDTO {
       createdAt?: Date;
 }
 
+// ---------------
+
 export interface SubjectDTO {
       _id?: mongoose.Types.ObjectId;
       name: string;
       teacher: mongoose.Types.ObjectId | string;
+}
+
+
+// ---------------
+
+export interface CreateAnnouncementDTO {
+      title: string;
+      content: string;
+      author: mongoose.Types.ObjectId;
+      sendTo: mongoose.Types.ObjectId[];
+      schoolId: mongoose.Types.ObjectId;
+}
+
+export interface AnnouncementResponseDTO {
+      _id?: mongoose.Types.ObjectId;
+      title: string;
+      content: string;
+      author: mongoose.Types.ObjectId | string; 
+      creartedAt?: Date;
+      updatedAt?: Date;
 }

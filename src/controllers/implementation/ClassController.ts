@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { CustomRequest, PayloadType } from "../../types/types";
 import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
-import { CreateClassDTO } from "../../dto/ClassDTO";
+import { CreateAnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO";
 import HttpStatus from "../../constants/StatusConstants";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
+import mongoose from "mongoose";
 
 export class ClassController implements IClassController {
     constructor(private _classService: IClassService) {}
@@ -81,6 +82,29 @@ export class ClassController implements IClassController {
             res.status(HttpStatus.OK).json({
                 data: response
             })
+        }catch(err){
+            next(err)
+        }
+    }
+
+    async addAnnouncement(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const { schoolId, userId } = req.user as PayloadType
+            const { title, content, sendTo } = req.body
+
+            console.log(title, content, sendTo)
+
+            const announcementData: CreateAnnouncementDTO = {
+                title,
+                content,
+                sendTo,
+                schoolId: new mongoose.Types.ObjectId(schoolId),
+                author: new mongoose.Types.ObjectId(userId)
+            }
+
+            const response = await this._classService.addAnnouncement(announcementData)
+
+            res.status(HttpStatus.OK).json(response)
         }catch(err){
             next(err)
         }

@@ -8,11 +8,15 @@ import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { ITeacherRepository } from "../../repositories/interface/ITeacherRepository";
+import { IAnnouncementRepository } from "../../repositories/interface/IAnnouncementRepository";
+import { CreateAnnouncementDTO, AnnouncementResponseDTO } from "../../dto/ClassDTO";
+
 
 export class ClassService implements IClassService {
     constructor(
       private _classRepository: IClassRepository,
-      private _teacherRepository: ITeacherRepository
+      private _teacherRepository: ITeacherRepository,
+      private _announcementRepository: IAnnouncementRepository
     ) {}
 
     async createClass(dto: CreateClassDTO): Promise<ClassResponseDTO> {
@@ -70,14 +74,12 @@ export class ClassService implements IClassService {
         teacher: data.teacher as mongoose.Types.ObjectId
       }
       const response = await this._classRepository.addSubject(subjectData, classId)
-      console.log(response, "this is the response.")
 
       if(!response){
         throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
       }
 
         const teacher = await this._teacherRepository.findTeacherById(String(response.teacher))
-        console.log(teacher, "this is the teacher data...")
         if(!teacher){
           throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
         }
@@ -100,4 +102,21 @@ export class ClassService implements IClassService {
       return response
     }
 
+    async addAnnouncement(data: CreateAnnouncementDTO): Promise<AnnouncementResponseDTO> {
+
+      const sendToData = data.sendTo.map((item) => new mongoose.Types.ObjectId(item))
+
+      const response = await this._announcementRepository.addAnnouncement({
+        ...data,
+        sendTo: sendToData
+      })
+
+      return {
+        _id: response._id,
+        title: response.title,
+        content: response.content,
+        author: response.author,
+        creartedAt: response.createdAt as Date
+      }
+    }
 }

@@ -1,5 +1,5 @@
-
+import { AnnouncementEntityType } from "../../types/types";
 
 export interface IAnnouncementRepository {
-    // createClass(data: ClassEntityType): Promise<ClassEntityType>;
+    addAnnouncement(data: AnnouncementEntityType): Promise<AnnouncementEntityType>
 }
