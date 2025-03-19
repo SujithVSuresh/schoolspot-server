@@ -38,7 +38,6 @@ export class TeacherController implements ITeacherController {
 
               res.status(HttpStatus.CREATED).json({email: student})
               
-
         }catch(err){
             next(err)
         }
@@ -57,4 +56,19 @@ export class TeacherController implements ITeacherController {
             next(err)
         }
     }
+
+    async getTeacherBySchool(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {schoolId} = req.user as PayloadType
+
+            const teachers = await this._teacherService.getTeacherBySchool(schoolId)
+
+            res.status(HttpStatus.OK).json(teachers)
+
+        }catch(err){
+            next(err)
+        }
+    }
+
+
 }

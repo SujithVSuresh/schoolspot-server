@@ -17,6 +17,7 @@ export class ClassService implements IClassService {
         const classEntity: ClassEntityType = {
             name: dto.name,
             section: dto.section,
+            strength: dto.strength,
             teacher: new mongoose.Types.ObjectId(dto.teacher),
             school: new mongoose.Types.ObjectId(dto.school)
           };
@@ -29,15 +30,19 @@ export class ClassService implements IClassService {
 
           const response = await this._classRepository.createClass(classEntity)
 
-          console.log(response, "this is the response data...")
-
           return {
-            _id: String(response._id),
+            _id: response._id,
             name: response.name,
             section: response.section,
             strength: response.strength,
             createdAt: response.createdAt
           }
+    }
+
+    async findAllClasses(schoolId: string): Promise<ClassResponseDTO[]>{
+      const response = await this._classRepository.findAllClasses(schoolId)
+
+      return response
     }
 
 }

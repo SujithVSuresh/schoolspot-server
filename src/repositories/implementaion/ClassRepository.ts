@@ -3,6 +3,7 @@ import Class from "../../models/Class";
 import { ClassEntityType } from "../../types/types";
 import { IClassRepository } from "../interface/IClassRepository";
 import { query } from "express";
+import mongoose from "mongoose";
 
 
 
@@ -15,8 +16,8 @@ class ClassRepository extends BaseRepository<ClassEntityType> implements IClassR
         try{
             return await this.create(data)
         }catch(error){
-            console.error("Error creating user", error);
-            throw new Error("Error creating user")
+            console.error("Error creating class", error);
+            throw new Error("Error creating class")
         }
     }
 
@@ -24,10 +25,29 @@ class ClassRepository extends BaseRepository<ClassEntityType> implements IClassR
         try{
             return await this.findOne(data)
         }catch(error){
-            console.error("Error creating user", error);
-            throw new Error("Error creating user")
+            console.error("Error finding class", error);
+            throw new Error("Error finding class")
         }
     }
+
+    async findAllClasses(schoolId: string): Promise<ClassEntityType[]> {
+        try{
+            return await this.findByQuery({school: new mongoose.Types.ObjectId(schoolId)})
+        }catch(error){
+            console.error("Error finding classes", error);
+            throw new Error("Error finding classes")
+        }
+    }
+
+    async findClassById(id: string): Promise<ClassEntityType> {
+        try{
+
+        }catch(error){
+
+        }
+    }
+
+    
 
 
 

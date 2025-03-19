@@ -230,3 +230,6 @@ export interface ClassEntityType {
 export interface StudentProfileUserEntityType extends StudentProfileEntityType {
   user: UserEntityType
 }
+
+
+

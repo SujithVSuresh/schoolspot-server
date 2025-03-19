@@ -13,6 +13,7 @@ import {
   GetTeacherParamsType,
   GetTeacherResponseType,
 } from "../../types/types";
+import { TeacherBySchoolResponseDTO } from "../../dto/TeacherDTO";
 
 export class TeacherService implements ITeacherService {
   constructor(
@@ -50,16 +51,16 @@ export class TeacherService implements ITeacherService {
             { folder: "student_profiles" },
             (error, result) => {
               if (error) {
-                reject(error); // Reject in case of error
+                reject(error); 
               } else if (result) {
-                resolve(result); // Resolve with Cloudinary result
+                resolve(result); 
               } else {
                 reject(new Error("Cloudinary upload failed"));
               }
             }
           );
 
-          stream.end(file.buffer); // Send file buffer to Cloudinary
+          stream.end(file.buffer);
         }
       );
 
@@ -97,5 +98,10 @@ export class TeacherService implements ITeacherService {
     );
 
     return teachers;
+  }
+
+  async getTeacherBySchool(schoolId: string): Promise<TeacherBySchoolResponseDTO[]> {
+    const teachers = await this._teacherRepository.getTeacherBySchool(schoolId)
+    return teachers
   }
 }

@@ -13,7 +13,7 @@ import { GetParamsType } from "../../types/types";
 import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import mongoose from "mongoose";
-import { StudentResponseDTO } from "../../dto/ProfileDTO";
+import { StudentResponseDTO } from "../../dto/StudentDTO";
 
 export class StudentService implements IStudentService {
   constructor(

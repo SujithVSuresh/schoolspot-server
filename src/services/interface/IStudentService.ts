@@ -1,5 +1,5 @@
 import { GetParamsType, GetStudentsResponseType, StudentUserProfileType, UserResponseType, UserType } from "../../types/types";
-import { StudentResponseDTO } from "../../dto/ProfileDTO";
+import { StudentResponseDTO } from "../../dto/StudentDTO";
 
 
 export interface IStudentService{

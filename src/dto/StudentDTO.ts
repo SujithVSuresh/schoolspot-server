@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 
 
 export interface StudentResponseDTO {
@@ -20,8 +19,8 @@ export interface StudentResponseDTO {
       email: string;
       status: "active" | "inactive" | "deleted" | "blocked";
     };
-  
 }
+
 
 
 

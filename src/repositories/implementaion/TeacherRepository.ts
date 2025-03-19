@@ -39,8 +39,6 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
                 matchQuery["userDetails.status"] = status; 
             }
             
-            console.log(matchQuery, "this is the matcch query....")
-
             const totalTeachers = await Teacher.countDocuments(matchQuery);
 
             const teachers = await Teacher.aggregate([
@@ -85,8 +83,20 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
             }
 
         }catch(error){
-            console.error("Error fetching student data", error);
-            throw new Error("Error creating user")
+            console.error("Error fetching teacher data", error);
+            throw new Error("Error fetchin teacher")
+        }
+    }
+
+    async getTeacherBySchool(schoolId: string): Promise<TeacherProfileType[]> {
+        try{
+            const teachers = await this.findByQuery({schoolId}, {fullName: 1, userId: 1})
+            console.log(teachers, "lala teachersss/...")
+
+            return teachers
+        }catch(error){
+            console.error("Error fetching teacher data", error);
+            throw new Error("Error fetching teacher")
         }
     }
 

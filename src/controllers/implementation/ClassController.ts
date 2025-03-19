@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CustomRequest } from "../../types/types";
+import { CustomRequest, PayloadType } from "../../types/types";
 import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
 import { CreateClassDTO } from "../../dto/ClassDTO";
@@ -22,5 +22,20 @@ export class ClassController implements IClassController {
         }catch(err){
             next(err)
         }
+    }
+
+    async findAllClasses(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+
+            const { schoolId } = req.user as PayloadType
+    
+            const classes = await this._classService.findAllClasses(schoolId)
+    
+            res.status(HttpStatus.CREATED).json({
+                data: classes 
+            })
+            }catch(err){
+                next(err)
+            }
     }
 }
