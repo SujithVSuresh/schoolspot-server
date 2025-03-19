@@ -181,9 +181,10 @@ export interface GetTeacherResponseType {
   teachers: TeacherDataResponseType[];
 }
 
-type SubjectType = {
+export type SubjectEntityType = {
+  _id?: mongoose.Types.ObjectId;
   name: string;
-  teacher: mongoose.Types.ObjectId;
+  teacher: mongoose.Types.ObjectId | string;
 };
 
 // ---------------
@@ -222,13 +223,23 @@ export interface ClassEntityType {
   teacher: mongoose.Types.ObjectId | string;
   school: mongoose.Types.ObjectId;
   strength?: number;
-  subjects?: SubjectType[];
+  subjects?: SubjectEntityType[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export interface StudentProfileUserEntityType extends StudentProfileEntityType {
   user: UserEntityType
+}
+
+export interface AnnouncementEntityType {
+  _id?: mongoose.Types.ObjectId;
+  title: string;
+  content: string;
+  author: mongoose.Types.ObjectId | string;
+  sendTo: mongoose.Types.ObjectId[]
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 

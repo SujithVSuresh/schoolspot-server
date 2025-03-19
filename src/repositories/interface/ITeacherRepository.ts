@@ -8,4 +8,5 @@ export interface ITeacherRepository {
     createTeacherProfile(data: TeacherProfileType): Promise<TeacherProfileType>;
     getAllTeachers({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetTeacherResponseType> 
     getTeacherBySchool(schoolId: string): Promise<TeacherProfileType[]>
+    findTeacherById(id: string): Promise<TeacherProfileType | null> 
 }

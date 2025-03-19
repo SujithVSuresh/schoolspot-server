@@ -17,3 +17,9 @@ export interface ClassResponseDTO {
       strength?: number;
       createdAt?: Date;
 }
+
+export interface SubjectDTO {
+      _id?: mongoose.Types.ObjectId;
+      name: string;
+      teacher: mongoose.Types.ObjectId | string;
+}

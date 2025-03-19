@@ -1,16 +1,18 @@
 import { IClassRepository } from "../../repositories/interface/IClassRepository";
-import { CreateClassDTO } from "../../dto/ClassDTO";
+import { CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
-import { ClassEntityType } from "../../types/types";
+import { ClassEntityType, SubjectEntityType } from "../../types/types";
 import mongoose from "mongoose";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
+import { ITeacherRepository } from "../../repositories/interface/ITeacherRepository";
 
 export class ClassService implements IClassService {
     constructor(
       private _classRepository: IClassRepository,
+      private _teacherRepository: ITeacherRepository
     ) {}
 
     async createClass(dto: CreateClassDTO): Promise<ClassResponseDTO> {
@@ -60,6 +62,42 @@ export class ClassService implements IClassService {
         teacher: response.teacher,
         strength: response.strength 
       }
+    }
+
+    async addSubject(data: SubjectDTO, classId: string): Promise<SubjectDTO> {
+      const subjectData: SubjectEntityType = {
+        name: data.name,
+        teacher: data.teacher as mongoose.Types.ObjectId
+      }
+      const response = await this._classRepository.addSubject(subjectData, classId)
+      console.log(response, "this is the response.")
+
+      if(!response){
+        throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+
+        const teacher = await this._teacherRepository.findTeacherById(String(response.teacher))
+        console.log(teacher, "this is the teacher data...")
+        if(!teacher){
+          throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        return {
+          name: response.name,
+          _id: response._id,
+          teacher: teacher?.fullName as string
+        }
+
+    }
+
+
+    async removeSubject(subjectId: string, classId: string): Promise<string> {
+      const response = await this._classRepository.removeClass(subjectId, classId)
+
+      if(!response){
+        throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+
+      return response
     }
 
 }

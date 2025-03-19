@@ -91,9 +91,18 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
     async getTeacherBySchool(schoolId: string): Promise<TeacherProfileType[]> {
         try{
             const teachers = await this.findByQuery({schoolId}, {fullName: 1, userId: 1})
-            console.log(teachers, "lala teachersss/...")
 
             return teachers
+        }catch(error){
+            console.error("Error fetching teacher data", error);
+            throw new Error("Error fetching teacher")
+        }
+    }
+
+    async findTeacherById(id: string): Promise<TeacherProfileType | null> {
+        try{
+            const teacher = await this.findByQuery({userId: id})
+            return teacher[0] 
         }catch(error){
             console.error("Error fetching teacher data", error);
             throw new Error("Error fetching teacher")

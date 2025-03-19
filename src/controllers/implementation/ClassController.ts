@@ -4,7 +4,8 @@ import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
 import { CreateClassDTO } from "../../dto/ClassDTO";
 import HttpStatus from "../../constants/StatusConstants";
-
+import { CustomError } from "../../utils/CustomError";
+import Messages from "../../constants/MessageConstants";
 
 export class ClassController implements IClassController {
     constructor(private _classService: IClassService) {}
@@ -44,6 +45,38 @@ export class ClassController implements IClassController {
             const classId = req.params.classId
 
             const response = await this._classService.findClassById(classId)
+
+            res.status(HttpStatus.OK).json({
+                data: response
+            })
+        }catch(err){
+            next(err)
+        }
+    }
+
+    async addSubject(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {name, teacher, classId} = req.body
+
+            const response = await this._classService.addSubject({name, teacher}, classId)
+
+            res.status(HttpStatus.OK).json({
+                data: response
+            })
+        }catch(err){
+            next(err)
+        }
+    }
+
+    async removeSubject(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {subjectId, classId} = req.query
+
+            if(!subjectId && !classId){
+                throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+
+            const response = await this._classService.removeSubject(subjectId as string , classId as string)
 
             res.status(HttpStatus.OK).json({
                 data: response
