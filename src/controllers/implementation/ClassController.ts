@@ -38,4 +38,18 @@ export class ClassController implements IClassController {
                 next(err)
             }
     }
+
+    async findClassById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const classId = req.params.classId
+
+            const response = await this._classService.findClassById(classId)
+
+            res.status(HttpStatus.OK).json({
+                data: response
+            })
+        }catch(err){
+            next(err)
+        }
+    }
 }

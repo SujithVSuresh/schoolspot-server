@@ -6,5 +6,6 @@ export interface IClassRepository {
     createClass(data: ClassEntityType): Promise<ClassEntityType>;
     findClass(data: {name: string, section: string, school: mongoose.Types.ObjectId}): Promise<ClassEntityType | null>
     findAllClasses(schoolId: string): Promise<ClassEntityType[]> 
-    findClassById(id: string): Promise<ClassEntityType>
+    findClassById(id: string): Promise<ClassEntityType | null>
+    
 }

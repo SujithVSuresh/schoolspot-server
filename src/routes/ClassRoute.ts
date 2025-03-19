@@ -13,5 +13,6 @@ const classRouter = Router();
 
 classRouter.post("/add-class", protectRoute("admin"), classController.createClass.bind(classController));
 classRouter.get('/get-classes', protectRoute("admin"), classController.findAllClasses.bind(classController));
+classRouter.get('/get-class/:classId', protectRoute("admin"), classController.findClassById.bind(classController));
 
 export default classRouter;

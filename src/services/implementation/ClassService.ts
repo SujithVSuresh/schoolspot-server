@@ -45,4 +45,21 @@ export class ClassService implements IClassService {
       return response
     }
 
+    async findClassById(id: string): Promise<ClassResponseDTO> {
+      const response = await this._classRepository.findClassById(id)
+      if(!response){
+          throw new CustomError(
+            Messages.CLASS_NOT_FOUNT,
+            HttpStatus.NOT_FOUND
+          );
+      }
+      return {
+        _id: response._id,
+        name: response.name,
+        section: response.section,
+        teacher: response.teacher,
+        strength: response.strength 
+      }
+    }
+
 }

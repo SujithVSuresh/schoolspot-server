@@ -219,7 +219,7 @@ export interface ClassEntityType {
   _id?: mongoose.Types.ObjectId;
   name: string;
   section: string;
-  teacher: mongoose.Types.ObjectId;
+  teacher: mongoose.Types.ObjectId | string;
   school: mongoose.Types.ObjectId;
   strength?: number;
   subjects?: SubjectType[];

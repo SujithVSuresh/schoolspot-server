@@ -39,11 +39,38 @@ class ClassRepository extends BaseRepository<ClassEntityType> implements IClassR
         }
     }
 
-    async findClassById(id: string): Promise<ClassEntityType> {
+    async findClassById(id: string): Promise<ClassEntityType | null> {
         try{
+            const classData = await Class.aggregate([
+                {
+                   $match: {
+                    _id: new mongoose.Types.ObjectId(id)
+                   } 
+                },
+                {
+                    $lookup: {
+                        from: "Teachers",
+                        localField: "teacher",
+                        foreignField: "userId",
+                        as: "teacherData"
+                    }
+                },
+                {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    section: 1,
+                    strength: 1,
+                    subjects: 1,
+                    teacher: { $arrayElemAt: ["$teacherData.fullName", 0] }
+                }
+            }
+            ])
+            return classData[0]
 
         }catch(error){
-
+            console.error("Error finding classes", error);
+            throw new Error("Error finding classes")
         }
     }
 
