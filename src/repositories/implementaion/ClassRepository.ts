@@ -3,7 +3,6 @@ import Class from "../../models/Class";
 import { ClassEntityType, SubjectEntityType } from "../../types/types";
 import { IClassRepository } from "../interface/IClassRepository";
 import mongoose from "mongoose";
- 
 
 class ClassRepository
   extends BaseRepository<ClassEntityType>
@@ -90,35 +89,75 @@ class ClassRepository
         { new: true, fields: { subjects: 1 } }
       );
 
-        const addedSubject = response?.subjects ? response?.subjects[response.subjects.length - 1] : null;
+      const addedSubject = response?.subjects
+        ? response?.subjects[response.subjects.length - 1]
+        : null;
 
-        return addedSubject
-
+      return addedSubject;
     } catch (error) {
       console.error("Error adding subject", error);
       throw new Error("Error adding subject");
     }
   }
 
-  async removeClass(subjectId: string, classId: string): Promise<string | null> {
+  async removeSubject(
+    subjectId: string,
+    classId: string
+  ): Promise<string | null> {
     try {
+      const response = await Class.findOneAndUpdate(
+        { _id: classId },
+        { $pull: { subjects: { _id: subjectId } } },
+        { new: true }
+      );
 
-
-        const response = await Class.findOneAndUpdate(
-            {_id: classId},
-            {$pull: {subjects: {_id: subjectId}}},
-            { new: true }
-        )
-
-
-        return response ? String(response?._id) : null
-
-  
-      } catch (error) {
-        console.error("Error removing subject", error);
-        throw new Error("Error removing subject");
-      }
+      return response ? String(response?._id) : null;
+    } catch (error) {
+      console.error("Error removing subject", error);
+      throw new Error("Error removing subject");
+    }
   }
+
+  async updateSubject(subjectId: string, classId: string, data:SubjectEntityType): Promise<SubjectEntityType | null> {
+    try{
+      const response = await Class.findOneAndUpdate(
+        { _id: classId, "subjects._id": subjectId },
+        { $set: { "subjects.$.name":  data.name, "subjects.$.teacher":  data.teacher} },
+        { new: true, fields: { subjects: 1 } }
+      );
+
+
+      const addedSubject = response?.subjects ? {
+        ...data,
+        _id: new mongoose.Types.ObjectId(subjectId)
+      }  : null;
+
+      return addedSubject;
+
+    }catch(error){
+      console.error("Error updating subject", error);
+      throw new Error("Error updating subject");
+  
+    }
+  }
+
+
+  async findSubjectByName(subjectName: string, classId: string): Promise<SubjectEntityType | null> {
+    try{
+      const response = await Class.findOne(
+        { _id: classId, "subjects.name": subjectName },
+        { "subjects.$": 1 }
+      );
+
+      return response?.subjects ? response?.subjects[0] : null;
+
+    }catch(error){
+      console.error("Error finding subject", error);
+      throw new Error("Error finding subject");
+    }
+  }
+
 }
+
 
 export default new ClassRepository();

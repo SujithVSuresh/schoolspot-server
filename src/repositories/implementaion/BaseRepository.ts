@@ -29,7 +29,9 @@ export class BaseRepository<T> implements IBaseRepository<T> {
     }
 
     async update(id: string, data: Partial<T>): Promise<T | null> {
-        return this.model.findByIdAndUpdate(id, data, {new: true})
+        return this.model.findByIdAndUpdate(id, 
+            { $set: data }, 
+            {new: true})
     }
 
     async delete(id: string): Promise<boolean> {

@@ -8,5 +8,7 @@ export interface IClassRepository {
     findAllClasses(schoolId: string): Promise<ClassEntityType[]> 
     findClassById(id: string): Promise<ClassEntityType | null>
     addSubject(data: SubjectEntityType, classId: string): Promise<SubjectEntityType | null>
-    removeClass(subjectId: string, classId: string): Promise<string | null>
+    removeSubject(subjectId: string, classId: string): Promise<string | null>
+    updateSubject(subjectId: string, classId: string, data:SubjectEntityType): Promise<SubjectEntityType | null>
+    findSubjectByName(subjectName: string, classId: string): Promise<SubjectEntityType | null> 
 }

@@ -29,13 +29,15 @@ export interface SubjectDTO {
 
 // ---------------
 
-export interface CreateAnnouncementDTO {
+export interface AnnouncementDTO {
       title: string;
       content: string;
       author: mongoose.Types.ObjectId;
       sendTo: mongoose.Types.ObjectId[];
       schoolId: mongoose.Types.ObjectId;
 }
+
+
 
 export interface AnnouncementResponseDTO {
       _id?: mongoose.Types.ObjectId;

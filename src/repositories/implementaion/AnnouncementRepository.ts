@@ -20,6 +20,17 @@ class AnnouncementRepository extends BaseRepository<AnnouncementEntityType> impl
             throw new Error("Error creating announcement");
           }
     }
+
+    async updateAnnouncement(id: string, data: AnnouncementEntityType): Promise<AnnouncementEntityType | null>{
+      try {
+        const response = await this.update(id, data);
+        
+        return response ? response : null; 
+      } catch (error) {
+        console.error("Error updating announcement", error);
+        throw new Error("Error updating announcement");
+      }
+    }
 }
 
 export default new AnnouncementRepository()

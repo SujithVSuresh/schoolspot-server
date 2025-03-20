@@ -243,5 +243,14 @@ export interface AnnouncementEntityType {
   updatedAt?: Date;
 }
 
+export interface AttendaceEntityType {
+  _id?: mongoose.Types.ObjectId;
+  student: mongoose.Types.ObjectId;
+  class: mongoose.Types.ObjectId;
+  status: "Present" | "Absent";
+  schoolId: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;  
+}
 
 

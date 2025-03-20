@@ -18,7 +18,9 @@ const Messages = {
     INVALID_TOKEN: "Token is invalid",
     NO_TOKEN: "No token provided",
     CLASS_EXIST: "Class already exist",
-    CLASS_NOT_FOUNT: "Class doesn't exist"
+    CLASS_NOT_FOUNT: "Class doesn't exist",
+    SUBJECT_EXIST: "Subject already exist",
+    ATTENDANCE_ALREADY_EXIST: "Attendance already exist",
   };
 
   export default Messages

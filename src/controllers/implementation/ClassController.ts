@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CustomRequest, PayloadType } from "../../types/types";
 import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
-import { CreateAnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO";
+import { AnnouncementDTO, CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
 import HttpStatus from "../../constants/StatusConstants";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -87,6 +87,29 @@ export class ClassController implements IClassController {
         }
     }
 
+    async updateSubject(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {subjectId, classId} = req.body
+
+            const data = req.body
+
+            const subjectData: SubjectDTO = {
+                name: data.name,
+                teacher: data.teacher
+            }
+
+            if(!subjectId && !classId){
+                throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+
+            const response = await this._classService.updateSubject(subjectId as string , classId as string, subjectData)
+
+            res.status(HttpStatus.OK).json(response)
+        }catch(err){
+            next(err)
+        }
+    }
+
     async addAnnouncement(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
         try{
             const { schoolId, userId } = req.user as PayloadType
@@ -94,7 +117,7 @@ export class ClassController implements IClassController {
 
             console.log(title, content, sendTo)
 
-            const announcementData: CreateAnnouncementDTO = {
+            const announcementData: AnnouncementDTO = {
                 title,
                 content,
                 sendTo,
@@ -103,6 +126,27 @@ export class ClassController implements IClassController {
             }
 
             const response = await this._classService.addAnnouncement(announcementData)
+
+            res.status(HttpStatus.OK).json(response)
+        }catch(err){
+            next(err)
+        }
+    }
+
+    async updateAnnouncement(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const { schoolId, userId } = req.user as PayloadType
+            const { title, content, sendTo, announcementId } = req.body
+
+            const announcementData: AnnouncementDTO = {
+                title,
+                content,
+                sendTo,
+                schoolId: new mongoose.Types.ObjectId(schoolId),
+                author: new mongoose.Types.ObjectId(userId)
+            }
+
+            const response = await this._classService.updateAnnouncement(announcementId, announcementData)
 
             res.status(HttpStatus.OK).json(response)
         }catch(err){

@@ -7,5 +7,7 @@ export interface IClassController {
     findClassById(req: Request, res: Response, next: NextFunction): Promise<void>
     addSubject(req: Request, res: Response, next: NextFunction): Promise<void>
     removeSubject(req: Request, res: Response, next: NextFunction): Promise<void>
+    updateSubject(req: Request, res: Response, next: NextFunction): Promise<void>
     addAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void>
+    updateAnnouncement(req: Request, res: Response, next: NextFunction): 
 }
