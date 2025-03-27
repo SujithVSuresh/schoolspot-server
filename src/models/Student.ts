@@ -13,10 +13,16 @@ const StudentSchema = new mongoose.Schema(
         },
     roll: {
         type: Number,
+        required: true
     },
     section: { 
         type: String, 
         required: true 
+    },
+    classId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Class"
     },
     profilePhoto: { 
         type: String, 

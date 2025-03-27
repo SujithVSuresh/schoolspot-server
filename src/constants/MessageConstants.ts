@@ -21,6 +21,9 @@ const Messages = {
     CLASS_NOT_FOUNT: "Class doesn't exist",
     SUBJECT_EXIST: "Subject already exist",
     ATTENDANCE_ALREADY_EXIST: "Attendance already exist",
+    ROLL_EXIST: "Roll number already exist",
+    ATTENDANCE_NOT_FOUND: "Attendance not found",
+    SCHOOL_NOT_FOUND: "School not found"
   };
 
   export default Messages

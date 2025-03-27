@@ -21,7 +21,7 @@ export class AuthController implements IAuthController {
   async verify(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { otp, email } = req.body;
-      const {accessToken, refreshToken, _id, email: userEmail, role, status} = await this._authService.verify(otp, email);
+      const {accessToken, refreshToken, _id, email: userEmail, role, status, schoolId} = await this._authService.verify(otp, email);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -29,12 +29,14 @@ export class AuthController implements IAuthController {
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
+
       res.status(HttpStatus.CREATED).json({
         _id,
         email: userEmail,
         role,
         status,
         accessToken,
+        schoolId
       });
     } catch (err) {
       next(err);

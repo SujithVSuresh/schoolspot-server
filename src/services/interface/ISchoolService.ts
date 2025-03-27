@@ -1,0 +1,5 @@
+import { SchoolProfileDTO } from "../../dto/SchoolDTO"
+
+export interface ISchoolService{
+    getSchool(schoolId: string): Promise<SchoolProfileDTO>
+}

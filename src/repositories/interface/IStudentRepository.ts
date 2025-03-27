@@ -7,5 +7,7 @@ export interface IStudentRepository {
     createStudentProfile(data: StudentProfileType): Promise<StudentProfileType>;
     getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetStudentsResponseType> 
     getStudentById(userId: string): Promise<StudentProfileUserEntityType | null>
+    getStudentByQuery(query: any): Promise<StudentProfileType | null>
+    getStudentsByQuery(query: any, schoolId: string): Promise<any>
 }
 

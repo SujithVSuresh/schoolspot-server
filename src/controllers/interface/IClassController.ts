@@ -9,5 +9,7 @@ export interface IClassController {
     removeSubject(req: Request, res: Response, next: NextFunction): Promise<void>
     updateSubject(req: Request, res: Response, next: NextFunction): Promise<void>
     addAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void>
-    updateAnnouncement(req: Request, res: Response, next: NextFunction): 
+    updateAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void>
+    fetchAnnouncements(req: Request, res: Response, next: NextFunction): Promise<void>
+
 }

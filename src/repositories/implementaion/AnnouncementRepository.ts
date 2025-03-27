@@ -31,6 +31,17 @@ class AnnouncementRepository extends BaseRepository<AnnouncementEntityType> impl
         throw new Error("Error updating announcement");
       }
     }
+
+    async getAnnouncements(schoolId: string): Promise<AnnouncementEntityType[]>{
+      try {
+        const response = await this.findByQuery({schoolId});
+        
+        return response; 
+      } catch (error) {
+        console.error("Error updating announcement", error);
+        throw new Error("Error updating announcement");
+      }
+    }
 }
 
 export default new AnnouncementRepository()

@@ -21,6 +21,7 @@ classRouter.delete('/remove-subject', protectRoute("admin"), classController.rem
 classRouter.put('/update-subject', protectRoute("admin"), classController.updateSubject.bind(classController))
 classRouter.post('/add-announcement', protectRoute("admin"), classController.addAnnouncement.bind(classController))
 classRouter.put('/update-announcement', protectRoute("admin"), classController.updateAnnouncement.bind(classController))
+classRouter.get('/get-announcements', protectRoute("admin"), classController.fetchAnnouncements.bind(classController))
 
 
 export default classRouter;

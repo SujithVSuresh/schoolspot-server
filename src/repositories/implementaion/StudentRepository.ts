@@ -134,6 +134,73 @@ class StudentRepository
         throw new Error("Error creating user");
     }
   }
+
+  async getStudentsByQuery(query: any, schoolId: string): Promise<any> {
+
+    let matchQuery = {
+      schoolId: new mongoose.Types.ObjectId
+    }
+
+    if(query && Object.keys(query).length > 0){
+      matchQuery = {
+        ...matchQuery,
+        ...query,
+      }
+
+    }
+
+    const students = await Student.aggregate([
+      {
+        $match: {
+          ...query,
+          schoolId: new mongoose.Types.ObjectId(schoolId),
+        }
+      },
+      {
+        $lookup: {
+          from: "Users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      { $unwind: "$userDetails" },
+      {
+        $project: {
+          _id: 1,
+          fullName: 1,
+          class: 1,
+          roll:1,
+          section: 1,
+          classId: 1,
+          profilePhoto: 1,
+          schoolId: 1,
+          createdAt: 1,
+          user: {
+            _id: "$userDetails._id",
+            email: "$userDetails.email",
+            status: "$userDetails.status",
+          },
+        },
+      }
+
+    ])
+
+    return students
+  }
+
+  async getStudentByQuery(query: any): Promise<StudentProfileType | null> {
+    try {
+      const student = await this.findByQuery({...query})
+
+      return student[0]
+    } catch (error) {
+      console.error("Error fetching student data", error);
+      throw new Error("Error creating user");
+    }
+  }
+
+
 }
 
 export default new StudentRepository();

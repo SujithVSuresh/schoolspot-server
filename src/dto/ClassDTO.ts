@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SubjectEntityType } from "../types/types";
 
 
 export interface CreateClassDTO {
@@ -13,6 +14,7 @@ export interface ClassResponseDTO {
       _id?: mongoose.Types.ObjectId;
       name: string;
       section: string;
+      subjects?: SubjectEntityType[] | [];
       teacher?: mongoose.Types.ObjectId | string;
       strength?: number;
       createdAt?: Date;

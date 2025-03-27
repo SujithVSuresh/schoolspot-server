@@ -1,12 +1,13 @@
 import { Router } from "express";
 import StudentRepository from "../repositories/implementaion/StudentRepository";
 import { StudentService } from "../services/implementation/StudentService";
+import ClassRepository from "../repositories/implementaion/ClassRepository";
 import { StudentController } from "../controllers/implementation/StudentController";
 import UserRepository from "../repositories/implementaion/UserRepository";
 import upload from '../middlewares/UploadMiddleware'
 import { protectRoute } from "../middlewares/AuthHandler";
 
-const studentService = new StudentService(StudentRepository, UserRepository);
+const studentService = new StudentService(StudentRepository, UserRepository, ClassRepository);
 
 const studentController = new StudentController(studentService);
 
@@ -16,6 +17,7 @@ const studentRouter = Router();
 studentRouter.post("/add-student", protectRoute("admin"), upload.single("profilePhoto"), studentController.addStudent.bind(studentController));
 studentRouter.get("/get-students", protectRoute("admin"), studentController.getStudents.bind(studentController));
 studentRouter.get("/get-student/:userId", protectRoute("admin"), studentController.getStudentProfile.bind(studentController))
-
+studentRouter.get("/get-students-by-query", protectRoute("admin"), studentController.getStudentByQuery.bind(studentController));
+studentRouter.get("/get-students-by-class/:classId", protectRoute("admin"), studentController.getStudentsByClassId.bind(studentController));
 
 export default studentRouter;

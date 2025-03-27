@@ -2,7 +2,7 @@ import { IClassRepository } from "../../repositories/interface/IClassRepository"
 import { CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
-import { ClassEntityType, SubjectEntityType } from "../../types/types";
+import { AnnouncementEntityType, ClassEntityType, SubjectEntityType } from "../../types/types";
 import mongoose from "mongoose";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -65,6 +65,7 @@ export class ClassService implements IClassService {
       section: response.section,
       teacher: response.teacher,
       strength: response.strength,
+      subjects: response.subjects
     };
   }
 
@@ -114,7 +115,7 @@ export class ClassService implements IClassService {
       );
     }
 
-    return response;
+    return subjectId;
   }
 
   async updateSubject(
@@ -211,5 +212,15 @@ export class ClassService implements IClassService {
       author: response.author,
       creartedAt: response.createdAt as Date,
     };
+  }
+
+
+  async fetchAnnouncements(
+    schoolId: string
+  ): Promise<AnnouncementEntityType[]> {
+
+    const response = await this._announcementRepository.getAnnouncements(schoolId);
+
+    return response;
   }
 }

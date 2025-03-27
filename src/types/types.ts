@@ -54,11 +54,13 @@ export interface CustomRequest extends Request {
 export interface StudentProfileType {
   _id?: mongoose.Types.ObjectId;
   fullName: string;
-  class: string;
-  section: string;
+  class?: string;
+  section?: string;
+  classId?: mongoose.Types.ObjectId;
   profilePhoto?: string;
   gender: "male" | "female";
   dob: Date;
+  roll: number;
   address: string;
   fatherName: string;
   motherName: string;
@@ -96,6 +98,8 @@ export interface StudentDataResponseType {
   fullName: string;
   class: string;
   section: string;
+  classId: mongoose.Types.ObjectId;
+  roll: number;
   profilePhoto: string;
   schoolId?: mongoose.Types.ObjectId;
   user: {
@@ -181,11 +185,7 @@ export interface GetTeacherResponseType {
   teachers: TeacherDataResponseType[];
 }
 
-export type SubjectEntityType = {
-  _id?: mongoose.Types.ObjectId;
-  name: string;
-  teacher: mongoose.Types.ObjectId | string;
-};
+
 
 // ---------------
 
@@ -215,6 +215,12 @@ export interface StudentProfileEntityType {
   contactNumber: string;
   schoolId?: mongoose.Types.ObjectId;
 }
+
+export type SubjectEntityType = {
+  _id?: mongoose.Types.ObjectId;
+  name: string;
+  teacher: mongoose.Types.ObjectId | string;
+};
 
 export interface ClassEntityType {
   _id?: mongoose.Types.ObjectId;
@@ -252,5 +258,7 @@ export interface AttendaceEntityType {
   createdAt?: Date;
   updatedAt?: Date;  
 }
+
+
 
 

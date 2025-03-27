@@ -13,6 +13,7 @@ import cookieParser from "cookie-parser";
 import teacherRouter from "./routes/TeacherRouter";
 import classRouter from "./routes/ClassRoute";
 import attendaceRouter from "./routes/AttendanceRouter";
+import schoolRouter from "./routes/SchoolRouter";
 
 
 
@@ -55,6 +56,7 @@ class App {
     this.app.use('/teacher', teacherRouter)
     this.app.use('/class', classRouter)
     this.app.use('/attendance', attendaceRouter)
+    this.app.use('/school', schoolRouter)
     this.app.use(errorHandler);
   }
 

@@ -95,6 +95,7 @@ export class AuthService implements IAuthService {
           },
           ...school
         })
+        console.log("crowwwwwwwww", schoolData)
     
         const { user } = JSON.parse(userDataResponse as string);
     
@@ -130,7 +131,8 @@ export class AuthService implements IAuthService {
           role: userData.role,
           status: userData.status,
           accessToken,
-          refreshToken
+          refreshToken,
+          schoolId: userData.schoolId
         };
       }
 

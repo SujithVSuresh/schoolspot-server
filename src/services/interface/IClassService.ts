@@ -1,4 +1,5 @@
 import { AnnouncementResponseDTO, ClassResponseDTO, AnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO"
+import { AnnouncementEntityType } from "../../types/types"
 import { SubjectDTO } from "../../dto/ClassDTO"
 
 export interface IClassService{
@@ -10,6 +11,7 @@ export interface IClassService{
     updateSubject(subjectId: string, classId: string, data: SubjectDTO): Promise<SubjectDTO> 
     addAnnouncement(data: AnnouncementDTO): Promise<AnnouncementResponseDTO>
     updateAnnouncement(id: string, data: AnnouncementDTO): Promise<AnnouncementResponseDTO | null>
+    fetchAnnouncements(schoolId: string): Promise<AnnouncementEntityType[]>
 }
 
 export default IClassService

@@ -1,5 +1,6 @@
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
+import { IClassRepository } from "../../repositories/interface/IClassRepository";
 import {
   GetStudentsResponseType,
   StudentUserProfileType,
@@ -18,18 +19,35 @@ import { StudentResponseDTO } from "../../dto/StudentDTO";
 export class StudentService implements IStudentService {
   constructor(
     private _studentRepository: IStudentRepository,
-    private _userRepository: IUserRepository
+    private _userRepository: IUserRepository,
+    private _classRepository: IClassRepository
   ) {}
 
   async addStudent(
     data: StudentUserProfileType,
     file: Express.Multer.File,
-    schoolId: string
-  ): Promise<string> {
+    schoolId: string,
+    classId: string
+  ): Promise<{ email: string; userId: string; classId: string }> {
     const existingUser = await this._userRepository.findByEmail(data.email);
     if (existingUser) {
       throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
     }
+
+    const classExist = await this._classRepository.findClassById(classId);
+    if (!classExist) {
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
+    }
+
+    const rollExist = await this._studentRepository.getStudentByQuery({
+      roll: data.roll,
+      classId: classId,
+    });
+
+    if (rollExist) {
+      throw new CustomError(Messages.ROLL_EXIST, HttpStatus.CONFLICT);
+    }
+
     const password = await hashPassword(data.password as string);
 
     let user = await this._userRepository.createUser({
@@ -58,7 +76,6 @@ export class StudentService implements IStudentService {
               }
             }
           );
-
           stream.end(file.buffer);
         }
       );
@@ -66,14 +83,14 @@ export class StudentService implements IStudentService {
       profilePhotoURL = uploadResult.secure_url;
     }
 
-    console.log(profilePhotoURL, "blenlennle");
-
     let studentProfile = await this._studentRepository.createStudentProfile({
       fullName: data.fullName,
-      class: data.class,
-      section: data.section,
+      class: classExist.name,
+      section: classExist.section,
+      classId: new mongoose.Types.ObjectId(classId),
       address: data.address,
       dob: data.dob,
+      roll: data.roll,
       gender: data.gender,
       fatherName: data.fatherName,
       motherName: data.motherName,
@@ -83,7 +100,11 @@ export class StudentService implements IStudentService {
       schoolId: new mongoose.Types.ObjectId(schoolId),
     });
 
-    return user.email;
+    return {
+      email: user.email,
+      userId: String(user._id),
+      classId: String(classExist._id),
+    };
   }
 
   async getStudents(
@@ -133,5 +154,17 @@ export class StudentService implements IStudentService {
         status: student.user.status,
       },
     };
+  }
+
+  async getStudentsByClassId(
+    classId: string,
+    schoolId: string
+  ): Promise<StudentResponseDTO[]> {
+    const query = { classId: new mongoose.Types.ObjectId(classId) };
+    return await this._studentRepository.getStudentsByQuery(query, schoolId);
+  }
+
+  async getStudentsByQuery(query: any, schoolId: string): Promise<any> {
+    return await this._studentRepository.getStudentsByQuery(query, schoolId);
   }
 }
