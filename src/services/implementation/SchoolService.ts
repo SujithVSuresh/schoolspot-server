@@ -4,6 +4,7 @@ import { ISchoolService } from "../interface/ISchoolService";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { CustomError } from "../../utils/CustomError";
+import { SchoolProfileType } from "../../types/types";
 
 export class SchoolService implements ISchoolService{
     constructor(
@@ -35,5 +36,16 @@ export class SchoolService implements ISchoolService{
                 postalCode: school.address.postalCode
             }
         }
+    }
+
+    async editSchoolProfile(id: string, data: SchoolProfileDTO): Promise<SchoolProfileDTO> {
+
+        const schoolProfile = await this._schoolRepository.updateSchoolProfile(id, data)
+
+        if(!schoolProfile){
+            throw new CustomError(Messages.SCHOOL_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        return schoolProfile
     }
 }

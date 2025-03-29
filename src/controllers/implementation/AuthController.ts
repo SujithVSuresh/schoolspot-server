@@ -11,7 +11,6 @@ export class AuthController implements IAuthController {
     try {
       const {schoolData, userData} = req.body
       const email = await this._authService.signup(userData, schoolData);
-      console.log(email, "this is the email...")
       res.status(HttpStatus.OK).json({ email });
     } catch (err) {
       next(err);

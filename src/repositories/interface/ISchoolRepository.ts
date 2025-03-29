@@ -3,5 +3,6 @@ import { SchoolProfileType } from "../../types/types";
 
 export interface ISchoolRepository {
     createSchoolProfile(data: SchoolProfileType): Promise<SchoolProfileType>;
-    findSchoolById(id: string): Promise<SchoolProfileType | null>
+    findSchoolById(id: string): Promise<SchoolProfileType | null>;
+    updateSchoolProfile(id: string, data:SchoolProfileType): Promise<SchoolProfileType | null>;
 }

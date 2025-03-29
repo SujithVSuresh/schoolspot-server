@@ -27,6 +27,15 @@ class SchoolRepository extends BaseRepository<SchoolProfileType> implements ISch
             }
         }
 
+        async updateSchoolProfile(id: string, data:SchoolProfileType): Promise<SchoolProfileType | null>{
+            try{
+                return await this.update(id, data) as SchoolProfileType
+            }catch(error){
+                console.error("Error updating user", error);
+                throw new Error("Error updating user")
+            }
+        }
+
 }
 
 

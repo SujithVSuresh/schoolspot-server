@@ -128,8 +128,6 @@ export class ClassService implements IClassService {
       classId
     );
 
-    console.log(subjectExist, "existing subjects...");
-
     if (subjectExist) {
       throw new CustomError(Messages.SUBJECT_EXIST, HttpStatus.CONFLICT);
     }
