@@ -23,6 +23,7 @@ export class SchoolController implements ISchoolController {
 
   async editSchoolProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
       try{
+
         const schoolId = req.params.schoolId
 
                 const schoolData: SchoolProfileDTO = {
@@ -37,12 +38,14 @@ export class SchoolController implements ISchoolController {
                     totalTeachers: req.body.totalTeachers,
                     board: req.body.board,
                     address: {
-                        city: req.body.address.city,
-                        state: req.body.address.state,
-                        country: req.body.address.country,
-                        postalCode: req.body.address.postalCode
+                        city: req.body.city,
+                        state: req.body.state,
+                        country: req.body.country,
+                        postalCode: req.body.postalCode
                     }
                 }
+
+            
 
                 const response = await this._schoolService.editSchoolProfile(schoolId, schoolData)
 
