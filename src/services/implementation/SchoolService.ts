@@ -4,7 +4,7 @@ import { ISchoolService } from "../interface/ISchoolService";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { CustomError } from "../../utils/CustomError";
-import { SchoolProfileType } from "../../types/types";
+
 
 export class SchoolService implements ISchoolService{
     constructor(

@@ -23,7 +23,7 @@ const Messages = {
     ATTENDANCE_ALREADY_EXIST: "Attendance already exist",
     ROLL_EXIST: "Roll number already exist",
     ATTENDANCE_NOT_FOUND: "Attendance not found",
-    SCHOOL_NOT_FOUND: "School not found"
+    SCHOOL_NOT_FOUND: "School not found",
   };
 
   export default Messages

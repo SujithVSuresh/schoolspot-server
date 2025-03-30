@@ -8,5 +8,4 @@ export interface IStudentService{
     getStudentById(userId: string): Promise<StudentResponseDTO> 
     getStudentsByQuery(query: any, schoolId: string): Promise<any>
     getStudentsByClassId(classId: string, schoolId: string): Promise<StudentResponseDTO[]> 
-
 }

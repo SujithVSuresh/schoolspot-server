@@ -260,5 +260,25 @@ export interface AttendaceEntityType {
 }
 
 
+export interface AdminProfileUserEntityType {
+  _id?: mongoose.Types.ObjectId;
+  fullName: string;
+  phoneNumber: string;
+  role: "principal" | "it_admin" | "vice_principal" | "other";
+  userId?: mongoose.Types.ObjectId;
+  schoolId?: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  user: {
+    _id?: mongoose.Types.ObjectId;
+    email: string;
+    role: "superadmin" | "admin" | "teacher" | "student";
+    status: "active" | "inactive" | "deleted" | "blocked";
+    schoolId?: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  } 
+}
+
 
 
