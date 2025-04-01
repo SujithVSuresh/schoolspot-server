@@ -15,6 +15,11 @@ export interface CreateAdminProfileDTO {
     schoolId?: string
 }
 
+export interface UpdateAdminProfileDTO {
+    fullName: string,
+    phoneNumber: string,
+}
+
 export interface AdminProfileResponseDTO extends AdminResponseDTO {
     user?: {
         _id: string,

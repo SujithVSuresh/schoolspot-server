@@ -297,7 +297,7 @@ export class AuthService implements IAuthService {
           userData = await this._userRepository.createUser({
             email: payload.email,
             role: "admin",
-            status: "active",
+            status: "inactive",
             schoolId: school._id
           });
 

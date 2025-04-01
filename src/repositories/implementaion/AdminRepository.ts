@@ -18,6 +18,16 @@ class AdminRepository extends BaseRepository<AdminProfileEntityType> implements 
         }
     }
 
+    async updateAdminProfile(id: string, data: Partial<AdminProfileEntityType>): Promise<AdminProfileEntityType | null> {
+        try{
+            return await this.update(id, data)
+
+        }catch(error){
+            console.error("Error updating admin profile", error);
+            throw new Error("Error updating admin profile")
+        }
+    }
+
     async getAdminByUserId(id: string): Promise<AdminProfileUserEntityType | null> {
         try{
            const adminProfile = await Admin.aggregate([
@@ -37,7 +47,7 @@ class AdminRepository extends BaseRepository<AdminProfileEntityType> implements 
             },
            ])
 
-           console.log(adminProfile, "blaaaa")
+           console.log(adminProfile, "kraa")
 
            return adminProfile[0]
 

@@ -5,6 +5,7 @@ import {
   AdminProfileResponseDTO,
   AdminResponseDTO,
   CreateAdminProfileDTO,
+  UpdateAdminProfileDTO,
 } from "../../dto/AdminDTO";
 import { IAdminRepository } from "../../repositories/interface/IAdminRepository";
 import { CustomError } from "../../utils/CustomError";
@@ -66,5 +67,21 @@ export class AdminService implements IAdminService {
       userId: String(createAdmin.userId),
       schoolId: String(createAdmin.schoolId),
     };
+  }
+
+  async updateAdminProfile(id: string, data: UpdateAdminProfileDTO): Promise<AdminResponseDTO> {
+    const updateProfile = await this._adminRepository.updateAdminProfile(id, data)
+
+    if(!updateProfile){
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: String(updateProfile._id),
+      fullName: updateProfile.fullName,
+      phoneNumber: updateProfile.phoneNumber,
+      userId: String(updateProfile.userId),
+      schoolId: String(updateProfile.schoolId),
+    }
   }
 }
