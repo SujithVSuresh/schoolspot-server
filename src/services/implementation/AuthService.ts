@@ -14,15 +14,14 @@ import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
 import { OAuth2Client, TokenPayload, UserRefreshClient } from "google-auth-library";
 import { ISchoolRepository } from "../../repositories/interface/ISchoolRepository";
-import { IAdminRepository } from "../../repositories/interface/IAdminRepository";
-import mongoose from "mongoose";
+
 
 
 export class AuthService implements IAuthService {
     constructor(
       private _userRepository: IUserRepository,
       private _schoolRepository: ISchoolRepository,
-      private _authRepository: IAdminRepository
+      // private _authRepository: IAdminRepository
     ) {}
 
     async signup(user: UserType, school: SchoolProfileType): Promise<string> {
@@ -49,7 +48,7 @@ export class AuthService implements IAuthService {
     
         const otpResponse = await redisClient.setEx(
           `otp-${user.email}`,
-          60,
+          70,
           JSON.stringify({otp})
         );
     
@@ -101,7 +100,7 @@ export class AuthService implements IAuthService {
         let userData = await this._userRepository.createUser({
           ...user,
           role: "admin",
-          status: "active",
+          status: "inactive",
           schoolId: schoolData._id
         });
 
@@ -119,10 +118,10 @@ export class AuthService implements IAuthService {
           schoolId: String(schoolData._id)
         });
 
-        await this._authRepository.createAdminProfile({
-          userId: userData._id as mongoose.Types.ObjectId,
-          schoolId: schoolData._id
-        })
+        // await this._authRepository.createAdminProfile({
+        //   userId: userData._id as mongoose.Types.ObjectId,
+        //   schoolId: schoolData._id
+        // })
     
         return {
           _id: String(userData._id),
@@ -148,7 +147,7 @@ export class AuthService implements IAuthService {
     
         const setUser = await redisClient.setEx(
           `otp-${email}`,
-          60,
+          70,
           JSON.stringify(otpCode)
         );
     
@@ -302,10 +301,10 @@ export class AuthService implements IAuthService {
             schoolId: school._id
           });
 
-          await this._authRepository.createAdminProfile({
-            userId: userData._id as mongoose.Types.ObjectId,
-            schoolId: school._id
-          })          
+          // await this._authRepository.createAdminProfile({
+          //   userId: userData._id as mongoose.Types.ObjectId,
+          //   schoolId: school._id
+          // })          
         }
  
           let accessToken = authToken.generateAccessToken({

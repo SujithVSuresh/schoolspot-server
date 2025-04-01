@@ -1,15 +1,15 @@
 import Admin from '../../models/Admin'
 import { BaseRepository } from './BaseRepository';
-import { AdminProfileType, AdminProfileUserEntityType } from '../../types/types';
+import { AdminProfileEntityType, AdminProfileUserEntityType } from '../../types/types';
 import { IAdminRepository } from '../interface/IAdminRepository';
 import mongoose from 'mongoose';
 
-class AdminRepository extends BaseRepository<AdminProfileType> implements IAdminRepository {
+class AdminRepository extends BaseRepository<AdminProfileEntityType> implements IAdminRepository {
     constructor(){
         super(Admin)
     }
 
-    async createAdminProfile(data: AdminProfileType): Promise<AdminProfileType> {
+    async createAdminProfile(data: AdminProfileEntityType): Promise<AdminProfileEntityType> {
         try{
             return await this.create(data)
         }catch(error){

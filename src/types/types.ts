@@ -21,23 +21,23 @@ export interface UserResponseType extends BaseUser {
   refreshToken?: string;
 }
 
-export interface BaseAdminProfileType {
-  fullName?: string;
-  phoneNumber?: string;
-  role?: "principal" | "it_admin" | "vice_principal" | "other";
-  userId: mongoose.Types.ObjectId;
-  schoolId?: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+// export interface BaseAdminProfileType {
+//   fullName?: string;
+//   phoneNumber?: string;
+//   role?: "principal" | "it_admin" | "vice_principal" | "other";
+//   userId: mongoose.Types.ObjectId | string;
+//   schoolId?: mongoose.Types.ObjectId | string;
+//   createdAt?: Date;
+//   updatedAt?: Date;
+// }
 
-export interface AdminProfileType extends BaseAdminProfileType {
-  _id?: mongoose.Types.ObjectId;
-}
+// export interface AdminProfileType extends BaseAdminProfileType {
+//   _id?: mongoose.Types.ObjectId | string;
+// }
 
-export interface AdminProfileResponseType extends BaseAdminProfileType {
-  _id?: string;
-}
+// export interface AdminProfileResponseType extends BaseAdminProfileType {
+//   _id?: string;
+// }
 
 export interface PayloadType {
   userId: string;
@@ -260,11 +260,20 @@ export interface AttendaceEntityType {
 }
 
 
+export interface AdminProfileEntityType {
+    _id?: mongoose.Types.ObjectId | string
+    fullName: string;
+    phoneNumber: string;
+    userId: mongoose.Types.ObjectId | string;
+    schoolId?: mongoose.Types.ObjectId | string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 export interface AdminProfileUserEntityType {
   _id?: mongoose.Types.ObjectId;
   fullName: string;
   phoneNumber: string;
-  role: "principal" | "it_admin" | "vice_principal" | "other";
   userId?: mongoose.Types.ObjectId;
   schoolId?: mongoose.Types.ObjectId;
   createdAt?: Date;

@@ -4,9 +4,15 @@ export interface AdminResponseDTO {
         _id: string,
        fullName: string,
         phoneNumber: string,
-        role: 'principal' | 'it_admin' | 'vice_principal' | 'other',
         userId?: string,
         schoolId?: string
+}
+
+export interface CreateAdminProfileDTO {
+    fullName: string,
+    phoneNumber: string,
+    userId: string,
+    schoolId?: string
 }
 
 export interface AdminProfileResponseDTO extends AdminResponseDTO {

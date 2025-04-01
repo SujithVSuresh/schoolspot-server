@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { AdminProfileType } from "../types/types";
+import { AdminProfileEntityType } from "../types/types";
 
 const AdminSchema = new Schema({
     fullName: {
@@ -7,10 +7,6 @@ const AdminSchema = new Schema({
     },
     phoneNumber: {
         type: String,
-    },
-    role: {
-        type: String,
-        enum: ['principal', 'it_admin', 'vice_principal', 'other']
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,4 +20,4 @@ const AdminSchema = new Schema({
     timestamps: true
 })
 
-export default mongoose.model<AdminProfileType>('Admin', AdminSchema, 'Admins')
+export default mongoose.model<AdminProfileEntityType>('Admin', AdminSchema, 'Admins')

@@ -4,9 +4,8 @@ import SchoolRepository from "../repositories/implementaion/SchoolRepository";
 import { AuthService } from "../services/implementation/AuthService";
 import { AuthController } from "../controllers/implementation/AuthController";
 import { protectRoute } from "../middlewares/AuthHandler";
-import AdminRepository from "../repositories/implementaion/AdminRepository";
 
-const authService = new AuthService(UserRepository, SchoolRepository, AdminRepository);
+const authService = new AuthService(UserRepository, SchoolRepository);
 
 const authController = new AuthController(authService);
 

@@ -16,7 +16,7 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
             console.error("Error creating user", error);
             throw new Error("Error creating user")
         }
-    }
+    }             
 
     async findByEmail(email: string): Promise<UserType | null> {
         try{
