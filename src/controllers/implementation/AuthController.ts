@@ -3,6 +3,8 @@ import { IAuthController } from "../interface/IAuthController";
 import { IAuthService } from "../../services/interface/IAuthService";
 import HttpStatus from "../../constants/StatusConstants";
 import Messages from "../../constants/MessageConstants";
+import { CustomRequest } from "../../types/types";
+import { ChangePasswordRequestDTO } from "../../dto/AuthDTO";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
@@ -205,11 +207,27 @@ export class AuthController implements IAuthController {
     try{
       const {status, userId} = req.body
 
-      console.log(userId, "idd")
-
       const response = await this._authService.changeAccountStatus(userId, status)
 
       res.status(HttpStatus.OK).json(response);
+
+    }catch(err){
+      next(err)
+    }
+  }
+
+  async changePassword(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const userId = req.user?.userId
+
+      const data: ChangePasswordRequestDTO = {
+        oldPassword: req.body.oldPassword,
+        newPassword: req.body.newPassword
+      }
+
+      const response = await this._authService.changePassword(userId as string, data)
+
+      res.status(HttpStatus.OK).json({email: response})
 
     }catch(err){
       next(err)

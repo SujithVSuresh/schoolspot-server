@@ -47,8 +47,6 @@ class AdminRepository extends BaseRepository<AdminProfileEntityType> implements 
             },
            ])
 
-           console.log(adminProfile, "kraa")
-
            return adminProfile[0]
 
         }catch(error){

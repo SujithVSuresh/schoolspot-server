@@ -16,4 +16,5 @@ export interface IAuthService{
         userId: string,
         status: "active" | "inactive" | "deleted" | "blocked"
       }>
+    changePassword(userId: string, data: {oldPassword: string, newPassword: string}): Promise<string> 
 }

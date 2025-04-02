@@ -14,6 +14,7 @@ import { generateToken } from "../../utils/TokenGenerator";
 import { sendPasswordResetEmail } from "../../utils/SendEmail";
 import { OAuth2Client, TokenPayload, UserRefreshClient } from "google-auth-library";
 import { ISchoolRepository } from "../../repositories/interface/ISchoolRepository";
+import { ChangePasswordRequestDTO } from "../../dto/AuthDTO";
 
 
 
@@ -397,7 +398,6 @@ export class AuthService implements IAuthService {
         userId: string,
         status: "active" | "inactive" | "deleted" | "blocked"
       }> {
-        console.log("userid", userId, "status", status)
         const user = await this._userRepository.findUserById(userId);
         if (!user) {
           throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -406,8 +406,6 @@ export class AuthService implements IAuthService {
         const updateUserStatus = await this._userRepository.updateUser(userId, {
           status: status
         })
-
-        console.log(updateUserStatus, "updated user")
 
         return {
           userId: String(user._id),
@@ -422,6 +420,27 @@ export class AuthService implements IAuthService {
         const students = await this._userRepository.listAllStudents();
 
         return students ?? [];
+      }
+
+
+      async changePassword(userId: string, data: ChangePasswordRequestDTO): Promise<string> {
+        const user = await this._userRepository.findUserById(userId)
+        console.log("kooi", user)
+        if(!user){
+          throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        const pwMatch = await comparePassword(data.oldPassword, user.password as string);
+    
+        if (!pwMatch) {
+          throw new CustomError(Messages.ACCOUNT_NOT_FOUND, HttpStatus.UNAUTHORIZED);
+        }
+
+        const password = await hashPassword(data.newPassword as string);
+
+        const updatePassword = await this._userRepository.updateUser(userId, {password})
+
+        return updatePassword?.email as string
       }
 
 
