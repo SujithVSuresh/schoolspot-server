@@ -1,5 +1,4 @@
 import { AttendaceResponseDTO, CreateAttendanceDTO } from "../../dto/AttendanceDTO"
-import { AttendaceEntityType } from "../../types/types"
 
 export interface IAttendanceService{
     addAttendance(dto: CreateAttendanceDTO[], schoolId: string, recordedBy: string): Promise<string>

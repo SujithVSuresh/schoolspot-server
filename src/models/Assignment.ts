@@ -37,6 +37,11 @@ const AssignmentSchema = new Schema(
         type: Date,
         required: true,
       },
+      submissionType: {
+        type: String,
+        enum: ["file", "link", "text"],
+        required: true,
+      }
     },
     {
       timestamps: true,

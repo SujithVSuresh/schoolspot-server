@@ -1,4 +1,4 @@
-import { AnnouncementEntityType, AttendaceEntityType } from "../../types/types";
+import { AttendaceEntityType } from "../../types/types";
 import { BaseRepository } from "./BaseRepository";
 import { IAttendanceRepository } from "../interface/IAttendanceRepository";
 import Attendance from "../../models/Attendance";

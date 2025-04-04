@@ -291,19 +291,34 @@ export interface AdminProfileUserEntityType {
   } 
 }
 
+// ----------------
+
 export interface AssignmentEntityType {
   _id?: mongoose.Types.ObjectId | string;
   title: string;
-  desctiption: string;
-  link: string;
+  description: string;
+  link?: string;
   teacherId: mongoose.Types.ObjectId | string;
   classId: mongoose.Types.ObjectId | string;
   subjectId: mongoose.Types.ObjectId | string;
   schoolId: mongoose.Types.ObjectId | string;
+  submissionType: "file" | "link" | "text";
   dueDate: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-
-
+export interface AssignmentSubmissionEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  assignmentId: mongoose.Types.ObjectId | string;
+  studentId: mongoose.Types.ObjectId | string;
+  schoolId: mongoose.Types.ObjectId | string;
+  description?: string;
+  link?: string;
+  fileUrl: string;
+  grade?: string;
+  feedback?: string;
+  status: "Pending" | "Submitted" | "Graded";
+  createdAt?: Date;
+  updatedAt?: Date;
+}
