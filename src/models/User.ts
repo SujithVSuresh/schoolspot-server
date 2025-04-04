@@ -27,6 +27,10 @@ const User = new Schema({
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "School"
+    },
+    authProvider: {
+        type: ['email', 'google'],
+        default: "email"
     }
 }, {
     timestamps: true

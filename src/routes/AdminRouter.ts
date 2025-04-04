@@ -13,9 +13,9 @@ const adminController = new AdminController(adminService);
 const adminRouter = Router();
 
 
-adminRouter.get("/admin-profile", protectRoute('admin'), adminController.getAdminProfile.bind(adminController));
-adminRouter.post("/admin-profile", protectRoute('admin'), adminController.createAdminProfile.bind(adminController));
-adminRouter.put("/admin-profile/:profileId", protectRoute('admin'), adminController.updateAdminProfile.bind(adminController));
+adminRouter.get("/admin-profile", protectRoute(['admin']), adminController.getAdminProfile.bind(adminController));
+adminRouter.post("/admin-profile", protectRoute(['admin']), adminController.createAdminProfile.bind(adminController));
+adminRouter.put("/admin-profile/:profileId", protectRoute(['admin']), adminController.updateAdminProfile.bind(adminController));
 
 
 export default adminRouter

@@ -166,6 +166,8 @@ export class AuthService implements IAuthService {
 
       async signin(email: string, password: string, role: string): Promise<UserResponseType> {
         const user = await this._userRepository.findByEmail(email);
+
+        console.log(user, "sheee")
     
         if (!user || (user && !user.password)) {
           throw new CustomError(
@@ -201,14 +203,14 @@ export class AuthService implements IAuthService {
           userId: String(user._id),
           role: "admin",
           iat: Date.now(),
-          schoolId: String(user._id)
+          schoolId: String(user.schoolId)
         });
     
         const refreshToken = authToken.generateRefreshToken({
           userId: String(user._id),
           role: "admin",
           iat: Date.now(),
-          schoolId: String(user._id)
+          schoolId: String(user.schoolId)
         });
     
         return {
@@ -330,6 +332,7 @@ export class AuthService implements IAuthService {
           status: userData.status,
           accessToken: accessToken,
           refreshToken: refreshToken,
+          authProvider: userData.authProvider
         };
         }else{
           throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
@@ -425,9 +428,13 @@ export class AuthService implements IAuthService {
 
       async changePassword(userId: string, data: ChangePasswordRequestDTO): Promise<string> {
         const user = await this._userRepository.findUserById(userId)
-        console.log("kooi", user)
+
         if(!user){
           throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        if(user.authProvider == "google"){
+          throw new CustomError(Messages.PASSWORD_CHANGE_NOT_ALLOWED, HttpStatus.FORBIDDEN)
         }
 
         const pwMatch = await comparePassword(data.oldPassword, user.password as string);

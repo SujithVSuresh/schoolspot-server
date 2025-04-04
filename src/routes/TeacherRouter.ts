@@ -14,9 +14,9 @@ const teacherController = new TeacherController(teacherService);
 const teacherRouter = Router();
 
 
-teacherRouter.post("/add-teacher", protectRoute("admin"), upload.single("profilePhoto"), teacherController.addTeacher.bind(teacherController));
-teacherRouter.get("/get-teachers", protectRoute("admin"), teacherController.getTeachers.bind(teacherController));
-teacherRouter.get("/get-teachers/school", protectRoute("admin"), teacherController.getTeacherBySchool.bind(teacherController))
+teacherRouter.post("/add-teacher", protectRoute(["admin"]), upload.single("profilePhoto"), teacherController.addTeacher.bind(teacherController));
+teacherRouter.get("/get-teachers", protectRoute(["admin"]), teacherController.getTeachers.bind(teacherController));
+teacherRouter.get("/get-teachers/school", protectRoute(["admin"]), teacherController.getTeacherBySchool.bind(teacherController))
 
 
 export default teacherRouter;

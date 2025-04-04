@@ -129,7 +129,7 @@ export class AuthController implements IAuthController {
     try {
       const { credential, clientId } = req.body.payload;
       const schoolData = req.body.schoolData
-      const { _id, email, role, status, accessToken, refreshToken } =
+      const { _id, email, role, status, accessToken, refreshToken, authProvider } =
         await this._authService.googleAuth(credential, clientId, schoolData);
 
       res.cookie("refreshToken", refreshToken, {
@@ -144,6 +144,7 @@ export class AuthController implements IAuthController {
         role,
         status,
         accessToken,
+        authProvider
       });
     } catch (err) {
       next(err);
@@ -225,7 +226,10 @@ export class AuthController implements IAuthController {
         newPassword: req.body.newPassword
       }
 
+      console.log(userId, data, "heyyyy")
+
       const response = await this._authService.changePassword(userId as string, data)
+
 
       res.status(HttpStatus.OK).json({email: response})
 

@@ -128,6 +128,8 @@ export class StudentController implements IStudentController {
       const classId = req.params.classId;
       const { schoolId } = req.user as PayloadType;
 
+      console.log(classId, "class", schoolId, "school", req.user)
+
       const students = await this._studentService.getStudentsByClassId(
         classId as string,
         schoolId

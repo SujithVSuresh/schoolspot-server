@@ -24,7 +24,7 @@ const Messages = {
     ROLL_EXIST: "Roll number already exist",
     ATTENDANCE_NOT_FOUND: "Attendance not found",
     SCHOOL_NOT_FOUND: "School not found",
-    
+    PASSWORD_CHANGE_NOT_ALLOWED: "Password change is not allowed for Google accounts"
   };
 
   export default Messages

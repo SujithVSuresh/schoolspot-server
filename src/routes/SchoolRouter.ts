@@ -13,8 +13,8 @@ const schoolService = new SchoolService(SchoolRepository)
 
 const schoolController = new SchoolController(schoolService)
 
-schoolRouter.get('/get-school', protectRoute("admin"), schoolController.getSchool.bind(schoolController))
-schoolRouter.put('/edit-school/:schoolId', protectRoute("admin"), validateRequest(schoolInfoValidationSchema), schoolController.editSchoolProfile.bind(schoolController))
+schoolRouter.get('/get-school', protectRoute(["admin"]), schoolController.getSchool.bind(schoolController))
+schoolRouter.put('/edit-school/:schoolId', protectRoute(["admin"]), validateRequest(schoolInfoValidationSchema), schoolController.editSchoolProfile.bind(schoolController))
 
 
 export default schoolRouter

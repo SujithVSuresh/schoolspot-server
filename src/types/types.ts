@@ -8,11 +8,13 @@ export interface BaseUser {
   schoolId?: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  authProvider?: "google" | "email"
 }
 
 export interface UserType extends BaseUser {
   _id?: mongoose.Types.ObjectId;
   password?: string;
+  
 }
 
 export interface UserResponseType extends BaseUser {
@@ -287,6 +289,20 @@ export interface AdminProfileUserEntityType {
     createdAt?: Date;
     updatedAt?: Date;
   } 
+}
+
+export interface AssignmentEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  title: string;
+  desctiption: string;
+  link: string;
+  teacherId: mongoose.Types.ObjectId | string;
+  classId: mongoose.Types.ObjectId | string;
+  subjectId: mongoose.Types.ObjectId | string;
+  schoolId: mongoose.Types.ObjectId | string;
+  dueDate: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 

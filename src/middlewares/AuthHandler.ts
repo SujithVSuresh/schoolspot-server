@@ -5,7 +5,7 @@ import { CustomRequest } from "../types/types";
 
 
 export const protectRoute = (
-    allowedRole: string
+    allowedRole: string[]
   ): (req: CustomRequest, res: Response, next: NextFunction) => Promise<void> => {
     return async (req, res, next) => {
         try {
@@ -23,7 +23,9 @@ export const protectRoute = (
                 process.env.ACCESS_TOKEN_SECRET as string
             ) as PayloadType;
 
-            if(allowedRole != decoded.role){
+            console.log(allowedRole.includes(decoded.role), "ll", decoded.role, allowedRole)
+
+            if(!allowedRole.includes(decoded.role)){
                 res.status(403).json({ message: "Access denied, you do not have permission to access this resource." });
                return;  
             }

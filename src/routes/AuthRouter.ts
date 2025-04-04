@@ -20,11 +20,11 @@ authRouter.post("/signin", authController.signin.bind(authController));
 authRouter.post("/password-reset-request", authController.passwordResetRequest.bind(authController))
 authRouter.post("/password-reset", authController.resetPassword.bind(authController))
 authRouter.post("/google-auth", authController.googleAuth.bind(authController))
-authRouter.post("/create-user", protectRoute("admin"), authController.createUser.bind(authController))
-authRouter.get("/get-students", protectRoute("admin"), authController.getAllStudents.bind(authController))
+authRouter.post("/create-user", protectRoute(["admin"]), authController.createUser.bind(authController))
+authRouter.get("/get-students", protectRoute(["admin"]), authController.getAllStudents.bind(authController))
 authRouter.post('/refreshToken', authController.refreshToken.bind(authController))
-authRouter.patch('/change-account-status', protectRoute("admin"), authController.changeAccountStatus.bind(authController))
-authRouter.patch('/change-password', protectRoute("admin"), authController.changePassword.bind(authController))
+authRouter.patch('/change-account-status', protectRoute(["admin"]), authController.changeAccountStatus.bind(authController))
+authRouter.patch('/change-password', protectRoute(["admin"]), authController.changePassword.bind(authController))
 
 
 export default authRouter;
