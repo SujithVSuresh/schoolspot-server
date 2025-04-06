@@ -67,6 +67,21 @@ export class AssignmentController implements IAssignmentController {
         next(err);
     }
 }
+
+async getAllAssignmentSubmissions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+        const {assignmentId} = req.params;
+        const response = await this._assignmentService.getAllAssignmentSubmissions(assignmentId)
+
+        res.status(200).json({
+            message: "Assignment fetched successfully",
+            data: response
+        })
+
+    }catch(err){
+        next(err)
+    }
+}
   
 
 }

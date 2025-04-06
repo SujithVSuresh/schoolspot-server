@@ -38,6 +38,10 @@ const AssignmentSubmissionSchema = new Schema(
         enum: ["Pending", "Submitted", "Graded"],
         default: "Pending",
       },
+      submittedAt: {
+        type: Date,
+        default: null 
+      }
     },
     {
       timestamps: true,

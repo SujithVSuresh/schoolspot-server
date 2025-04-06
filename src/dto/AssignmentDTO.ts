@@ -29,3 +29,17 @@ export interface AssignmentListResponseDTO {
     dueDate: Date;
     createdAt?: Date;
 }
+
+export interface AssignmentSubmissionsListResponseDTO {
+  _id: string;
+  assignmentId: string;
+  student: {
+    _id: string,
+    fullName: string,
+    class: string,
+    section: string,
+    roll: number
+  };
+  status: "Pending" | "Submitted" | "Graded";
+  submittedAt: Date | null
+}

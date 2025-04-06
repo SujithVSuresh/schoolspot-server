@@ -308,6 +308,8 @@ export interface AssignmentEntityType {
   updatedAt?: Date;
 }
 
+
+
 export interface AssignmentSubmissionEntityType {
   _id?: mongoose.Types.ObjectId | string;
   assignmentId: mongoose.Types.ObjectId | string;
@@ -321,4 +323,17 @@ export interface AssignmentSubmissionEntityType {
   status: "Pending" | "Submitted" | "Graded";
   createdAt?: Date;
   updatedAt?: Date;
+  submittedAt?: Date | null
 }
+
+
+export interface AssignmentSubmissionStudentEntityType extends AssignmentSubmissionEntityType {
+  student: {
+    _id: string;
+    fullName: string;
+    class: string;
+    section: string;
+    roll: number;
+  };
+};
+

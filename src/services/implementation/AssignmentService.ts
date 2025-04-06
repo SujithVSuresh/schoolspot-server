@@ -1,16 +1,18 @@
-import { CreateAssignmentDTO, AssignmentResponseDTO, AssignmentListResponseDTO } from "../../dto/AssignmentDTO";
+import { CreateAssignmentDTO, AssignmentResponseDTO, AssignmentListResponseDTO, AssignmentSubmissionsListResponseDTO } from "../../dto/AssignmentDTO";
 import { IAssignmentRepository } from "../../repositories/interface/IAssignmentRepository";
 import IAssignmentService from "../interface/IAssignmentService";
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
+import { IAssignmentSubmissionRepository } from "../../repositories/interface/IAssignmentSubmissionRepository";
 
 
 export class AssignmentService implements IAssignmentService {
   constructor(
     private _assignmentRepository: IAssignmentRepository,
     private _studentRepository: IStudentRepository,
+    private _assignmentSubmissionRepository: IAssignmentSubmissionRepository
   ) {}
 
   async createAssignment(data: CreateAssignmentDTO): Promise<AssignmentResponseDTO> {
@@ -75,5 +77,25 @@ export class AssignmentService implements IAssignmentService {
     }
   }
 
-  
+  async getAllAssignmentSubmissions(assignmentId: string): Promise<AssignmentSubmissionsListResponseDTO[]> {
+    const response = await this._assignmentSubmissionRepository.getAssignmentSubmissions(assignmentId)
+
+    const assignmentSubmission: AssignmentSubmissionsListResponseDTO[] = response.map((submission) => ({
+      _id: submission._id?.toString() ?? "",
+      assignmentId: submission.assignmentId.toString(),
+      status: submission.status,
+      submittedAt: submission.submittedAt ?? null,
+      student: {
+        _id: submission.student._id.toString(),
+        fullName: submission.student.fullName,
+        class: submission.student.class,
+        section: submission.student.section,
+        roll: submission.student.roll
+      }
+    }));
+    
+    
+
+    return assignmentSubmission
+  } 
 }
