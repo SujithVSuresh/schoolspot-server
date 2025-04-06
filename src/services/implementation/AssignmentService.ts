@@ -1,4 +1,4 @@
-import { CreateAssignmentDTO, AssignmentResponseDTO, AssignmentListResponseDTO, AssignmentSubmissionsListResponseDTO } from "../../dto/AssignmentDTO";
+import { CreateAssignmentDTO, AssignmentResponseDTO, AssignmentListResponseDTO, AssignmentSubmissionsListResponseDTO, CreateStudyMaterialDTO, StudyMaterialResponseDTO } from "../../dto/AssignmentDTO";
 import { IAssignmentRepository } from "../../repositories/interface/IAssignmentRepository";
 import IAssignmentService from "../interface/IAssignmentService";
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
@@ -6,13 +6,16 @@ import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { IAssignmentSubmissionRepository } from "../../repositories/interface/IAssignmentSubmissionRepository";
-
+import { IStudyMaterialRepository } from "../../repositories/interface/IStudyMaterialRepository";
+import cloudinary from "../../config/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 export class AssignmentService implements IAssignmentService {
   constructor(
     private _assignmentRepository: IAssignmentRepository,
     private _studentRepository: IStudentRepository,
-    private _assignmentSubmissionRepository: IAssignmentSubmissionRepository
+    private _assignmentSubmissionRepository: IAssignmentSubmissionRepository,
+    private _studyMaterialRepository: IStudyMaterialRepository
   ) {}
 
   async createAssignment(data: CreateAssignmentDTO): Promise<AssignmentResponseDTO> {
@@ -98,4 +101,49 @@ export class AssignmentService implements IAssignmentService {
 
     return assignmentSubmission
   } 
+
+
+  async createStudyMaterial(data: CreateStudyMaterialDTO, file?: Express.Multer.File): Promise<StudyMaterialResponseDTO> {
+
+        let fileUrl = null;
+    
+        if (file) {
+          console.log("Uploading file to Cloudinary...");
+    
+          const uploadResult: UploadApiResponse = await new Promise(
+            (resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { folder: "study_material" },
+                (error, result) => {
+                  if (error) {
+                    reject(error);
+                  } else if (result) {
+                    resolve(result);
+                  } else {
+                    reject(new Error("Cloudinary upload failed"));
+                  }
+                }
+              );
+              stream.end(file.buffer);
+            }
+          );
+    
+          fileUrl = uploadResult.secure_url;
+        }
+
+        if(fileUrl){
+          data.fileUrl = fileUrl
+        }
+
+        const response = await this._studyMaterialRepository.createStudyMaterial(data)
+
+        return {
+          title: response.title,
+          description: response.description,
+          createdAt: response.createdAt as Date,
+          fileUrl: response.fileUrl ? response.fileUrl : "",
+          link: response.fileUrl ? response.fileUrl : ""
+        }
+
+  }
 }

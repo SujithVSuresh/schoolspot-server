@@ -43,3 +43,22 @@ export interface AssignmentSubmissionsListResponseDTO {
   status: "Pending" | "Submitted" | "Graded";
   submittedAt: Date | null
 }
+
+export interface CreateStudyMaterialDTO {
+  title: string;
+  description: string;
+  link?: string;
+  fileUrl?: string;
+  teacherId: string;
+  classId: string;
+  subjectId: string;
+  schoolId: string;
+}
+
+export interface StudyMaterialResponseDTO {
+  title: string;
+  description: string;
+  link?: string;
+  fileUrl?: string;
+  createdAt: Date
+}

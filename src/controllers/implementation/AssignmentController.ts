@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import IAssignmentService from "../../services/interface/IAssignmentService";
 import { IAssignmentController } from "../interface/IAssignmentController";
-import { CreateAssignmentDTO } from "../../dto/AssignmentDTO";
+import { CreateAssignmentDTO, CreateStudyMaterialDTO } from "../../dto/AssignmentDTO";
 import { CustomRequest } from "../../types/types";
 import { PayloadType } from "../../types/types";
 
@@ -12,7 +12,6 @@ export class AssignmentController implements IAssignmentController {
   async createAssignment(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
       try {
 
-        console.log("req.body...", req.body)
         const { schoolId, userId } = req.user as PayloadType;
 
         const data: CreateAssignmentDTO = {
@@ -81,6 +80,36 @@ async getAllAssignmentSubmissions(req: Request, res: Response, next: NextFunctio
     }catch(err){
         next(err)
     }
+}
+
+async createStudyMaterial(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+        console.log(req.body, "shuoooiiii")
+
+        const { schoolId, userId } = req.user as PayloadType;
+        const file = req.file;
+
+        const data: CreateStudyMaterialDTO = {
+            title: req.body.title,
+            description: req.body.description,
+            link: req.body.link ? req.body.link : null,
+            schoolId: schoolId,
+            teacherId: userId,
+            classId: req.body.classId,
+            subjectId: req.body.subjectId
+        }     
+        
+        const response = await this._assignmentService.createStudyMaterial(data, file);
+
+        res.status(201).json({
+            message: "Study material created successfully",
+            data: response,
+        });
+
+      } catch(err) {
+          next(err);
+      }
 }
   
 

@@ -29,8 +29,6 @@ export class StudentController implements IStudentController {
         classId,
       } = req.body;
 
-      console.log(req.body, "class id passed through formdata");
-
       const { schoolId } = req.user as PayloadType;
 
       const file = req.file;

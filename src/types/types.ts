@@ -337,3 +337,19 @@ export interface AssignmentSubmissionStudentEntityType extends AssignmentSubmiss
   };
 };
 
+
+export interface StudyMaterialEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  teacherId: mongoose.Types.ObjectId | string;
+  classId: mongoose.Types.ObjectId | string;
+  subjectId: mongoose.Types.ObjectId | string;
+  schoolId: mongoose.Types.ObjectId | string;
+  title: string;
+  description: string;
+  link?: string;
+  fileUrl?: string;
+  viewers?: (mongoose.Types.ObjectId | string)[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
