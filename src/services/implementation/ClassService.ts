@@ -1,5 +1,5 @@
 import { IClassRepository } from "../../repositories/interface/IClassRepository";
-import { CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
+import { ClassByIdResponseDTO, ClassListResponseDTO, CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
 import { AnnouncementEntityType, ClassEntityType, SubjectEntityType } from "../../types/types";
@@ -10,12 +10,14 @@ import HttpStatus from "../../constants/StatusConstants";
 import { ITeacherRepository } from "../../repositories/interface/ITeacherRepository";
 import { IAnnouncementRepository } from "../../repositories/interface/IAnnouncementRepository";
 import { AnnouncementDTO, AnnouncementResponseDTO } from "../../dto/ClassDTO";
+import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
 
 export class ClassService implements IClassService {
   constructor(
     private _classRepository: IClassRepository,
     private _teacherRepository: ITeacherRepository,
-    private _announcementRepository: IAnnouncementRepository
+    private _announcementRepository: IAnnouncementRepository,
+    private _attendanceRepository: IAttendanceRepository
   ) {}
 
   async createClass(dto: CreateClassDTO): Promise<ClassResponseDTO> {
@@ -45,6 +47,7 @@ export class ClassService implements IClassService {
       section: response.section,
       strength: response.strength,
       createdAt: response.createdAt,
+      
     };
   }
 
@@ -54,19 +57,64 @@ export class ClassService implements IClassService {
     return response;
   }
 
-  async findClassById(id: string): Promise<ClassResponseDTO> {
-    const response = await this._classRepository.findClassById(id);
+  async findClassById(classId: string, userId: string, userType: string): Promise<ClassByIdResponseDTO> {
+    const response = await this._classRepository.findClassById(classId);
     if (!response) {
       throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
     }
-    return {
-      _id: response._id,
-      name: response.name,
-      section: response.section,
-      teacher: response.teacher,
-      strength: response.strength,
-      subjects: response.subjects
-    };
+
+    const now = new Date();
+    const startOfUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+    const endOfUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+
+    const attendace = await this._attendanceRepository.findAttendanceCount({
+            class: new mongoose.Types.ObjectId(classId),
+            createdAt: {
+              $gte: startOfUTC,
+              $lt: endOfUTC,
+            },
+    })
+
+    console.log(attendace, "this is the attendance data")
+
+    const data: ClassByIdResponseDTO = {
+        _id: response._id,
+        name: response.name,
+        section: response.section,
+        teacher: response.teacher,
+        strength: response.strength,
+        subjects: response.subjects,
+        attendance: {
+          presentCount: attendace ? attendace.present : 0,
+          absentCount: attendace ? attendace.absent : 0,
+          date: attendace ? attendace.date : new Date()
+        }
+    }
+    
+    if (userType == "teacher") {
+      const subject = await this._classRepository.findSubjectByTeacherId(userId, classId);
+      if (subject) {
+        data.subject = subject;
+      }
+    }
+
+
+    return data;
+  }
+
+  async findAllClassesByTeacherId(teacherId: string): Promise<ClassListResponseDTO[]> {
+    const response = await this._classRepository.findClassByTeacherId(teacherId);
+
+    const data: ClassListResponseDTO[] = response.map((item) => {
+        return {
+          _id: String(item._id),
+          name: item.name,
+          section: item.section,
+          strength: item.strength,
+        }
+    })
+
+    return data
   }
 
   async addSubject(data: SubjectDTO, classId: string): Promise<SubjectDTO> {

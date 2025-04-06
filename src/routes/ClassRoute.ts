@@ -5,8 +5,9 @@ import ClassRepository from "../repositories/implementaion/ClassRepository";
 import { ClassController } from "../controllers/implementation/ClassController";
 import TeacherRepository from "../repositories/implementaion/TeacherRepository";
 import AnnouncementRepository from "../repositories/implementaion/AnnouncementRepository";
+import AttendanceRepository from "../repositories/implementaion/AttendanceRepository";
 
-const classService = new ClassService(ClassRepository, TeacherRepository, AnnouncementRepository);
+const classService = new ClassService(ClassRepository, TeacherRepository, AnnouncementRepository, AttendanceRepository);
 
 const classController = new ClassController(classService);
 
@@ -15,7 +16,8 @@ const classRouter = Router();
 
 classRouter.post('/add-class', protectRoute(["admin"]), classController.createClass.bind(classController));
 classRouter.get('/get-classes', protectRoute(["admin"]), classController.findAllClasses.bind(classController));
-classRouter.get('/get-class/:classId', protectRoute(["admin"]), classController.findClassById.bind(classController));
+classRouter.get('/get-classes/teacher', protectRoute(["teacher"]), classController.findClassesByTeacherId.bind(classController));
+classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher"]), classController.findClassById.bind(classController));
 classRouter.post('/add-subject', protectRoute(["admin"]), classController.addSubject.bind(classController))
 classRouter.delete('/remove-subject', protectRoute(["admin"]), classController.removeSubject.bind(classController));
 classRouter.put('/update-subject', protectRoute(["admin"]), classController.updateSubject.bind(classController))

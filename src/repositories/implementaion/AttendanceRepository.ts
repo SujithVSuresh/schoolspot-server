@@ -74,6 +74,52 @@ class AttendanceRepository
     }
   }
 
+  async findAttendanceCount(query: any): Promise<{present: number, absent: number, date: Date} | null> {
+    const attendanceCount = await Attendance.aggregate([
+      {
+        $match: {
+          ...query
+        }
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+          createdAt: { $first: "$createdAt" }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          present: {
+            $sum: {
+              $cond: [{ $eq: ["$_id", "Present"] }, "$count", 0]
+            }
+          },
+          absent: {
+            $sum: {
+              $cond: [{ $eq: ["$_id", "Absent"] }, "$count", 0]
+            }
+          },
+          date: { $first: "$createdAt" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          present: 1,
+          absent: 1,
+          date: 1
+        }
+      }
+    ])
+
+    console.log(attendanceCount, "this is the attendance count")
+
+    return attendanceCount[0] ? attendanceCount[0] : null
+    
+  }
+
   async updateAttendanceStatus(attendaceId: string, data: AttendaceEntityType): Promise<AttendaceEntityType | null> {
     try{
       const response = await this.update(attendaceId, data)
@@ -85,6 +131,8 @@ class AttendanceRepository
       throw new Error("Error finding attendance");
     }
   }
+
+  
 }
 
 export default new AttendanceRepository();

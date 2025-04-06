@@ -17,8 +17,7 @@ export class AttendanceService implements IAttendanceService {
     recordedBy: string
   ): Promise<string> {
     const today = new Date().toISOString().split("T")[0];
-    const attendanceExist =
-      await this._attendanceRepository.findAttendanceByQuery({
+    const attendanceExist = await this._attendanceRepository.findAttendanceByQuery({
         class: new mongoose.Types.ObjectId(dto[0].class as string),
         createdAt: {
           $gte: new Date(today + "T00:00:00.000Z"),

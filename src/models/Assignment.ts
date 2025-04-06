@@ -9,6 +9,7 @@ const AssignmentSchema = new Schema(
       },
       description: {
         type: String,
+        required: true,
       },
       link: {
         type: String,
@@ -48,4 +49,4 @@ const AssignmentSchema = new Schema(
     }
   );
 
-export default mongoose.model<AssignmentEntityType>('Assignments', AssignmentSchema, 'Announcements')
+export default mongoose.model<AssignmentEntityType>('Assignment', AssignmentSchema, 'Assignments')

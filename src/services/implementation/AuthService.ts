@@ -166,8 +166,6 @@ export class AuthService implements IAuthService {
 
       async signin(email: string, password: string, role: string): Promise<UserResponseType> {
         const user = await this._userRepository.findByEmail(email);
-
-        console.log(user, "sheee")
     
         if (!user || (user && !user.password)) {
           throw new CustomError(
@@ -201,14 +199,14 @@ export class AuthService implements IAuthService {
     
         const accessToken = authToken.generateAccessToken({
           userId: String(user._id),
-          role: "admin",
+          role: user.role,
           iat: Date.now(),
           schoolId: String(user.schoolId)
         });
     
         const refreshToken = authToken.generateRefreshToken({
           userId: String(user._id),
-          role: "admin",
+          role: user.role,
           iat: Date.now(),
           schoolId: String(user.schoolId)
         });

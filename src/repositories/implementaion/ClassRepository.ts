@@ -44,6 +44,21 @@ class ClassRepository
     }
   }
 
+  async findClassByTeacherId(teacherId: string): Promise<ClassEntityType[]> {
+    try{
+      const response = Class.find({ 
+        subjects: { $elemMatch: { 
+          teacher: new mongoose.Types.ObjectId(teacherId) 
+        } } });
+
+        return response;
+
+    } catch (error) {
+      console.error("Error finding classes", error);
+      throw new Error("Error finding classes");
+    }
+  }
+
   async findClassById(id: string): Promise<ClassEntityType | null> {
     try {
       const classData = await Class.aggregate([
@@ -156,6 +171,22 @@ class ClassRepository
       throw new Error("Error finding subject");
     }
   }
+
+  async findSubjectByTeacherId(teacherId: string, classId: string): Promise<SubjectEntityType | null> {
+    try{
+      const response = await Class.findOne(
+        { _id: classId, "subjects.teacher": teacherId },
+        { "subjects.$": 1 }
+      );
+
+      return response?.subjects ? response?.subjects[0] : null;
+
+    }catch(error){
+      console.error("Error finding subject", error);
+      throw new Error("Error finding subject");
+    
+  }
+}
 
 }
 

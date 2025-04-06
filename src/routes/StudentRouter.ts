@@ -18,6 +18,6 @@ studentRouter.post("/add-student", protectRoute(["admin"]), upload.single("profi
 studentRouter.get("/get-students", protectRoute(["admin"]), studentController.getStudents.bind(studentController));
 studentRouter.get("/get-student/:userId", protectRoute(["admin"]), studentController.getStudentProfile.bind(studentController))
 studentRouter.get("/get-students-by-query", protectRoute(["admin"]), studentController.getStudentByQuery.bind(studentController));
-studentRouter.get("/get-students-by-class/:classId", protectRoute(["admin", "teacher"]), studentController.getStudentsByClassId.bind(studentController));
+studentRouter.get("/get-students/:classId", protectRoute(["admin", "teacher"]), studentController.getStudentsByClassId.bind(studentController));
 
 export default studentRouter;

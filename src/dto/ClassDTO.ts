@@ -20,6 +20,25 @@ export interface ClassResponseDTO {
       createdAt?: Date;
 }
 
+export type attendanceCount = {
+      presentCount: number;
+      absentCount: number;
+      date: Date;
+}
+
+export interface ClassByIdResponseDTO extends ClassResponseDTO {
+      attendance?: attendanceCount;
+      subject?: SubjectDTO;
+}
+
+
+export interface ClassListResponseDTO {
+      _id?: string;
+      name: string;
+      section: string;
+      strength?: number;
+}
+
 // ---------------
 
 export interface SubjectDTO {

@@ -23,7 +23,8 @@ export const protectRoute = (
                 process.env.ACCESS_TOKEN_SECRET as string
             ) as PayloadType;
 
-            console.log(allowedRole.includes(decoded.role), "ll", decoded.role, allowedRole)
+            console.log("Decoded token:", decoded);
+
 
             if(!allowedRole.includes(decoded.role)){
                 res.status(403).json({ message: "Access denied, you do not have permission to access this resource." });

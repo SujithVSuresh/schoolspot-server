@@ -15,6 +15,7 @@ import classRouter from "./routes/ClassRoute";
 import attendaceRouter from "./routes/AttendanceRouter";
 import schoolRouter from "./routes/SchoolRouter";
 import adminRouter from "./routes/AdminRouter";
+import assignmentRouter from "./routes/AssignmentRouter";
 
 
 
@@ -59,6 +60,7 @@ class App {
     this.app.use('/attendance', attendaceRouter)
     this.app.use('/school', schoolRouter)
     this.app.use('/admin', adminRouter)
+    this.app.use('/assignment', assignmentRouter)
     this.app.use(errorHandler);
   }
 

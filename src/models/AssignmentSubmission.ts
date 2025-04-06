@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import { AssignmentSubmissionEntityType } from "../types/types";
 
 const AssignmentSubmissionSchema = new Schema(
     {
@@ -25,7 +26,6 @@ const AssignmentSubmissionSchema = new Schema(
       },
       fileUrl: {
         type: String,
-        required: true,
       },
       grade: {
         type: String,
@@ -43,3 +43,5 @@ const AssignmentSubmissionSchema = new Schema(
       timestamps: true,
     }
   );
+
+  export default mongoose.model<AssignmentSubmissionEntityType>('AssignmentSubmission', AssignmentSubmissionSchema, 'AssignmentSubmissions')

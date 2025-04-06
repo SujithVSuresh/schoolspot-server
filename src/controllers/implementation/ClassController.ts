@@ -53,14 +53,34 @@ export class ClassController implements IClassController {
   }
 
   async findClassById(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
+      const { userId, role } = req.user as PayloadType;
+
+
       const classId = req.params.classId;
 
-      const response = await this._classService.findClassById(classId);
+
+      const response = await this._classService.findClassById(classId, userId, role);
+
+      res.status(HttpStatus.OK).json({
+        data: response,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async findClassesByTeacherId(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.query.teacherId ? req.query.teacherId : req.user?.userId;
+
+      const response = await this._classService.findAllClassesByTeacherId(
+        id as string
+      );
 
       res.status(HttpStatus.OK).json({
         data: response,

@@ -315,7 +315,7 @@ export interface AssignmentSubmissionEntityType {
   schoolId: mongoose.Types.ObjectId | string;
   description?: string;
   link?: string;
-  fileUrl: string;
+  fileUrl?: string;
   grade?: string;
   feedback?: string;
   status: "Pending" | "Submitted" | "Graded";
