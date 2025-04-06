@@ -19,6 +19,18 @@ async createStudyMaterial(data: StudyMaterialEntityType): Promise<StudyMaterialE
         throw new Error("Error creating study material");
     }
   }
+
+async getStudyMaterial(subjectId: string): Promise<StudyMaterialEntityType[]> {
+    try {
+        const response = await this.findByQuery({subjectId});
+        return response;
+    } catch (error) {
+        console.error("Error creating study material", error);
+        throw new Error("Error creating study material");
+    }
 }
+}
+
+
 
 export default new StudyMaterialRepository()

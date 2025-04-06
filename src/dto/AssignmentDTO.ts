@@ -56,6 +56,7 @@ export interface CreateStudyMaterialDTO {
 }
 
 export interface StudyMaterialResponseDTO {
+  _id?: string;
   title: string;
   description: string;
   link?: string;

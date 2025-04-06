@@ -85,8 +85,6 @@ async getAllAssignmentSubmissions(req: Request, res: Response, next: NextFunctio
 async createStudyMaterial(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
 
-        console.log(req.body, "shuoooiiii")
-
         const { schoolId, userId } = req.user as PayloadType;
         const file = req.file;
 
@@ -104,6 +102,22 @@ async createStudyMaterial(req: CustomRequest, res: Response, next: NextFunction)
 
         res.status(201).json({
             message: "Study material created successfully",
+            data: response,
+        });
+
+      } catch(err) {
+          next(err);
+      }
+}
+
+async fetchStudyMaterials(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+        const { subjectId } = req.params;
+        const response = await this._assignmentService.fetchStudyMaterials(subjectId);
+
+        res.status(200).json({
+            message: "Study materials fetched successfully",
             data: response,
         });
 

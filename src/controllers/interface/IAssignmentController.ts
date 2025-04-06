@@ -6,5 +6,5 @@ export interface IAssignmentController {
     getAssignmentById(req: Request, res: Response, next: NextFunction): Promise<void>
     getAllAssignmentSubmissions(req: Request, res: Response, next: NextFunction): Promise<void>
     createStudyMaterial(req: Request, res: Response, next: NextFunction): Promise<void>
-
+    fetchStudyMaterials(req: Request, res: Response, next: NextFunction): Promise<void>
 }

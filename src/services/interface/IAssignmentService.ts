@@ -6,7 +6,7 @@ export interface IAssignmentService{
     getAssignmentById(assignmentId: string): Promise<AssignmentResponseDTO>
     getAllAssignmentSubmissions(assignmentId: string): Promise<AssignmentSubmissionsListResponseDTO[]> 
     createStudyMaterial(data: CreateStudyMaterialDTO, file?: Express.Multer.File): Promise<StudyMaterialResponseDTO> 
+    fetchStudyMaterials(subjectId: string): Promise<StudyMaterialResponseDTO[]>    
 }
-
 
 export default IAssignmentService

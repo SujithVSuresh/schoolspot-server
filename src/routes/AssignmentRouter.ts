@@ -21,6 +21,8 @@ assignmentRouter.get('/get-assignment/:assignmentId', protectRoute(["teacher"]),
 assignmentRouter.get('/get-submissions/:assignmentId', protectRoute(["teacher"]), assignmentController.getAllAssignmentSubmissions.bind(assignmentController));
 
 
-assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), upload.single("studyMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
+assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), upload.single("fileMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
+assignmentRouter.get('/get-studymaterials/:subjectId', protectRoute(["teacher"]), assignmentController.fetchStudyMaterials.bind(assignmentController));
+
 
 export default assignmentRouter

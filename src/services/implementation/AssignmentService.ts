@@ -146,4 +146,23 @@ export class AssignmentService implements IAssignmentService {
         }
 
   }
+
+
+  async fetchStudyMaterials(subjectId: string): Promise<StudyMaterialResponseDTO[]> {
+    const response = await this._studyMaterialRepository.getStudyMaterial(subjectId)
+
+    const data: StudyMaterialResponseDTO[] = response.map((material) => {
+      return {
+          _id: String(material._id),
+          title: material.title,
+          description: material.description,
+          createdAt: material.createdAt as Date,
+          fileUrl: material.fileUrl ? material.fileUrl : "",
+          link: material.link ? material.link : ""
+      }
+  })
+
+  return data
+
+  }
 }
