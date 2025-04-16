@@ -18,11 +18,6 @@ const AttendanceSchema = new Schema({
         enum: ['Present', 'Absent'],
         default: 'Present'
     },
-    recordedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User"
-    },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

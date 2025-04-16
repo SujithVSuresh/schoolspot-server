@@ -1,5 +1,5 @@
 import { IClassRepository } from "../../repositories/interface/IClassRepository";
-import { ClassByIdResponseDTO, ClassListResponseDTO, CreateClassDTO, SubjectDTO } from "../../dto/ClassDTO";
+import { ClassByIdResponseDTO, ClassListResponseDTO, CreateClassDTO } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
 import { AnnouncementEntityType, ClassEntityType, SubjectEntityType } from "../../types/types";
@@ -7,17 +7,20 @@ import mongoose from "mongoose";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
-import { ITeacherRepository } from "../../repositories/interface/ITeacherRepository";
 import { IAnnouncementRepository } from "../../repositories/interface/IAnnouncementRepository";
 import { AnnouncementDTO, AnnouncementResponseDTO } from "../../dto/ClassDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
+import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
+import { ISubjectRepository } from "../../repositories/interface/ISubjectRepository";
+
 
 export class ClassService implements IClassService {
   constructor(
     private _classRepository: IClassRepository,
-    private _teacherRepository: ITeacherRepository,
     private _announcementRepository: IAnnouncementRepository,
-    private _attendanceRepository: IAttendanceRepository
+    private _attendanceRepository: IAttendanceRepository,
+    private _studentRepository: IStudentRepository,
+    private _subjectRepository: ISubjectRepository
   ) {}
 
   async createClass(dto: CreateClassDTO): Promise<ClassResponseDTO> {
@@ -75,30 +78,34 @@ export class ClassService implements IClassService {
             },
     })
 
-    console.log(attendace, "this is the attendance data")
-
     const data: ClassByIdResponseDTO = {
         _id: response._id,
         name: response.name,
         section: response.section,
         teacher: response.teacher,
         strength: response.strength,
-        subjects: response.subjects,
+        school: String(response.school),
         attendance: {
           presentCount: attendace ? attendace.present : 0,
           absentCount: attendace ? attendace.absent : 0,
           date: attendace ? attendace.date : new Date()
         }
     }
-    
+
     if (userType == "teacher") {
-      const subject = await this._classRepository.findSubjectByTeacherId(userId, classId);
+      const subject = await this._subjectRepository.findSubject({
+        teacher: userId, 
+        class: classId
+      });
+
       if (subject) {
-        data.subject = subject;
+        data.subject = {
+          _id: String(subject._id),
+          name: subject.name,
+          teacher: String(subject.teacher),
+        };
       }
     }
-
-
     return data;
   }
 
@@ -117,99 +124,46 @@ export class ClassService implements IClassService {
     return data
   }
 
-  async addSubject(data: SubjectDTO, classId: string): Promise<SubjectDTO> {
-    const subjectData: SubjectEntityType = {
-      name: data.name,
-      teacher: data.teacher as mongoose.Types.ObjectId,
-    };
-    const response = await this._classRepository.addSubject(
-      subjectData,
-      classId
-    );
+  async getClassIdsForUsers(userId: string, role: "superadmin" | "admin" | "teacher" | "student", schoolId: string): Promise<{name: string, section: string, id: string}[]> {
+    let classIds: {name: string, section: string, id: string}[] = []
 
-    if (!response) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+    switch (role) {
+        case 'admin':
+            const adminClasses = await this._classRepository.findAllClasses(schoolId)
+            classIds = adminClasses.map((classData) => {
+              return {
+               id: String(classData._id),
+               name: classData.name,
+               section: classData.section
+              }
+            })
+            break;
+        case 'teacher':
+            const teacherClasses = await this._classRepository.findClassByTeacherId(userId)
+            classIds = teacherClasses.map((classData) => {
+              return {
+                id: String(classData._id),
+                name: classData.name,
+                section: classData.section
+              }
+            })
+            break;
+        case 'student':
+            const studentClass = await this._studentRepository.getStudentById(userId)
+            classIds = [{
+              id: String(studentClass?._id),
+              name: studentClass?.class as string,
+              section: studentClass?.section as string
+            }]
+            break;
+        default:
+            console.log('No user role matches');
     }
 
-    const teacher = await this._teacherRepository.findTeacherById(
-      String(response.teacher)
-    );
-    if (!teacher) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-    return {
-      name: response.name,
-      _id: response._id,
-      teacher: teacher?.fullName as string,
-    };
+    return classIds
+    
   }
 
-  async removeSubject(subjectId: string, classId: string): Promise<string> {
-    const response = await this._classRepository.removeSubject(
-      subjectId,
-      classId
-    );
-
-    if (!response) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-
-    return subjectId;
-  }
-
-  async updateSubject(
-    subjectId: string,
-    classId: string,
-    data: SubjectDTO
-  ): Promise<SubjectDTO> {
-    const subjectExist = await this._classRepository.findSubjectByName(
-      data.name,
-      classId
-    );
-
-    if (subjectExist) {
-      throw new CustomError(Messages.SUBJECT_EXIST, HttpStatus.CONFLICT);
-    }
-
-    const response = await this._classRepository.updateSubject(
-      subjectId,
-      classId,
-      data
-    );
-
-    console.log(response, "thhis is the response");
-
-    if (!response) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-
-    const teacher = await this._teacherRepository.findTeacherById(
-      String(response.teacher)
-    );
-    if (!teacher) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-    return {
-      name: response.name,
-      _id: response._id,
-      teacher: teacher?.fullName as string,
-    };
-  }
 
   async addAnnouncement(
     data: AnnouncementDTO

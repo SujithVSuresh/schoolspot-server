@@ -6,7 +6,7 @@ import { AssignmentController } from "../controllers/implementation/AssignmentCo
 import StudentRepository from "../repositories/implementaion/StudentRepository";
 import AssignmentSubmissionRepository from "../repositories/implementaion/AssignmentSubmissionRepository";
 import StudyMaterialRepository from "../repositories/implementaion/StudyMaterialRepository";
-import upload from '../middlewares/UploadMiddleware'
+import {fileUpload} from '../middlewares/UploadMiddleware'
 
 
 const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository);
@@ -16,13 +16,18 @@ const assignmentRouter = Router();
 
 
 assignmentRouter.post('/add', protectRoute(["teacher"]), assignmentController.createAssignment.bind(assignmentController));
-assignmentRouter.get('/get-assignments/:subjectId', protectRoute(["teacher"]), assignmentController.getAssignments.bind(assignmentController));
-assignmentRouter.get('/get-assignment/:assignmentId', protectRoute(["teacher"]), assignmentController.getAssignmentById.bind(assignmentController));
+assignmentRouter.get('/get-assignments/:subjectId', protectRoute(["teacher", "student"]), assignmentController.getAssignments.bind(assignmentController));
+assignmentRouter.get('/get-assignment/:assignmentId', protectRoute(["teacher", "student"]), assignmentController.getAssignmentById.bind(assignmentController));
 assignmentRouter.get('/get-submissions/:assignmentId', protectRoute(["teacher"]), assignmentController.getAllAssignmentSubmissions.bind(assignmentController));
+assignmentRouter.get('/submission/:assignmentId', protectRoute(["teacher", "student"]), assignmentController.getAssignmentSubmission.bind(assignmentController));
+assignmentRouter.post('/submission/:submissionId', protectRoute(["student"]), assignmentController.addAssignmentSubmission.bind(assignmentController));
+assignmentRouter.get('/submission/id/:submissionId', protectRoute(["teacher"]), assignmentController.getAssignmentSubmissionById.bind(assignmentController));
+assignmentRouter.post('/submission/grade/:submissionId', protectRoute(["teacher"]), assignmentController.addMarksToAssignmentSubmission.bind(assignmentController));
 
-
-assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), upload.single("fileMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
-assignmentRouter.get('/get-studymaterials/:subjectId', protectRoute(["teacher"]), assignmentController.fetchStudyMaterials.bind(assignmentController));
+assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), fileUpload.single("fileMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
+assignmentRouter.get('/get-studymaterials/:subjectId', protectRoute(["teacher", "student"]), assignmentController.fetchStudyMaterials.bind(assignmentController));
+assignmentRouter.get('/get-studymaterial/:id', protectRoute(["teacher", "student"]), assignmentController.fetchStudyMaterialById.bind(assignmentController));
+assignmentRouter.post('/studymaterial/viewer/:materialId', protectRoute(["student"]), assignmentController.addStudyMaterialView.bind(assignmentController));
 
 
 export default assignmentRouter

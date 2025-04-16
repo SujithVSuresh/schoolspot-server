@@ -196,6 +196,8 @@ export class AuthService implements IAuthService {
             HttpStatus.UNAUTHORIZED
           );
         }
+
+        console.log("jeeeeevvvvvvv", user)
     
         const accessToken = authToken.generateAccessToken({
           userId: String(user._id),

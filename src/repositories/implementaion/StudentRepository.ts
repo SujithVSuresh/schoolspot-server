@@ -201,6 +201,18 @@ class StudentRepository
   }
 
 
+  async updateStudentProfile(profileId: string, data: StudentProfileType): Promise<StudentProfileType> {
+     try{
+      const updateStudent = await this.update(profileId, data)
+
+      return updateStudent as StudentProfileType
+     } catch(err){
+      console.error("Error fetching student data", err);
+      throw new Error("Error creating user");
+     }
+  }
+
+
 }
 
 export default new StudentRepository();

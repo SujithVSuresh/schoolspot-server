@@ -1,7 +1,7 @@
 
 import { Router } from "express";
 import UserRepository from "../repositories/implementaion/UserRepository";
-import upload from '../middlewares/UploadMiddleware'
+import {upload} from '../middlewares/UploadMiddleware'
 import { protectRoute } from "../middlewares/AuthHandler";
 import { TeacherService } from "../services/implementation/TeacherService";
 import TeacherRepository from "../repositories/implementaion/TeacherRepository";

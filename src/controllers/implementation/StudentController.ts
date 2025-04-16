@@ -86,8 +86,7 @@ export class StudentController implements IStudentController {
     next: NextFunction
   ): Promise<void> {
     try {
-      // const {schoolId} = req.user as PayloadType
-      const userId = req.params.userId;
+      const userId = req.user?.role == "student" ? req.user.userId : req.params.userId
 
       const students = await this._studentService.getStudentById(userId);
 

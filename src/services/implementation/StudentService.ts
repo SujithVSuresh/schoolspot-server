@@ -55,6 +55,7 @@ export class StudentService implements IStudentService {
       password: password,
       role: "student",
       status: "active",
+      schoolId: new mongoose.Types.ObjectId(schoolId),
     });
 
     let profilePhotoURL = null;
@@ -107,6 +108,7 @@ export class StudentService implements IStudentService {
     };
   }
 
+
   async getStudents(
     data: GetParamsType,
     schoolId: string
@@ -148,6 +150,7 @@ export class StudentService implements IStudentService {
       gender: student.gender,
       profilePhoto: student.profilePhoto,
       schoolId: String(student.schoolId),
+      classId: String(student.classId),
       user: {
         _id: String(student.user._id),
         email: student.user.email,

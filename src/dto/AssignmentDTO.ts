@@ -44,6 +44,26 @@ export interface AssignmentSubmissionsListResponseDTO {
   submittedAt: Date | null
 }
 
+export interface AssignmentSubmissionResponseDTO {
+  _id: string;
+  assignmentId: string;
+  description?: string;
+  link?: string;
+  fileUrl?: string;
+  grade?: string;
+  feedback?: string;
+  status: "Pending" | "Submitted" | "Graded";
+  createdAt?: Date;
+  student?: {
+    _id: string,
+    fullName: string,
+    class: string,
+    section: string,
+    roll: number
+  };
+  submittedAt?: Date | null
+}
+
 export interface CreateStudyMaterialDTO {
   title: string;
   description: string;
@@ -61,5 +81,11 @@ export interface StudyMaterialResponseDTO {
   description: string;
   link?: string;
   fileUrl?: string;
-  createdAt: Date
+  createdAt: Date;
+}
+export interface StudyMaterialResponseWithViewersDTO extends StudyMaterialResponseDTO {
+  viewers: {
+    _id: string;
+    fullName: string
+  }[]
 }

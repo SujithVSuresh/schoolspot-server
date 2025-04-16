@@ -23,21 +23,7 @@ const ClassSchema = new Schema({
     strength: {
         type: Number,
         default: 0
-    },
-    subjects: [
-        {
-            name: {
-                type: String,
-                required: true
-            },
-            teacher: {
-                type: mongoose.Schema.Types.ObjectId,
-                required: true,
-                ref: 'User'
-            }
-        }
-    ]
-
+    }
 }, {
     timestamps: true
 })

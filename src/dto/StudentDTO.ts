@@ -14,6 +14,7 @@ export interface StudentResponseDTO {
   contactNumber: string;
   schoolId: string;
   _id: string;
+  classId: string;
   user: {
       _id: string;
       email: string;

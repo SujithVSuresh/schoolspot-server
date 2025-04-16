@@ -16,6 +16,8 @@ import attendaceRouter from "./routes/AttendanceRouter";
 import schoolRouter from "./routes/SchoolRouter";
 import adminRouter from "./routes/AdminRouter";
 import assignmentRouter from "./routes/AssignmentRouter";
+import subjectRouter from "./routes/SubjectRouter";
+import invoiceRouter from "./routes/InvoiceRouter";
 
 
 
@@ -61,9 +63,10 @@ class App {
     this.app.use('/school', schoolRouter)
     this.app.use('/admin', adminRouter)
     this.app.use('/assignment', assignmentRouter)
+    this.app.use('/subject', subjectRouter)
+    this.app.use('/invoice', invoiceRouter)
     this.app.use(errorHandler);
   }
-
 
   public listen(): void {
     this.app.listen(process.env.PORT, () => {

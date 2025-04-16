@@ -215,14 +215,10 @@ export interface StudentProfileEntityType {
   fatherName: string;
   motherName: string;
   contactNumber: string;
+  userId?: string;
   schoolId?: mongoose.Types.ObjectId;
 }
 
-export type SubjectEntityType = {
-  _id?: mongoose.Types.ObjectId;
-  name: string;
-  teacher: mongoose.Types.ObjectId | string;
-};
 
 export interface ClassEntityType {
   _id?: mongoose.Types.ObjectId;
@@ -231,13 +227,15 @@ export interface ClassEntityType {
   teacher: mongoose.Types.ObjectId | string;
   school: mongoose.Types.ObjectId;
   strength?: number;
-  subjects?: SubjectEntityType[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
+
+
 export interface StudentProfileUserEntityType extends StudentProfileEntityType {
-  user: UserEntityType
+  user: UserEntityType,
+  classId?: string
 }
 
 export interface AnnouncementEntityType {
@@ -337,6 +335,10 @@ export interface AssignmentSubmissionStudentEntityType extends AssignmentSubmiss
   };
 };
 
+export type MaterialViewers = {
+  _id: mongoose.Types.ObjectId | string;
+  fullName: string
+}
 
 export interface StudyMaterialEntityType {
   _id?: mongoose.Types.ObjectId | string;
@@ -348,8 +350,59 @@ export interface StudyMaterialEntityType {
   description: string;
   link?: string;
   fileUrl?: string;
-  viewers?: (mongoose.Types.ObjectId | string)[];
+  viewers?: MaterialViewers[];
+  updatedAt?: Date;
+  createdAt?: Date
+}
+
+export interface SubjectEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  name: string;
+  teacher: mongoose.Types.ObjectId | string;
+  class: mongoose.Types.ObjectId | string;
+  school: mongoose.Types.ObjectId | string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
+
+
+export interface LeaveLetterEntityType {
+  _id?: mongoose.Types.ObjectId;
+  studentId: mongoose.Types.ObjectId | string;
+  classId: mongoose.Types.ObjectId | string;
+  schoolId: mongoose.Types.ObjectId | string; 
+  reason: string;
+  fromDate: Date;
+  toDate: Date;
+  status: 'pending' | 'approved' | 'rejected';
+  remarks?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+
+// -----------------------------------
+
+
+export interface FeeBreakdownItemType {
+  feeType: string;
+  amount: number;
+}
+
+export interface InvoiceEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  title: string;
+  student: mongoose.Types.ObjectId | string;
+  class: mongoose.Types.ObjectId | string;
+  school: mongoose.Types.ObjectId | string;
+  invoiceNumber: string;
+  dueDate: Date;
+  feeBreakdown?: FeeBreakdownItemType[];
+  totalAmount: number;
+  status: 'Unpaid' | 'Paid';
+  remarks?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

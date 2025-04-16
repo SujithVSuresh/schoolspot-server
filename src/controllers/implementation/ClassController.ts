@@ -2,14 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { CustomRequest, PayloadType } from "../../types/types";
 import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
-import {
-  AnnouncementDTO,
-  CreateClassDTO,
-  SubjectDTO,
-} from "../../dto/ClassDTO";
+import { AnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO";
 import HttpStatus from "../../constants/StatusConstants";
-import { CustomError } from "../../utils/CustomError";
-import Messages from "../../constants/MessageConstants";
 import mongoose from "mongoose";
 
 export class ClassController implements IClassController {
@@ -60,11 +54,13 @@ export class ClassController implements IClassController {
     try {
       const { userId, role } = req.user as PayloadType;
 
-
       const classId = req.params.classId;
 
-
-      const response = await this._classService.findClassById(classId, userId, role);
+      const response = await this._classService.findClassById(
+        classId,
+        userId,
+        role
+      );
 
       res.status(HttpStatus.OK).json({
         data: response,
@@ -74,7 +70,11 @@ export class ClassController implements IClassController {
     }
   }
 
-  async findClassesByTeacherId(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+  async findClassesByTeacherId(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const id = req.query.teacherId ? req.query.teacherId : req.user?.userId;
 
@@ -85,89 +85,6 @@ export class ClassController implements IClassController {
       res.status(HttpStatus.OK).json({
         data: response,
       });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async addSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { name, teacher, classId } = req.body;
-
-      const response = await this._classService.addSubject(
-        { name, teacher },
-        classId
-      );
-
-      res.status(HttpStatus.OK).json({
-        data: response,
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async removeSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { subjectId, classId } = req.query;
-
-      if (!subjectId && !classId) {
-        throw new CustomError(
-          Messages.SERVER_ERROR,
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      }
-
-      const response = await this._classService.removeSubject(
-        subjectId as string,
-        classId as string
-      );
-
-      res.status(HttpStatus.OK).json({
-        data: response,
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async updateSubject(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { subjectId, classId } = req.body;
-
-      const data = req.body;
-
-      const subjectData: SubjectDTO = {
-        name: data.name,
-        teacher: data.teacher,
-      };
-
-      if (!subjectId && !classId) {
-        throw new CustomError(
-          Messages.SERVER_ERROR,
-          HttpStatus.INTERNAL_SERVER_ERROR
-        );
-      }
-
-      const response = await this._classService.updateSubject(
-        subjectId as string,
-        classId as string,
-        subjectData
-      );
-
-      res.status(HttpStatus.OK).json(response);
     } catch (err) {
       next(err);
     }

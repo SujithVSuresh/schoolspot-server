@@ -37,6 +37,8 @@ export const protectRoute = (
                 res.status(401).json({ message: "Token expired" });
                 return;  
             }
+
+            console.log(decoded, "goppppppppp")
   
             req.user = decoded;
             next();  

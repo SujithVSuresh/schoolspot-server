@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CreateAttendanceDTO } from "../../dto/AttendanceDTO";
+import { CreateAttendanceDTO, CreateLeaveLetterDTO, LeaveLetterResponseDTO } from "../../dto/AttendanceDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
 import { AttendaceEntityType } from "../../types/types";
 import IAttendanceService from "../interface/IAttendanceService";
@@ -7,9 +7,15 @@ import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { AttendaceResponseDTO } from "../../dto/AttendanceDTO";
+import { generateMonthRange } from "../../utils/DateFormatter";
+import { ILeaveLetterRepository } from "../../repositories/interface/ILeaveLetterRepository";
+
 
 export class AttendanceService implements IAttendanceService {
-  constructor(private _attendanceRepository: IAttendanceRepository) {}
+  constructor(
+    private _attendanceRepository: IAttendanceRepository,
+    private _leaveLetterRepository: ILeaveLetterRepository
+  ) {}
 
   async addAttendance(
     dto: CreateAttendanceDTO[],
@@ -91,7 +97,77 @@ export class AttendanceService implements IAttendanceService {
     
   }
 
+
+  async getAttendanceByMonth(userId: string, date: string): Promise<AttendaceResponseDTO[]> {
+    const {startOfMonth, endOfMonth} = generateMonthRange(new Date(date));
+
+    const attendanceData = await this._attendanceRepository.findManyAttendanceByQuery({
+      student: new mongoose.Types.ObjectId(userId),
+      createdAt: {
+        $gt: startOfMonth,
+        $lte: endOfMonth,
+      },
+    });
+
+    if (!attendanceData) {
+      throw new CustomError(
+        Messages.ATTENDANCE_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return attendanceData.map((data) => ({
+      _id: data._id,
+      status: data.status,
+      createdAt: data.createdAt,
+    }));
+  }
+
+
+  async createLeaveLetter(dto: CreateLeaveLetterDTO): Promise<LeaveLetterResponseDTO> {
+    const leaveLetter = await this._leaveLetterRepository.createLeaveLetter(dto);
+    if (!leaveLetter) {
+      throw new CustomError(
+        Messages.SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+
+    return {
+      _id: String(leaveLetter._id),
+      reason: leaveLetter.reason,
+      fromDate: leaveLetter.fromDate,
+      toDate: leaveLetter.toDate,
+      createdAt: leaveLetter.createdAt,
+      status: leaveLetter.status
+    };
+  }
+
+
+  async getLeaveLetterByMonth(userId: string, date: string): Promise<LeaveLetterResponseDTO[]> {
+    const {startOfMonth, endOfMonth} = generateMonthRange(new Date(date));
+
+    const attendanceData = await this._leaveLetterRepository.findLeaveLetterByQuery({
+      studentId: new mongoose.Types.ObjectId(userId),
+      createdAt: {
+        $gt: startOfMonth,
+        $lte: endOfMonth,
+      },
+    });
+
+    const attendance: LeaveLetterResponseDTO[] = attendanceData.map((data) => {
+      return {
+        _id: String(data._id),
+        reason: data.reason,
+        fromDate: data.fromDate,
+        toDate: data.toDate,
+        createdAt: data.createdAt,
+        status: data.status
+      }
+    })
+
+    return attendance
+  }
+
   
-
-
 }

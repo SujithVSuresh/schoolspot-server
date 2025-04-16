@@ -21,3 +21,25 @@ export interface AttendaceResponseDTO {
   updatedAt?: Date;  
 }
 
+
+export interface CreateLeaveLetterDTO {
+  studentId: string;
+  classId: string;
+  schoolId: string;
+  reason: string;
+  fromDate: Date;
+  toDate: Date;
+  status: "pending" | "approved" | "rejected";
+}
+
+
+export interface LeaveLetterResponseDTO {
+  _id: string
+  reason: string;
+  fromDate: Date;
+  toDate: Date;
+  status: "pending" | "approved" | "rejected";
+  studentId?: string;
+  createdAt?: Date;
+}
+

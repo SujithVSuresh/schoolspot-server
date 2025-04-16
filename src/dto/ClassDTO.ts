@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { SubjectEntityType } from "../types/types";
+import { SubjectResponseDTO } from "./SubjectDTO";
 
 
 export interface CreateClassDTO {
@@ -28,7 +29,8 @@ export type attendanceCount = {
 
 export interface ClassByIdResponseDTO extends ClassResponseDTO {
       attendance?: attendanceCount;
-      subject?: SubjectDTO;
+      subject?: SubjectResponseDTO;
+      school: string;
 }
 
 
@@ -37,14 +39,6 @@ export interface ClassListResponseDTO {
       name: string;
       section: string;
       strength?: number;
-}
-
-// ---------------
-
-export interface SubjectDTO {
-      _id?: mongoose.Types.ObjectId;
-      name: string;
-      teacher: mongoose.Types.ObjectId | string;
 }
 
 

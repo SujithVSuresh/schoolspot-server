@@ -25,7 +25,9 @@ const Messages = {
     ATTENDANCE_NOT_FOUND: "Attendance not found",
     SCHOOL_NOT_FOUND: "School not found",
     PASSWORD_CHANGE_NOT_ALLOWED: "Password change is not allowed for Google accounts",
-    ASSIGNMENT_NOT_FOUND: "Assignment doesn't exist."
+    ASSIGNMENT_NOT_FOUND: "Assignment doesn't exist.",
+    STUDY_MATERIAL_NOT_FOUND: "Assignment doesn't exist.",
+    ASSIGNMENT_SUBMISSION_NOT_FOUND: "Assignment submission doesn't exist.",
   };
 
   export default Messages

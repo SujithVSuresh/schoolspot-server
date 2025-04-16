@@ -114,8 +114,6 @@ class AttendanceRepository
       }
     ])
 
-    console.log(attendanceCount, "this is the attendance count")
-
     return attendanceCount[0] ? attendanceCount[0] : null
     
   }

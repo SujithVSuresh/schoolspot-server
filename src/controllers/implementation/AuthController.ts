@@ -178,8 +178,6 @@ export class AuthController implements IAuthController {
 
       const user = await this._authService.createUser({email, password, role, status})
 
-      console.log("hey this is the new user", user)
-
       res.status(HttpStatus.CREATED).json({
         _id: user._id,
         email: user.email,
