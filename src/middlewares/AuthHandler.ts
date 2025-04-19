@@ -23,7 +23,7 @@ export const protectRoute = (
                 process.env.ACCESS_TOKEN_SECRET as string
             ) as PayloadType;
 
-            console.log("Decoded token:", decoded);
+            // console.log("Decoded token:", decoded);
 
 
             if(!allowedRole.includes(decoded.role)){

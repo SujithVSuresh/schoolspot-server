@@ -1,6 +1,6 @@
 import multer from "multer";
 
-const storage = multer.memoryStorage(); // Store file in memory (not disk)
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage });
 
 
@@ -11,7 +11,6 @@ const fileUpload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
-    // Accept PDFs and other document types
     if (file.mimetype === 'application/pdf' || 
         file.mimetype === 'application/msword' || 
         file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {

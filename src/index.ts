@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import http from 'http';
+import { Server } from "socket.io";
 import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./config/db";
@@ -19,14 +20,18 @@ import adminRouter from "./routes/AdminRouter";
 import assignmentRouter from "./routes/AssignmentRouter";
 import subjectRouter from "./routes/SubjectRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
+import { SocketManager } from "./socket/socket";
 
 
 class App {
-  public app: Application;
+  public app;
+  public server;
 
   constructor() {
     this.app = express();
+    this.server = http.createServer(this.app)
 
+    this.initializeSocket()
     this.intitalizeStorage();
     this.initializeMiddleware();
     this.initializeRouter();
@@ -37,6 +42,21 @@ class App {
     connectRedis();
   }
 
+  private initializeSocket():void {
+    
+    const io = new Server(this.server, {
+      cors: {
+          origin: 'http://localhost:5173', 
+          methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+          credentials: true,
+      }
+    });
+
+  const socketManager = new SocketManager(io)
+  socketManager.initialize()
+  
+  }
+
   private initializeMiddleware(): void {
     this.app.use(
       cors({
@@ -45,6 +65,7 @@ class App {
         credentials: true,
       })
     );
+  
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
@@ -67,7 +88,7 @@ class App {
   }
 
   public listen(): void {
-    this.app.listen(process.env.PORT, () => {
+    this.server.listen(process.env.PORT, () => {
       console.log(
         `🔥 Authentication service listening to port ${process.env.PORT}`
       );
