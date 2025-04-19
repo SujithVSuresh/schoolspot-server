@@ -1,11 +1,9 @@
 import { BaseRepository } from "./BaseRepository";
 import { GetTeacherParamsType, GetTeacherResponseType, TeacherProfileType } from "../../types/types";
-import { IStudentRepository } from "../interface/IStudentRepository";
-import { GetParamsType } from "../../types/types";
-import { GetStudentsResponseType } from "../../types/types";
 import { ITeacherRepository } from "../interface/ITeacherRepository";
 import Teacher from '../../models/Teacher'
 import mongoose from "mongoose";
+import { TeacherProfileUserEntityType } from "../../types/types";
 
 
 class TeacherRepository extends BaseRepository<TeacherProfileType> implements ITeacherRepository {
@@ -99,10 +97,38 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
         }
     }
 
-    async findTeacherById(id: string): Promise<TeacherProfileType | null> {
+    async findTeacherProfile(userId: string): Promise<TeacherProfileUserEntityType | null> {
         try{
-            const teacher = await this.findByQuery({userId: id})
-            return teacher[0] 
+            const teacher = await Teacher.aggregate([
+                {
+                    $match: { userId: new mongoose.Types.ObjectId(userId) }
+                },
+                {
+                    $lookup: {
+                        from: "Users",
+                        localField: "userId",
+                        foreignField: "_id",
+                        as: "userDetails"
+                    },
+                },
+                { $unwind: "$userDetails" },
+                {
+                    $project: {
+                      _id: 1,
+                      fullName: 1,
+                      subjectSpecialized: 1,
+                      qualification: 1,
+                      experience: 1,
+                      phoneNumber: 1,
+                      profilePhoto: 1,
+                      schoolId: 1,
+                      userId: 1,
+                      user: "$userDetails"
+                    }
+                }
+            ])
+
+            return teacher[0] || null
         }catch(error){
             console.error("Error fetching teacher data", error);
             throw new Error("Error fetching teacher")

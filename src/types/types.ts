@@ -149,6 +149,7 @@ export interface SchoolProfileReqType extends SchoolProfileBaseType {
 }
 
 export interface TeacherProfileType {
+  _id?: mongoose.Types.ObjectId;
   fullName: string;
   phoneNumber: string;
   subjectSpecialized: string;
@@ -185,6 +186,15 @@ export interface GetTeacherResponseType {
   totalPages: number;
   currentPage: number;
   teachers: TeacherDataResponseType[];
+}
+
+
+export interface TeacherProfileUserEntityType extends TeacherProfileType {
+  user: {
+    _id: mongoose.Types.ObjectId;
+    email: string;
+    status: "active" | "inactive" | "deleted" | "blocked";
+  }
 }
 
 

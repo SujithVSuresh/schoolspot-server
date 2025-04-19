@@ -24,6 +24,28 @@ async createStudyMaterial(data: StudyMaterialEntityType): Promise<StudyMaterialE
     }
   }
 
+async updateStudyMaterial(data: Partial<StudyMaterialEntityType>, id: string): Promise<StudyMaterialEntityType | null> {
+  try{
+    const response = await this.update(id, data)
+    return response
+
+
+  }catch (error) {
+        console.error("Error updating study material", error);
+        throw new Error("Error updating study material");
+    }
+}
+
+async deleteStudyMaterial(id: string): Promise<boolean> {
+  try{
+    return await this.delete(id)
+
+  }catch(error){
+    console.error("Error deleting study material", error);
+    throw new Error("Error deleting study material");
+  }
+}
+
 async getStudyMaterials(subjectId: string): Promise<StudyMaterialEntityType[]> {
     try {
         const response = await this.findByQuery({subjectId});

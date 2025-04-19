@@ -20,6 +20,17 @@ class AssignmentRepository extends BaseRepository<AssignmentEntityType> implemen
         }
     }
 
+    async updateAssignment(data: Partial<AssignmentEntityType>, id: string): Promise<AssignmentEntityType | null> {
+        try{
+            const response = await this.update(id, data)
+            return response
+
+        }catch(error){
+            console.error("Error updating assignment", error);
+            throw new Error("Error updating assignment");   
+        }
+    }
+
     async getAssignments(subjectId: string): Promise<AssignmentEntityType[]> {
         try {
             const response = await this.findByQuery({subjectId});

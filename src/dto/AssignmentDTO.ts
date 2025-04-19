@@ -13,6 +13,14 @@ export interface CreateAssignmentDTO {
   dueDate: Date;
 }
 
+export interface UpdateAssignmentDTO {
+  title: string;
+  description: string;
+  link?: string;
+  submissionType: submissionType
+  dueDate: Date;
+}
+
 export interface AssignmentResponseDTO {
       _id?: string;
       title: string;
@@ -73,6 +81,13 @@ export interface CreateStudyMaterialDTO {
   classId: string;
   subjectId: string;
   schoolId: string;
+}
+
+export interface UpdateStudyMaterialDTO {
+  title: string;
+  description: string;
+  link?: string;
+  fileUrl?: string
 }
 
 export interface StudyMaterialResponseDTO {

@@ -24,7 +24,7 @@ authRouter.post("/create-user", protectRoute(["admin"]), authController.createUs
 authRouter.get("/get-students", protectRoute(["admin"]), authController.getAllStudents.bind(authController))
 authRouter.post('/refreshToken', authController.refreshToken.bind(authController))
 authRouter.patch('/change-account-status', protectRoute(["admin"]), authController.changeAccountStatus.bind(authController))
-authRouter.patch('/change-password', protectRoute(["admin"]), authController.changePassword.bind(authController))
+authRouter.patch('/change-password', protectRoute(["admin", "teacher", "student"]), authController.changePassword.bind(authController))
 
 
 export default authRouter;

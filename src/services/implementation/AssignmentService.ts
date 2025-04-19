@@ -7,6 +7,8 @@ import {
   StudyMaterialResponseDTO,
   StudyMaterialResponseWithViewersDTO,
   AssignmentSubmissionResponseDTO,
+  UpdateStudyMaterialDTO,
+  UpdateAssignmentDTO
 } from "../../dto/AssignmentDTO";
 import { IAssignmentRepository } from "../../repositories/interface/IAssignmentRepository";
 import IAssignmentService from "../interface/IAssignmentService";
@@ -46,10 +48,10 @@ export class AssignmentService implements IAssignmentService {
       };
     });
 
-    const submissions = await this._assignmentRepository.createAssignmentSubmissions(
-      assignmentSubmissions
-    );
-
+    const submissions =
+      await this._assignmentRepository.createAssignmentSubmissions(
+        assignmentSubmissions
+      );
 
     return {
       _id: String(response._id),
@@ -77,6 +79,27 @@ export class AssignmentService implements IAssignmentService {
     });
 
     return data;
+  }
+
+
+  async updateAsssignment(data: UpdateAssignmentDTO, id: string): Promise<AssignmentResponseDTO> {
+    console.log(data, id, "vaaaaaaaaa")
+    const response = await this._assignmentRepository.updateAssignment(data, id)
+    console.log(response, "jaaaaaaaaaaaaaa123")
+
+    if(!response){
+      throw new CustomError(Messages.ASSIGNMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: String(response._id),
+      title: response.title,
+      description: response.description,
+      link: response.link,
+      submissionType: response.submissionType,
+      dueDate: response.dueDate,
+      createdAt: response.createdAt,
+    };
   }
 
   async getAssignmentById(
@@ -130,12 +153,15 @@ export class AssignmentService implements IAssignmentService {
     return assignmentSubmission;
   }
 
-
-  async getAssignmentSubmission(assignmentId: string, userId: string): Promise<AssignmentSubmissionResponseDTO | null> {
-    const response = await this._assignmentSubmissionRepository.getAssignmentSubmission(
-      assignmentId,
-      userId
-    );
+  async getAssignmentSubmission(
+    assignmentId: string,
+    userId: string
+  ): Promise<AssignmentSubmissionResponseDTO | null> {
+    const response =
+      await this._assignmentSubmissionRepository.getAssignmentSubmission(
+        assignmentId,
+        userId
+      );
 
     if (!response) {
       throw new CustomError(
@@ -157,13 +183,16 @@ export class AssignmentService implements IAssignmentService {
       submittedAt: response.submittedAt ?? null,
     };
 
-    return assignmentSubmission
+    return assignmentSubmission;
   }
 
-  async getAssignmentSubmissionById(submissionId: string): Promise<AssignmentSubmissionResponseDTO | null> {
-    const response = await this._assignmentSubmissionRepository.getAssignmentSubmissionById(
-      submissionId
-    );
+  async getAssignmentSubmissionById(
+    submissionId: string
+  ): Promise<AssignmentSubmissionResponseDTO | null> {
+    const response =
+      await this._assignmentSubmissionRepository.getAssignmentSubmissionById(
+        submissionId
+      );
 
     if (!response) {
       throw new CustomError(
@@ -189,17 +218,21 @@ export class AssignmentService implements IAssignmentService {
         class: response.student.class,
         section: response.student.section,
         roll: response.student.roll,
-      }
+      },
     };
 
     return assignmentSubmission;
   }
 
-  async addAssignmentSubmission(submissionId: string, data: any): Promise<AssignmentSubmissionResponseDTO | null> {
-    const response = await this._assignmentSubmissionRepository.addAssignmentSubmission(
-      submissionId,
-      data
-    );
+  async addAssignmentSubmission(
+    submissionId: string,
+    data: any
+  ): Promise<AssignmentSubmissionResponseDTO | null> {
+    const response =
+      await this._assignmentSubmissionRepository.addAssignmentSubmission(
+        submissionId,
+        data
+      );
 
     if (!response) {
       throw new CustomError(
@@ -234,16 +267,16 @@ export class AssignmentService implements IAssignmentService {
       console.log("Uploading file to Cloudinary...");
 
       const originalName = file.originalname;
-const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
+      const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
 
       const uploadResult: UploadApiResponse = await new Promise(
         (resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { 
-              folder: "study_material", 
+            {
+              folder: "study_material",
               resource_type: "raw",
               // Don't add .pdf extension to the public_id, Cloudinary will handle it
-              public_id: `${fileNameWithoutExt}_${Date.now()}.pdf`
+              public_id: `${fileNameWithoutExt}_${Date.now()}.pdf`,
             },
             (error, result) => {
               if (error) {
@@ -264,8 +297,8 @@ const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
       fileUrl = uploadResult.secure_url;
     }
 
-    if(fileUrl){
-      data.fileUrl = fileUrl
+    if (fileUrl) {
+      data.fileUrl = fileUrl;
     }
 
     const response = await this._studyMaterialRepository.createStudyMaterial(
@@ -279,6 +312,81 @@ const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
       fileUrl: response.fileUrl ? response.fileUrl : "",
       link: response.fileUrl ? response.fileUrl : "",
     };
+  }
+
+  async updateStudyMaterial(
+    data: UpdateStudyMaterialDTO,
+    id: string,
+    file?: Express.Multer.File
+  ): Promise<StudyMaterialResponseDTO> {
+    let fileUrl = null;
+
+    if (file) {
+      console.log("Uploading file to Cloudinary...");
+
+      const originalName = file.originalname;
+      const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
+
+      const uploadResult: UploadApiResponse = await new Promise(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: "study_material",
+              resource_type: "raw",
+              // Don't add .pdf extension to the public_id, Cloudinary will handle it
+              public_id: `${fileNameWithoutExt}_${Date.now()}.pdf`,
+            },
+            (error, result) => {
+              if (error) {
+                console.error("Cloudinary error:", error);
+                reject(error);
+              } else if (result) {
+                console.log("Upload succeeded, result:", result);
+                resolve(result);
+              } else {
+                reject(new Error("Cloudinary upload failed"));
+              }
+            }
+          );
+          stream.end(file.buffer);
+        }
+      );
+
+      fileUrl = uploadResult.secure_url;
+    }
+
+    if (fileUrl) {
+      data.fileUrl = fileUrl;
+    }
+
+    const response = await this._studyMaterialRepository.updateStudyMaterial(
+      data,
+      id
+    );
+    if (!response) {
+      throw new CustomError(
+        Messages.STUDY_MATERIAL_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return {
+      title: response.title,
+      description: response.description,
+      createdAt: response.createdAt as Date,
+      fileUrl: response.fileUrl ? response.fileUrl : "",
+      link: response.fileUrl ? response.fileUrl : "",
+    };
+  }
+
+  async deleteStudyMaterial(id: string): Promise<string> {
+    const response = await this._studyMaterialRepository.deleteStudyMaterial(id)
+
+    if(!response){
+      throw new CustomError(Messages.STUDY_MATERIAL_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return id
   }
 
   async fetchStudyMaterials(
@@ -336,7 +444,10 @@ const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
     return data;
   }
 
-  async addStudyMaterialViewer(studyMaterialId: string, studentId: string): Promise<string | null> {
+  async addStudyMaterialViewer(
+    studyMaterialId: string,
+    studentId: string
+  ): Promise<string | null> {
     const response = await this._studyMaterialRepository.addStudyMaterialViewer(
       studyMaterialId,
       studentId

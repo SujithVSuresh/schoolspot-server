@@ -224,8 +224,6 @@ export class AuthController implements IAuthController {
         newPassword: req.body.newPassword
       }
 
-      console.log(userId, data, "heyyyy")
-
       const response = await this._authService.changePassword(userId as string, data)
 
 

@@ -9,12 +9,13 @@ import StudyMaterialRepository from "../repositories/implementaion/StudyMaterial
 import {fileUpload} from '../middlewares/UploadMiddleware'
 
 
+
 const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository);
 const assignmentController = new AssignmentController(assignmentService);
 
 const assignmentRouter = Router();
 
-
+assignmentRouter.put('/update/:assignmentId', protectRoute(["teacher"]), assignmentController.updateAssignment.bind(assignmentController));
 assignmentRouter.post('/add', protectRoute(["teacher"]), assignmentController.createAssignment.bind(assignmentController));
 assignmentRouter.get('/get-assignments/:subjectId', protectRoute(["teacher", "student"]), assignmentController.getAssignments.bind(assignmentController));
 assignmentRouter.get('/get-assignment/:assignmentId', protectRoute(["teacher", "student"]), assignmentController.getAssignmentById.bind(assignmentController));
@@ -25,6 +26,8 @@ assignmentRouter.get('/submission/id/:submissionId', protectRoute(["teacher"]), 
 assignmentRouter.post('/submission/grade/:submissionId', protectRoute(["teacher"]), assignmentController.addMarksToAssignmentSubmission.bind(assignmentController));
 
 assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), fileUpload.single("fileMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
+assignmentRouter.put('/studymaterial/:studyMaterialId', protectRoute(["teacher"]), fileUpload.single("fileMaterial"), assignmentController.updateStudyMaterial.bind(assignmentController));
+assignmentRouter.delete('/studymaterial/:studyMaterialId', protectRoute(["teacher"]), assignmentController.deleteStudyMaterial.bind(assignmentController));
 assignmentRouter.get('/get-studymaterials/:subjectId', protectRoute(["teacher", "student"]), assignmentController.fetchStudyMaterials.bind(assignmentController));
 assignmentRouter.get('/get-studymaterial/:id', protectRoute(["teacher", "student"]), assignmentController.fetchStudyMaterialById.bind(assignmentController));
 assignmentRouter.post('/studymaterial/viewer/:materialId', protectRoute(["student"]), assignmentController.addStudyMaterialView.bind(assignmentController));

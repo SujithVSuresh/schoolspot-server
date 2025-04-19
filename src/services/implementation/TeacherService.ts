@@ -13,7 +13,7 @@ import {
   GetTeacherParamsType,
   GetTeacherResponseType,
 } from "../../types/types";
-import { TeacherBySchoolResponseDTO } from "../../dto/TeacherDTO";
+import { TeacherBySchoolResponseDTO, TeacherProfileResponseDTO } from "../../dto/TeacherDTO";
 
 export class TeacherService implements ITeacherService {
   constructor(
@@ -103,5 +103,29 @@ export class TeacherService implements ITeacherService {
   async getTeacherBySchool(schoolId: string): Promise<TeacherBySchoolResponseDTO[]> {
     const teachers = await this._teacherRepository.getTeacherBySchool(schoolId)
     return teachers
+  }
+
+  async getTeacherProfile(userId: string): Promise<TeacherProfileResponseDTO> {
+    const teacherProfile = await this._teacherRepository.findTeacherProfile(userId);
+
+    if(!teacherProfile) {
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      _id: String(teacherProfile._id),
+      fullName: teacherProfile.fullName,
+      phoneNumber: teacherProfile.phoneNumber,
+      subjectSpecialized: teacherProfile.subjectSpecialized,
+      qualification: teacherProfile.qualification,
+      experience: teacherProfile.experience,
+      profilePhoto: teacherProfile.profilePhoto ? teacherProfile.profilePhoto : "",
+      schoolId: String(teacherProfile.schoolId),
+      user: {
+        _id: String(teacherProfile.user?._id),
+        email: teacherProfile.user.email,
+        status: teacherProfile.user.status,
+      }
+    }
   }
 }

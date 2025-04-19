@@ -1,12 +1,13 @@
 import express, { Application } from "express";
-import dotenv from 'dotenv'
+import http from 'http';
+import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./config/db";
 import { connectRedis } from "./config/redis";
 import { errorHandler } from "./middlewares/ErrorHandler";
 import authRouter from "./routes/AuthRouter";
 import studentRouter from "./routes/StudentRouter";
-import cors from 'cors';
+import cors from "cors";
 import { consoleLogger } from "./middlewares/Logger";
 import { fileLogger } from "./middlewares/Logger";
 import cookieParser from "cookie-parser";
@@ -20,23 +21,20 @@ import subjectRouter from "./routes/SubjectRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
 
 
-
 class App {
   public app: Application;
 
   constructor() {
     this.app = express();
 
-
-    this.intitalizeStorage()
-    this.initializeMiddleware()
-    this.initializeRouter()
+    this.intitalizeStorage();
+    this.initializeMiddleware();
+    this.initializeRouter();
   }
-
 
   private intitalizeStorage(): void {
     connectDB();
-    connectRedis()
+    connectRedis();
   }
 
   private initializeMiddleware(): void {
@@ -46,25 +44,25 @@ class App {
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true,
       })
-  );
+    );
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
-    this.app.use(consoleLogger)
-    this.app.use(fileLogger)
+    this.app.use(consoleLogger);
+    this.app.use(fileLogger);
   }
 
   private initializeRouter(): void {
-    this.app.use("/auth", authRouter)
-    this.app.use("/student", studentRouter)
-    this.app.use('/teacher', teacherRouter)
-    this.app.use('/class', classRouter)
-    this.app.use('/attendance', attendaceRouter)
-    this.app.use('/school', schoolRouter)
-    this.app.use('/admin', adminRouter)
-    this.app.use('/assignment', assignmentRouter)
-    this.app.use('/subject', subjectRouter)
-    this.app.use('/invoice', invoiceRouter)
+    this.app.use("/auth", authRouter);
+    this.app.use("/student", studentRouter);
+    this.app.use("/teacher", teacherRouter);
+    this.app.use("/class", classRouter);
+    this.app.use("/attendance", attendaceRouter);
+    this.app.use("/school", schoolRouter);
+    this.app.use("/admin", adminRouter);
+    this.app.use("/assignment", assignmentRouter);
+    this.app.use("/subject", subjectRouter);
+    this.app.use("/invoice", invoiceRouter);
     this.app.use(errorHandler);
   }
 
@@ -77,10 +75,5 @@ class App {
   }
 }
 
-
-
 const app = new App();
 app.listen();
-
-
-

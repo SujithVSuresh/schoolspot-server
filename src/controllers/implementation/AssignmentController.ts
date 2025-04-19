@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import IAssignmentService from "../../services/interface/IAssignmentService";
 import { IAssignmentController } from "../interface/IAssignmentController";
-import { CreateAssignmentDTO, CreateStudyMaterialDTO } from "../../dto/AssignmentDTO";
+import { CreateAssignmentDTO, CreateStudyMaterialDTO, UpdateAssignmentDTO, UpdateStudyMaterialDTO } from "../../dto/AssignmentDTO";
 import { CustomRequest } from "../../types/types";
 import { PayloadType } from "../../types/types";
+import HttpStatus from "../../constants/StatusConstants";
 
 
 export class AssignmentController implements IAssignmentController {
@@ -35,6 +36,30 @@ export class AssignmentController implements IAssignmentController {
 
       } catch(err) {
           next(err);
+      }
+  }
+
+  async updateAssignment(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try{
+        const assignmentId = req.params.assignmentId
+
+        const data: UpdateAssignmentDTO = {
+            title: req.body.title,
+            description: req.body.description,
+            link: req.body.link ? req.body.link : null,
+            submissionType: req.body.submissionType,
+            dueDate: req.body.dueDate,
+        }
+
+        const response = await this._assignmentService.updateAsssignment(data, assignmentId as string)
+
+        res.status(HttpStatus.OK).json({
+            message: "Assignment updated successfully",
+            data: response
+        })
+
+      }catch(err){
+        next(err)
       }
   }
 
@@ -108,6 +133,46 @@ async createStudyMaterial(req: CustomRequest, res: Response, next: NextFunction)
       } catch(err) {
           next(err);
       }
+}
+
+async updateStudyMaterial(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+        const studyMaterialId = req.params.studyMaterialId
+        const file = req.file
+
+        const data: UpdateStudyMaterialDTO = {
+            title: req.body.title,
+            description: req.body.description,
+            link: req.body.link ? req.body.link : null,
+        }  
+        
+        const response = await this._assignmentService.updateStudyMaterial(data, studyMaterialId, file)
+
+        res.status(HttpStatus.OK).json({
+            message: "Study material updated successfully",
+            data: response,
+        });
+
+    }catch(err){
+        next(err)
+    }
+}
+
+async deleteStudyMaterial(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+
+        const studyMaterialId = req.params.studyMaterialId
+
+        const response = await this._assignmentService.deleteStudyMaterial(studyMaterialId)
+
+        res.status(HttpStatus.OK).json({
+            message: "Study material deleted successfully",
+            data: response
+        })
+
+    }catch(err){
+        next(err)
+    }
 }
 
 async fetchStudyMaterials(req: Request, res: Response, next: NextFunction): Promise<void> {

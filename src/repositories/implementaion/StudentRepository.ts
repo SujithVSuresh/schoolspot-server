@@ -182,6 +182,11 @@ class StudentRepository
             status: "$userDetails.status",
           },
         },
+      },
+      {
+        $sort: {
+          "roll": 1
+        }
       }
 
     ])

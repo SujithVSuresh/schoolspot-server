@@ -71,4 +71,17 @@ export class TeacherController implements ITeacherController {
     }
 
 
+    async getTeacherProfile(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const userId = req.user?.userId
+
+            const teacherProfile = await this._teacherService.getTeacherProfile(userId as string)
+
+            res.status(HttpStatus.OK).json(teacherProfile)
+
+        }catch(err){
+            next(err)
+        }
+    }
+
 }

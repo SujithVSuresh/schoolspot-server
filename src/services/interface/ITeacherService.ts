@@ -1,4 +1,4 @@
-import { TeacherBySchoolResponseDTO } from "../../dto/TeacherDTO";
+import { TeacherBySchoolResponseDTO, TeacherProfileResponseDTO } from "../../dto/TeacherDTO";
 import { GetTeacherParamsType, GetTeacherResponseType, TeacherUserProfileType, UserResponseType, UserType } from "../../types/types";
 
 
@@ -7,4 +7,5 @@ export interface ITeacherService{
     addTeacher(data: TeacherUserProfileType, file: Express.Multer.File, schoolId: string): Promise<string>
     getTeachers(data: GetTeacherParamsType, schoolId: string): Promise<GetTeacherResponseType>
     getTeacherBySchool(schoolId: string): Promise<TeacherBySchoolResponseDTO[]>
+    getTeacherProfile(userId: string): Promise<TeacherProfileResponseDTO>
 }
