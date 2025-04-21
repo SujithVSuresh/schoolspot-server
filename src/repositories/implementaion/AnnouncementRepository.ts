@@ -37,16 +37,29 @@ class AnnouncementRepository
     }
   }
 
-  async getAnnouncements(schoolId: string): Promise<AnnouncementEntityType[]> {
+  async findAnnouncementById(announcementId: string): Promise<AnnouncementEntityType | null>{
     try {
-      const response = await this.findByQuery({ schoolId });
-
-      return response;
+      const response = await this.findById(announcementId)      
+      return response
     } catch (error) {
       console.error("Error fetching announcement", error);
       throw new Error("Error fetching announcement");
     }
   }
+
+
+  
+  async deleteAnnouncement(announcementId: string): Promise<boolean> {
+    try{
+      const response = await this.delete(announcementId)
+      return response
+
+    }catch(error){
+      console.error("Error deleting announcement", error);
+      throw new Error("Error deteting announcement"); 
+    }
+  }
+
 
   async findAnnouncements(schoolId?: string | null, classId?: string | null): Promise<AnnouncementEntityType[]> {
     try {

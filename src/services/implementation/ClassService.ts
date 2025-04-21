@@ -178,7 +178,7 @@ export class ClassService implements IClassService {
     });
 
     return {
-      _id: response._id,
+      _id: String(response._id),
       title: response.title,
       content: response.content,
       author: response?.author as string,
@@ -206,7 +206,7 @@ export class ClassService implements IClassService {
     }
 
     return {
-      _id: response._id,
+      _id: String(response._id),
       title: response.title,
       content: response.content,
       author: response.author,
@@ -214,23 +214,42 @@ export class ClassService implements IClassService {
     };
   }
 
+  async findAnnouncementById(id: string): Promise<AnnouncementResponseDTO | null> {
+    const response = await this._announcementRepository.findAnnouncementById(id)
 
-  async fetchAnnouncements(
-    schoolId: string
-  ): Promise<AnnouncementEntityType[]> {
+    if(!response){
+      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
 
-    const response = await this._announcementRepository.getAnnouncements(schoolId);
-
-    return response;
+    return {
+      _id: String(response?._id),
+      title: response?.title,
+      content: response?.content,
+      author: response?.author,
+      createdAt: response?.createdAt
+    }
   }
 
+  async deleteAnnouncement(id: string): Promise<{ _id: string; }> {
+    const response = await this._announcementRepository.deleteAnnouncement(id)
+
+    if(!response){
+      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: id
+    }
+  }
+
+  
 
   async findAnnouncements(schoolId?: string, classId?: string): Promise<AnnouncementResponseDTO[]> {
     const response = await this._announcementRepository.findAnnouncements(!classId ? schoolId : null, classId ? classId : null)
 
     const announcements: AnnouncementResponseDTO[] = response.map((announcement) => {
       return {
-        _id: announcement._id,
+        _id: String(announcement._id),
         title: announcement.title,
         content: announcement.content,
         author: announcement.author,

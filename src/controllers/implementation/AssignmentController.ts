@@ -39,6 +39,19 @@ export class AssignmentController implements IAssignmentController {
       }
   }
 
+  async deleteAssignment(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try{
+        const assignmentId = req.params.assignmentId
+
+        const response = await this._assignmentService.deleteAssignment(assignmentId)
+
+        res.status(HttpStatus.OK).json(response)
+
+      }catch(err){
+        next(err)
+      }
+  }
+
   async updateAssignment(req: Request, res: Response, next: NextFunction): Promise<void> {
       try{
         const assignmentId = req.params.assignmentId

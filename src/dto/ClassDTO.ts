@@ -55,7 +55,7 @@ export interface AnnouncementDTO {
 
 
 export interface AnnouncementResponseDTO {
-      _id?: mongoose.Types.ObjectId;
+      _id?: string;
       title: string;
       content: string;
       author: mongoose.Types.ObjectId | string; 

@@ -17,6 +17,7 @@ const assignmentRouter = Router();
 
 assignmentRouter.put('/update/:assignmentId', protectRoute(["teacher"]), assignmentController.updateAssignment.bind(assignmentController));
 assignmentRouter.post('/add', protectRoute(["teacher"]), assignmentController.createAssignment.bind(assignmentController));
+assignmentRouter.delete('/:assignmentId', protectRoute(["teacher"]), assignmentController.deleteAssignment.bind(assignmentController));
 assignmentRouter.get('/get-assignments/:subjectId', protectRoute(["teacher", "student"]), assignmentController.getAssignments.bind(assignmentController));
 assignmentRouter.get('/get-assignment/:assignmentId', protectRoute(["teacher", "student"]), assignmentController.getAssignmentById.bind(assignmentController));
 assignmentRouter.get('/get-submissions/:assignmentId', protectRoute(["teacher"]), assignmentController.getAllAssignmentSubmissions.bind(assignmentController));

@@ -6,4 +6,5 @@ export interface IAssignmentRepository {
     getAssignments(subjectId: string): Promise<AssignmentEntityType[]>
     getAssignmentById(assignmentId: string): Promise<AssignmentEntityType | null> 
     createAssignmentSubmissions(data: AssignmentSubmissionEntityType[]): Promise<string>;
+    deleteAssignment(id: string): Promise<boolean>
 }

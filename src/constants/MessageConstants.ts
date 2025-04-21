@@ -28,6 +28,7 @@ const Messages = {
     ASSIGNMENT_NOT_FOUND: "Assignment doesn't exist.",
     STUDY_MATERIAL_NOT_FOUND: "Assignment doesn't exist.",
     ASSIGNMENT_SUBMISSION_NOT_FOUND: "Assignment submission doesn't exist.",
+    ANNOUNCEMENT_NOT_FOUND: "Assignment submission doesn't exist.",
   };
 
   export default Messages

@@ -5,6 +5,7 @@ export interface IAssignmentService{
     updateAsssignment(data: UpdateAssignmentDTO, id: string): Promise<AssignmentResponseDTO>
     getAssignments(subjectId: string): Promise<AssignmentListResponseDTO[]> 
     getAssignmentById(assignmentId: string): Promise<AssignmentResponseDTO>
+    deleteAssignment(assidnmentId: string): Promise<{_id: string}>
    
     getAllAssignmentSubmissions(assignmentId: string): Promise<AssignmentSubmissionsListResponseDTO[]> 
     addAssignmentSubmission(submissionId: string, data: any): Promise<AssignmentSubmissionResponseDTO | null>

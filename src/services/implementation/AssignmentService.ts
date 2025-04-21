@@ -81,11 +81,21 @@ export class AssignmentService implements IAssignmentService {
     return data;
   }
 
+  async deleteAssignment(assidnmentId: string): Promise<{_id: string}> {
+    const response = await this._assignmentRepository.deleteAssignment(assidnmentId)
+
+    if(!response){
+      throw new CustomError(Messages.ASSIGNMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: assidnmentId
+    }
+  }
+
 
   async updateAsssignment(data: UpdateAssignmentDTO, id: string): Promise<AssignmentResponseDTO> {
-    console.log(data, id, "vaaaaaaaaa")
     const response = await this._assignmentRepository.updateAssignment(data, id)
-    console.log(response, "jaaaaaaaaaaaaaa123")
 
     if(!response){
       throw new CustomError(Messages.ASSIGNMENT_NOT_FOUND, HttpStatus.NOT_FOUND)

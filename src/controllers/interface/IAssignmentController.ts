@@ -5,6 +5,8 @@ export interface IAssignmentController {
     updateAssignment(req: Request, res: Response, next: NextFunction): Promise<void>
     getAssignments(req: Request, res: Response, next: NextFunction): Promise<void>
     getAssignmentById(req: Request, res: Response, next: NextFunction): Promise<void>
+    deleteAssignment(req: Request, res: Response, next: NextFunction): Promise<void>
+
     getAllAssignmentSubmissions(req: Request, res: Response, next: NextFunction): Promise<void>
     getAssignmentSubmission(req: Request, res: Response, next: NextFunction): Promise<void>
     getAssignmentSubmissionById(req: Request, res: Response, next: NextFunction): Promise<void>

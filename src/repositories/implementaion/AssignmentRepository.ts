@@ -61,6 +61,16 @@ class AssignmentRepository extends BaseRepository<AssignmentEntityType> implemen
             throw new Error("Error creating assignment submissions");
         }
     }
+
+    async deleteAssignment(id: string): Promise<boolean> {
+        try {
+            const response = await this.delete(id);
+            return response
+        } catch (error) {
+            console.error("Error deleting assignment submissions", error);
+            throw new Error("Error deleting assignment submissions");
+        }
+    }
 }
 
 export default new AssignmentRepository()

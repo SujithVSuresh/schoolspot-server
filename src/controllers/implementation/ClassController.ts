@@ -124,7 +124,8 @@ export class ClassController implements IClassController {
   ): Promise<void> {
     try {
       const { schoolId, userId } = req.user as PayloadType;
-      const { title, content, sendTo, announcementId } = req.body;
+      const { title, content, sendTo } = req.body;
+      const announcementId = req.params.announcementId
 
       const announcementData: AnnouncementDTO = {
         title,
@@ -145,22 +146,31 @@ export class ClassController implements IClassController {
     }
   }
 
-  async fetchAnnouncements(
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { schoolId } = req.user as PayloadType;
+  async findAnnouncementById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const announcementId = req.params.announcementId
 
-      const response = await this._classService.fetchAnnouncements(schoolId);
+      const response = await this._classService.findAnnouncementById(announcementId)
 
-      res.status(HttpStatus.OK).json(response);
-    } catch (err) {
-      next(err);
+      res.status(HttpStatus.OK).json(response)
+
+    }catch(err){
+      next(err)
     }
   }
 
+  async deleteAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const announcementId = req.params.announcementId
+
+      const response = await this._classService.deleteAnnouncement(announcementId)
+
+      res.status(HttpStatus.OK).json(response)
+
+    }catch(err){
+      next(err)
+    }
+  }
 
   async findAnnouncements(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
