@@ -31,6 +31,16 @@ export class SocketManager {
                 console.log(`Message from ${socket.id} to room ${roomId}: ${message}`);
                 socket.to(roomId).emit('receive-announcement', message);
             });
+
+            socket.on('edit-announcement', ({ roomId, message }) => {
+                console.log(`Edit message from ${socket.id} to room ${roomId}: ${message}`);
+                socket.to(roomId).emit('receive-edit-announcement', message);
+            });
+
+            socket.on('delete-announcement', ({ roomId, message }) => {
+                console.log(`Delete message from ${socket.id} to room ${roomId}: ${message}`);
+                socket.to(roomId).emit('receive-delete-announcement', message);
+            });
         
             socket.on('disconnect', () => {
               console.log('User disconnected from /announcement:', socket.id);
