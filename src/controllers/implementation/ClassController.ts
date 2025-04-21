@@ -97,7 +97,7 @@ export class ClassController implements IClassController {
   ): Promise<void> {
     try {
       const { schoolId, userId } = req.user as PayloadType;
-      const { title, content, sendTo } = req.body.announcementData;
+      const { title, content, sendTo } = req.body;
 
       const announcementData: AnnouncementDTO = {
         title,
@@ -154,6 +154,21 @@ export class ClassController implements IClassController {
       const { schoolId } = req.user as PayloadType;
 
       const response = await this._classService.fetchAnnouncements(schoolId);
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+
+  async findAnnouncements(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { schoolId } = req.user as PayloadType;
+
+      const classId = req.params.classId
+
+      const response = await this._classService.findAnnouncements(schoolId, classId)
 
       res.status(HttpStatus.OK).json(response);
     } catch (err) {

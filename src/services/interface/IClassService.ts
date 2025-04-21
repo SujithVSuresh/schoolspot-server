@@ -14,6 +14,7 @@ export interface IClassService{
     addAnnouncement(data: AnnouncementDTO): Promise<AnnouncementResponseDTO>
     updateAnnouncement(id: string, data: AnnouncementDTO): Promise<AnnouncementResponseDTO | null>
     fetchAnnouncements(schoolId: string): Promise<AnnouncementEntityType[]>
+    findAnnouncements(schoolId?: string, classId?: string): Promise<AnnouncementResponseDTO[]>
 }
 
 export default IClassService

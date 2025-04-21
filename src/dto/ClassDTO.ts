@@ -59,6 +59,6 @@ export interface AnnouncementResponseDTO {
       title: string;
       content: string;
       author: mongoose.Types.ObjectId | string; 
-      creartedAt?: Date;
+      createdAt?: Date;
       updatedAt?: Date;
 }

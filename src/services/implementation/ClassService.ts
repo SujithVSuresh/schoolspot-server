@@ -181,8 +181,8 @@ export class ClassService implements IClassService {
       _id: response._id,
       title: response.title,
       content: response.content,
-      author: response.author,
-      creartedAt: response.createdAt as Date,
+      author: response?.author as string,
+      createdAt: response.createdAt as Date,
     };
   }
 
@@ -210,7 +210,7 @@ export class ClassService implements IClassService {
       title: response.title,
       content: response.content,
       author: response.author,
-      creartedAt: response.createdAt as Date,
+      createdAt: response.createdAt as Date,
     };
   }
 
@@ -222,5 +222,22 @@ export class ClassService implements IClassService {
     const response = await this._announcementRepository.getAnnouncements(schoolId);
 
     return response;
+  }
+
+
+  async findAnnouncements(schoolId?: string, classId?: string): Promise<AnnouncementResponseDTO[]> {
+    const response = await this._announcementRepository.findAnnouncements(!classId ? schoolId : null, classId ? classId : null)
+
+    const announcements: AnnouncementResponseDTO[] = response.map((announcement) => {
+      return {
+        _id: announcement._id,
+        title: announcement.title,
+        content: announcement.content,
+        author: announcement.author,
+        createdAt: announcement.createdAt
+      }
+    })
+
+    return announcements
   }
 }

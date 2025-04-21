@@ -21,9 +21,11 @@ classRouter.post('/add-class', protectRoute(["admin"]), classController.createCl
 classRouter.get('/get-classes', protectRoute(["admin"]), classController.findAllClasses.bind(classController));
 classRouter.get('/get-classes/teacher', protectRoute(["teacher"]), classController.findClassesByTeacherId.bind(classController));
 classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher", "student"]), classController.findClassById.bind(classController));
-classRouter.post('/add-announcement', protectRoute(["admin"]), classController.addAnnouncement.bind(classController))
-classRouter.put('/update-announcement', protectRoute(["admin"]), classController.updateAnnouncement.bind(classController))
-classRouter.get('/get-announcements', protectRoute(["admin"]), classController.fetchAnnouncements.bind(classController))
+
+classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))
+classRouter.put('/announcement', protectRoute(["admin", "teacher"]), classController.updateAnnouncement.bind(classController))
+classRouter.get('/announcements', protectRoute(["admin", "teacher"]), classController.findAnnouncements.bind(classController))
+classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher"]), classController.findAnnouncements.bind(classController))
 
 
 export default classRouter;
