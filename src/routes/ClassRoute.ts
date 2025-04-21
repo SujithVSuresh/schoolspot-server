@@ -25,7 +25,7 @@ classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher", "studen
 classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))
 classRouter.put('/announcement', protectRoute(["admin", "teacher"]), classController.updateAnnouncement.bind(classController))
 classRouter.get('/announcements', protectRoute(["admin", "teacher"]), classController.findAnnouncements.bind(classController))
-classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher"]), classController.findAnnouncements.bind(classController))
+classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher", "student"]), classController.findAnnouncements.bind(classController))
 
 
 export default classRouter;

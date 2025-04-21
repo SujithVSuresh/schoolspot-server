@@ -26,6 +26,11 @@ export class SocketManager {
                 socket.leave(roomId);
                 console.log(`${socket.id} left room ${roomId}`);
             });
+
+            socket.on('send-announcement', ({ roomId, message }) => {
+                console.log(`Message from ${socket.id} to room ${roomId}: ${message}`);
+                socket.to(roomId).emit('receive-announcement', message);
+            });
         
             socket.on('disconnect', () => {
               console.log('User disconnected from /announcement:', socket.id);

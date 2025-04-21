@@ -59,7 +59,9 @@ class AnnouncementRepository
         query.sendTo = new mongoose.Types.ObjectId(classId)
       }
 
-      const response = await this.findByQuery(query);
+      const response = await Announcement.find(
+        {...query}
+      ).sort({ createdAt: -1 });
 
       return response;
     } catch (error) {
