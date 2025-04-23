@@ -12,11 +12,11 @@ class AttendanceRepository
     super(Attendance);
   }
 
-  async createAttendace(data: AttendaceEntityType[]): Promise<string> {
+  async createAttendace(data: AttendaceEntityType[]): Promise<AttendaceEntityType[]> {
     try {
       const response = await Attendance.insertMany(data);
 
-      return String(response[0].class);
+      return response;
     } catch (error) {
       console.error("Error adding attendance", error);
       throw new Error("Error adding attendance");

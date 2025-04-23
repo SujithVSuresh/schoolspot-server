@@ -255,6 +255,7 @@ export interface AnnouncementEntityType {
   author: mongoose.Types.ObjectId | string;
   sendTo: mongoose.Types.ObjectId[]
   schoolId: mongoose.Types.ObjectId;
+  pinned?: mongoose.Types.ObjectId[];
   createdAt?: Date;
   updatedAt?: Date;
 }

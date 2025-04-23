@@ -62,3 +62,7 @@ export interface AnnouncementResponseDTO {
       createdAt?: Date;
       updatedAt?: Date;
 }
+
+export interface AnnouncementPinnedResponseDTO extends AnnouncementResponseDTO {
+      isPinned: boolean
+}

@@ -24,9 +24,11 @@ classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher", "studen
 
 classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))
 classRouter.put('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.updateAnnouncement.bind(classController))
+classRouter.get('/announcement/:announcementId', protectRoute(["student"]), classController.findAnnouncementDetails.bind(classController))
+classRouter.get('/announcements/pin', protectRoute(["student"]), classController.findPinnedAnnouncements.bind(classController))
 classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher", "student"]), classController.findAnnouncements.bind(classController))
-classRouter.get('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.findAnnouncementById.bind(classController))
 classRouter.delete('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.deleteAnnouncement.bind(classController))
+classRouter.patch('/announcement/:announcementId/pin', protectRoute(["student"]), classController.updatePinnedStatus.bind(classController))
 
 
 export default classRouter;

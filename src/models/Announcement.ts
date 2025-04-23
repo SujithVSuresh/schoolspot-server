@@ -22,8 +22,14 @@ const AnnouncementSchema = new Schema({
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-    }
-
+    },
+    pinned: [
+        {
+          type: mongoose.Types.ObjectId,
+          ref: "User", 
+        }
+      ],
+    
 }, {
     timestamps: true
 })

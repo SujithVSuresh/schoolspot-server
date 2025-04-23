@@ -1,4 +1,4 @@
-import { AnnouncementResponseDTO, ClassResponseDTO, AnnouncementDTO, CreateClassDTO, ClassListResponseDTO, ClassByIdResponseDTO } from "../../dto/ClassDTO"
+import { AnnouncementResponseDTO, ClassResponseDTO, AnnouncementDTO, CreateClassDTO, ClassListResponseDTO, ClassByIdResponseDTO, AnnouncementPinnedResponseDTO } from "../../dto/ClassDTO"
 import { AnnouncementEntityType } from "../../types/types"
 
 type userRole =  "superadmin" | "admin" | "teacher" | "student";
@@ -14,8 +14,10 @@ export interface IClassService{
     addAnnouncement(data: AnnouncementDTO): Promise<AnnouncementResponseDTO>
     updateAnnouncement(id: string, data: AnnouncementDTO): Promise<AnnouncementResponseDTO | null>
     deleteAnnouncement(id: string): Promise<{_id: string}>
-    findAnnouncementById(id: string): Promise<AnnouncementResponseDTO | null>
-    findAnnouncements(schoolId?: string, classId?: string): Promise<AnnouncementResponseDTO[]>
+    findPinnedAnnouncements(userId: string): Promise<AnnouncementResponseDTO[]>
+    findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementPinnedResponseDTO>
+    updatePinnedStatus(announcementId: string, userId: string, status: "pin" | "unpin"): Promise<AnnouncementPinnedResponseDTO>
+    findAnnouncements(schoolId?: string | null, classId?: string, userId?: string): Promise<AnnouncementResponseDTO[]>
 }
 
 export default IClassService

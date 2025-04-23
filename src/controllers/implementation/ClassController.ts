@@ -146,18 +146,6 @@ export class ClassController implements IClassController {
     }
   }
 
-  async findAnnouncementById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try{
-      const announcementId = req.params.announcementId
-
-      const response = await this._classService.findAnnouncementById(announcementId)
-
-      res.status(HttpStatus.OK).json(response)
-
-    }catch(err){
-      next(err)
-    }
-  }
 
   async deleteAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void> {
     try{
@@ -172,6 +160,21 @@ export class ClassController implements IClassController {
     }
   }
 
+  async updatePinnedStatus(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId } = req.user as PayloadType;
+      const {status} = req.body
+
+      const announcementId = req.params.announcementId
+
+      const response = await this._classService.updatePinnedStatus(announcementId, userId, status)
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async findAnnouncements(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { schoolId } = req.user as PayloadType;
@@ -179,6 +182,33 @@ export class ClassController implements IClassController {
       const classId = req.params.classId
 
       const response = await this._classService.findAnnouncements(schoolId, classId)
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+
+  async findAnnouncementDetails(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {userId} = req.user as PayloadType
+      const {announcementId} = req.params
+
+      const response = await this._classService.findAnnouncementDetails(announcementId, userId)
+
+      res.status(HttpStatus.OK).json(response)
+
+    }catch(err){
+      next(err)
+    }
+  }
+
+  async findPinnedAnnouncements(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId } = req.user as PayloadType;
+
+      const response = await this._classService.findPinnedAnnouncements(userId)
 
       res.status(HttpStatus.OK).json(response);
     } catch (err) {

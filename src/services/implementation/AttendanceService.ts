@@ -21,7 +21,7 @@ export class AttendanceService implements IAttendanceService {
     dto: CreateAttendanceDTO[],
     schoolId: string,
     recordedBy: string
-  ): Promise<string> {
+  ): Promise<{classId: string, presentCount: number, absentCount: number}> {
     const today = new Date().toISOString().split("T")[0];
     const attendanceExist = await this._attendanceRepository.findAttendanceByQuery({
         class: new mongoose.Types.ObjectId(dto[0].class as string),
@@ -51,7 +51,21 @@ export class AttendanceService implements IAttendanceService {
       attendanceData
     );
 
-    return response;
+    const attendanceCount = response.reduce((acc, curr) => {
+      if(curr.status == "Present"){
+        acc.presentCount += 1
+      }else if(curr.status == "Absent"){
+        acc.absentCount += 1
+      }
+
+      return acc
+
+    }, {presentCount: 0, absentCount: 0})
+
+    return {
+      ...attendanceCount,
+      classId: String(response[0].class)
+    };
   }
 
   async getAttendanceByClass(classId: string, date: string): Promise<any> {
