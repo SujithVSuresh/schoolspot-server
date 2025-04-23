@@ -21,6 +21,7 @@ import assignmentRouter from "./routes/AssignmentRouter";
 import subjectRouter from "./routes/SubjectRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
 import { SocketManager } from "./socket/socket";
+import invoiceWebhookRouter from "./routes/invoiceWebhookRouter";
 
 
 class App {
@@ -33,6 +34,7 @@ class App {
 
     this.initializeSocket()
     this.intitalizeStorage();
+    this.initializeWebhookRouter()
     this.initializeMiddleware();
     this.initializeRouter();
   }
@@ -85,6 +87,10 @@ class App {
     this.app.use("/subject", subjectRouter);
     this.app.use("/invoice", invoiceRouter);
     this.app.use(errorHandler);
+  }
+
+  private initializeWebhookRouter(): void {
+    this.app.use("/invoice", invoiceWebhookRouter)
   }
 
   public listen(): void {
