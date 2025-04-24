@@ -22,6 +22,7 @@ import subjectRouter from "./routes/SubjectRouter";
 import invoiceRouter from "./routes/InvoiceRouter";
 import { SocketManager } from "./socket/socket";
 import invoiceWebhookRouter from "./routes/invoiceWebhookRouter";
+import paymentRouter from "./routes/PaymentRouter";
 
 
 class App {
@@ -86,6 +87,7 @@ class App {
     this.app.use("/assignment", assignmentRouter);
     this.app.use("/subject", subjectRouter);
     this.app.use("/invoice", invoiceRouter);
+    this.app.use("/payment", paymentRouter);
     this.app.use(errorHandler);
   }
 

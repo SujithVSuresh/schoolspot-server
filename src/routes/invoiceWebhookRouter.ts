@@ -4,8 +4,9 @@ import { InvoiceService } from "../services/implementation/InvoiceService"
 import { InvoiceController } from "../controllers/implementation/InvoiceController"
 import { Router } from "express"
 import express from 'express'
+import PaymentRepository from "../repositories/implementaion/PaymentRepository"
 
-const invoiceService = new InvoiceService(InvoiceRepository, StudentRepository)
+const invoiceService = new InvoiceService(InvoiceRepository, StudentRepository, PaymentRepository)
 
 const invoiceController = new InvoiceController(invoiceService)
 

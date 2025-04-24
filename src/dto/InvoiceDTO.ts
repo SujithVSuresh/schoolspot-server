@@ -31,3 +31,38 @@ export interface InvoiceResponseDTO {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface InvoiceDetailsResponseDTO {
+  _id: string;
+  title: string;
+  student: {
+    _id: string;
+    fullName: string;
+    email: string;
+    contactNumber: string;
+  };
+  school: {
+    _id: string;
+    schoolName: string;
+    address: {
+      city: string;
+      state: string;
+    }
+  };
+  class: {
+    _id: string;
+    name: string;
+    section: string;
+  };
+  invoiceNumber: string;
+  dueDate: Date;
+  feeBreakdown?: {
+    feeType: string;
+    amount: number;
+  }[];
+  status: 'Unpaid' | 'Paid';
+  totalAmount: number;
+  remarks?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

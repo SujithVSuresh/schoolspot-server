@@ -6,4 +6,5 @@ export interface IInvoiceController {
     findInvoicesByStudentId(req: Request, res: Response, next: NextFunction): Promise<void>;
     createInvoiceSession(req: Request, res: Response, next: NextFunction): Promise<void>;
     stripeWebhookHandler(req: Request, res: Response, next: NextFunction): Promise<void>;
+    findInvoiceById(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

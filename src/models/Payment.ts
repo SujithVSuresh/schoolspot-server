@@ -1,4 +1,5 @@
-import mongoose, {Schema, Types} from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
+import { PaymentEntityType } from "../types/types";
 
 const PaymentSchema = new Schema({
   student: {
@@ -6,9 +7,13 @@ const PaymentSchema = new Schema({
     ref: 'User',
     required: true,
   },
-  invoice: {
+  paymentFor: {
+    type: String,
+    enum: ['Invoice', 'Subscription'],
+    required: true,
+  },
+  relatedId: {
     type: Types.ObjectId,
-    ref: 'Invoice',
     required: true,
   },
   amountPaid: {
@@ -36,5 +41,4 @@ const PaymentSchema = new Schema({
   }
 }, { timestamps: true });
 
-
-// export default mongoose.model<>('Payment', PaymentSchema, "Payments")
+export default mongoose.model<PaymentEntityType>('Payment', PaymentSchema, "Payments");

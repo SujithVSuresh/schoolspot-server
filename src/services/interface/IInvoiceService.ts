@@ -1,4 +1,4 @@
-import { CreateInvoiceDTO, InvoiceResponseDTO } from "../../dto/InvoiceDTO";
+import { CreateInvoiceDTO, InvoiceDetailsResponseDTO, InvoiceResponseDTO } from "../../dto/InvoiceDTO";
 import Stripe from "stripe";
 
 export interface IInvoiceService {
@@ -7,4 +7,5 @@ export interface IInvoiceService {
     findInvoicesByStudentId(studentId: string): Promise<InvoiceResponseDTO[]>
     createInvoiceSession(invoiceId: string, amount: number): Promise<Stripe.Checkout.Session>
     handleStripeEvent(event: Stripe.Event): Promise<string>
+    findInvoiceById(invoiceId: string): Promise<InvoiceDetailsResponseDTO>
 }

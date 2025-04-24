@@ -1,9 +1,10 @@
 import { BaseRepository } from "./BaseRepository";
-import { InvoiceEntityType } from "../../types/types";
+import { InvoiceDetailsEntityType, InvoiceEntityType } from "../../types/types";
 import Invoice from "../../models/Invoice";
 import mongoose from "mongoose";
+import { IInvoiceRepository } from "../interface/IInvoiceRepository";
 
-class IInvoiceRepository
+class InvoiceRepository
   extends BaseRepository<InvoiceEntityType>
   implements IInvoiceRepository
 {
@@ -29,6 +30,81 @@ class IInvoiceRepository
     }
   }
 
+  async findInvoiceById(invoiceId: string): Promise<InvoiceDetailsEntityType | null> {
+    try {
+      const invoice = await Invoice.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(invoiceId),
+          }
+        },
+        {
+          $lookup: {
+            from: "Students",
+            localField: "student",
+            foreignField: "userId",
+            as: "studentProfile"
+          }
+        },
+        {$unwind: "$studentProfile"},
+        {
+          $lookup: {
+            from: "Schools",
+            localField: "school",
+            foreignField: "_id",
+            as: "school"
+          }
+        },
+        {$unwind: "$school"},
+        {
+          $lookup: {
+            from: "Classes",
+            localField: "class",
+            foreignField: "_id",
+            as: "class"
+          }
+        },
+        {$unwind: "$class"},       
+        {
+          $lookup: {
+            from: "Users",
+            localField: "student",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        {$unwind: "$user"}
+      ])
+
+      return invoice[0]
+    } catch (error) {
+      console.error("Error fetching invoice", error);
+      throw new Error("Error fetching invoice");
+    }
+  }
+
+
+  async findInvoiceByNumber(invoiceNumber: string): Promise<InvoiceEntityType | null> {
+    try{
+      const invoice = await this.findOne({invoiceNumber})
+      return invoice
+    }catch (error) {
+      console.error("Error fetching invoice", error);
+      throw new Error("Error fetching invoice");
+    }
+  }
+
+  async updateInvoiceStatus(invoiceId: string, status: "Paid" | "Unpaid"): Promise<InvoiceEntityType | null> {
+    try{
+      const invoice = await this.update(invoiceId, {status: status})
+      return invoice
+ 
+    }catch (error) {
+      console.error("Error updating invoice", error);
+      throw new Error("Error oupdating invoice");
+    }
+  }
+
   async findInvoicesByStudentId(studentId: string): Promise<InvoiceEntityType[]> {
     try {
       const invoices = Invoice.aggregate([
@@ -50,6 +126,11 @@ class IInvoiceRepository
       throw new Error("Error fetching invoice");
     }
   }
+
+  
 }
 
-export default new IInvoiceRepository();
+
+
+
+export default new InvoiceRepository();

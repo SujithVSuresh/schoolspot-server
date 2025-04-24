@@ -11,7 +11,6 @@ class LeaveLetterRepository extends BaseRepository<LeaveLetterEntityType> implem
   }
 
   async createLeaveLetter(data: LeaveLetterEntityType): Promise<LeaveLetterEntityType> {
-    console.log(data, "this is the leave letter data")
     try {
       return await this.create({
         ...data,

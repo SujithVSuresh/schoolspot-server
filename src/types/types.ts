@@ -417,3 +417,38 @@ export interface InvoiceEntityType {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+
+export interface InvoiceDetailsEntityType {
+  _id: mongoose.Types.ObjectId | string;
+  title: string;
+  student: mongoose.Types.ObjectId | string;
+  class: ClassEntityType
+  school: SchoolProfileType
+  invoiceNumber: string;
+  dueDate: Date;
+  feeBreakdown: FeeBreakdownItemType[]
+  totalAmount: number;
+  status: 'Unpaid' | 'Paid'; 
+  remarks: string;
+  createdAt: Date;
+  updatedAt: Date;
+  studentProfile: StudentProfileEntityType;
+  user: UserEntityType;
+}
+
+// -----------------------------------------
+
+export interface PaymentEntityType {
+  _id?: mongoose.Types.ObjectId | string; 
+  student: mongoose.Types.ObjectId | string; 
+  paymentFor: 'Invoice' | 'Subscription';
+  relatedId: mongoose.Types.ObjectId | string; 
+  amountPaid: number;
+  paymentMethod: 'Cash' | 'Card' | 'UPI' | 'Online' | 'Bank Transfer';
+  transactionId?: string; 
+  paymentDate?: Date;
+  status?: 'Success' | 'Failed' | 'Pending';
+  createdAt?: Date;
+  updatedAt?: Date;
+}

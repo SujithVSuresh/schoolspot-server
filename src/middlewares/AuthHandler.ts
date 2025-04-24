@@ -38,7 +38,6 @@ export const protectRoute = (
                 return;  
             }
 
-            console.log(decoded, "goppppppppp")
   
             req.user = decoded;
             next();  

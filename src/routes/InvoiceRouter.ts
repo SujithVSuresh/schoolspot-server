@@ -5,8 +5,9 @@ import { InvoiceController } from "../controllers/implementation/InvoiceControll
 import { Router } from "express"
 import { protectRoute } from "../middlewares/AuthHandler"
 import express from 'express'
+import PaymentRepository from "../repositories/implementaion/PaymentRepository"
 
-const invoiceService = new InvoiceService(InvoiceRepository, StudentRepository)
+const invoiceService = new InvoiceService(InvoiceRepository, StudentRepository, PaymentRepository)
 
 const invoiceController = new InvoiceController(invoiceService)
 
@@ -18,6 +19,7 @@ invoiceRouter.get('/class/:classId', protectRoute(["student", "admin"]), invoice
 invoiceRouter.get('/student', protectRoute(["student"]), invoiceController.findInvoicesByStudentId.bind(invoiceController));
 invoiceRouter.post('/invoice-session', protectRoute(["student"]), invoiceController.createInvoiceSession.bind(invoiceController));
 invoiceRouter.post('/webhook', express.raw({ type: 'application/json' }), invoiceController.stripeWebhookHandler.bind(invoiceController));
+invoiceRouter.get('/:invoiceId', protectRoute(["student"]), invoiceController.findInvoiceById.bind(invoiceController));
 
 
 export default invoiceRouter

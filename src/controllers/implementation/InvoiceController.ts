@@ -92,4 +92,12 @@ export class InvoiceController implements IInvoiceController {
             next(err)
         }
     }
+
+    async findInvoiceById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        const {invoiceId} = req.params
+
+        const response = await this._invoiceService.findInvoiceById(invoiceId)
+
+        res.status(HttpStatus.OK).json(response)
+    }
 }
