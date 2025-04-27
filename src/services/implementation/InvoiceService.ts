@@ -8,12 +8,11 @@ import { IInvoiceRepository } from "../../repositories/interface/IInvoiceReposit
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import {
   InvoiceEntityType,
-  StudentProfileUserEntityType,
 } from "../../types/types";
+import { StudentProfileUserEntityType } from "../../types/StudentType";
 import mongoose from "mongoose";
 import Stripe from "stripe";
 import stripe from "../../config/stripe";
-import { response } from "express";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
@@ -27,7 +26,7 @@ export class InvoiceService implements IInvoiceService {
   ) {}
 
   async createInvoice(data: CreateInvoiceDTO): Promise<{ classId: string }> {
-    const students = await this._studentRepository.getStudentsByQuery(
+    const students = await this._studentRepository.getStudents(
       {
         classId: new mongoose.Types.ObjectId(data.class),
       },
@@ -158,7 +157,6 @@ export class InvoiceService implements IInvoiceService {
         );
 
         const invoiceNumber = lineItems.data[0]?.description; 
-        console.log("✅ Product name (invoiceId):", invoiceNumber);
 
         const invoice = await this._invoiceRepository.findInvoiceByNumber(
           invoiceNumber as string
@@ -194,7 +192,6 @@ export class InvoiceService implements IInvoiceService {
         const session = event.data.object as
           | Stripe.Checkout.Session
           | Stripe.PaymentIntent;
-        console.log("❌ Payment failed:", session.id);
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
         const invoiceNumber = paymentIntent.metadata.invoiceNumber;

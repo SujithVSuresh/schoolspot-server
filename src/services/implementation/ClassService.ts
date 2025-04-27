@@ -1,6 +1,6 @@
 import { IClassRepository } from "../../repositories/interface/IClassRepository";
 import {
-  AnnouncementPinnedResponseDTO,
+  AnnouncementDetailsResponseDTO,
   ClassByIdResponseDTO,
   ClassListResponseDTO,
   CreateClassDTO,
@@ -209,6 +209,10 @@ export class ClassService implements IClassService {
     return classIds;
   }
 
+
+  // ------------------------------------------------------------------
+
+
   async addAnnouncement(
     data: AnnouncementDTO
   ): Promise<AnnouncementResponseDTO> {
@@ -253,7 +257,7 @@ export class ClassService implements IClassService {
       _id: String(response._id),
       title: response.title,
       content: response.content,
-      author: response.author,
+      author: String(response.author),
       createdAt: response.createdAt as Date,
     };
   }
@@ -277,7 +281,7 @@ export class ClassService implements IClassService {
     announcementId: string,
     userId: string,
     status: "pin" | "unpin"
-  ): Promise<AnnouncementPinnedResponseDTO> {
+  ): Promise<AnnouncementDetailsResponseDTO> {
 
     // const announcements = await this._announcementRepository.findAnnouncements(
     //   null,
@@ -316,7 +320,7 @@ export class ClassService implements IClassService {
       _id: String(response._id),
       title: response.title,
       content: response.content,
-      author: response.author,
+      author: String(response.author),
       createdAt: response.createdAt,
       isPinned: status == "pin" ? true : false
     };
@@ -337,7 +341,7 @@ export class ClassService implements IClassService {
           _id: String(announcement._id),
           title: announcement.title,
           content: announcement.content,
-          author: announcement.author,
+          author: String(announcement.author),
           createdAt: announcement.createdAt,
           pinned: announcement.pinned,
         };
@@ -347,7 +351,7 @@ export class ClassService implements IClassService {
     return announcements;
   }
 
-  async findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementPinnedResponseDTO> {
+  async findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementDetailsResponseDTO> {
     const response = await this._announcementRepository.findAnnouncementById(announcementId)
 
     if(!response){
@@ -364,10 +368,34 @@ export class ClassService implements IClassService {
       _id: String(response._id),
       title: response.title,
       content: response.content,
-      author: response.author,
+      author: String(response.author),
       createdAt: response.createdAt,
-      isPinned: isPinned
+      isPinned: isPinned,
+      sendTo: response.sendTo
     }
+  }
+
+  async findAnnouncementsByAuthor(userId: string): Promise<AnnouncementResponseDTO[]> {
+    const response = await this._announcementRepository.findAnnouncementsByAuthor(userId)
+
+    if(!response){
+      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    const announcements: AnnouncementResponseDTO[] = response.map((announcement) => {
+      return {
+        _id: String(announcement._id),
+        title: announcement.title,
+        content: announcement.content,
+        author: String(announcement.author),
+        sendTo: announcement.sendTo.map((classId) => {
+          return String(classId)
+        }),
+        createdAt: announcement.createdAt
+      }
+    })
+
+    return announcements
   }
 
   async findPinnedAnnouncements(userId: string): Promise<AnnouncementResponseDTO[]>{
@@ -379,7 +407,7 @@ export class ClassService implements IClassService {
           _id: String(announcement._id),
           title: announcement.title,
           content: announcement.content,
-          author: announcement.author,
+          author: String(announcement.author),
           createdAt: announcement.createdAt,
           pinned: announcement.pinned,
         };

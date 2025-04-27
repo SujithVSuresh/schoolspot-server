@@ -34,7 +34,7 @@ export class AssignmentService implements IAssignmentService {
   ): Promise<AssignmentResponseDTO> {
     const response = await this._assignmentRepository.createAssignment(data);
 
-    const students = await this._studentRepository.getStudentsByQuery(
+    const students = await this._studentRepository.getStudents(
       { classId: response.classId },
       response.schoolId as string
     );

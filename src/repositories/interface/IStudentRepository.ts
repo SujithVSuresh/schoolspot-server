@@ -1,14 +1,14 @@
-import { StudentProfileType } from "../../types/types";
-import { GetParamsType } from "../../types/types";
-import { GetStudentsResponseType } from "../../types/types";
-import { StudentProfileUserEntityType } from "../../types/types";
+import { StudentProfileEntityType, StudentProfileUserEntityType } from "../../types/StudentType";
+import { StudentSearchQueryDTO } from "../../dto/StudentDTO";
+
 
 export interface IStudentRepository {
-    createStudentProfile(data: StudentProfileType): Promise<StudentProfileType>;
-    getAllStudents({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetStudentsResponseType> 
+    createStudentProfile(data: StudentProfileEntityType): Promise<StudentProfileEntityType>;
+    getStudentsBySchool({page, limit, search, sortBy, sortOrder, statusFilter}: StudentSearchQueryDTO, schoolId: string): Promise<StudentProfileUserEntityType[]> 
+    findStudentsCountBySchool(schoolId: string): Promise<number>
     getStudentById(userId: string): Promise<StudentProfileUserEntityType | null>
-    getStudentByQuery(query: any): Promise<StudentProfileType | null>
-    getStudentsByQuery(query: any, schoolId: string): Promise<any>
-    updateStudentProfile(profileId: string, data: StudentProfileType): Promise<StudentProfileType>
+    getStudent(query: any): Promise<StudentProfileEntityType | null>
+    getStudents(query: any, schoolId: string): Promise<any>
+    updateStudentProfile(profileId: string, data: StudentProfileEntityType): Promise<StudentProfileEntityType>
 }
 

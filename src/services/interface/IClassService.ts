@@ -1,5 +1,4 @@
-import { AnnouncementResponseDTO, ClassResponseDTO, AnnouncementDTO, CreateClassDTO, ClassListResponseDTO, ClassByIdResponseDTO, AnnouncementPinnedResponseDTO } from "../../dto/ClassDTO"
-import { AnnouncementEntityType } from "../../types/types"
+import { AnnouncementResponseDTO, ClassResponseDTO, AnnouncementDTO, CreateClassDTO, ClassListResponseDTO, ClassByIdResponseDTO, AnnouncementDetailsResponseDTO } from "../../dto/ClassDTO"
 
 type userRole =  "superadmin" | "admin" | "teacher" | "student";
 
@@ -15,8 +14,9 @@ export interface IClassService{
     updateAnnouncement(id: string, data: AnnouncementDTO): Promise<AnnouncementResponseDTO | null>
     deleteAnnouncement(id: string): Promise<{_id: string}>
     findPinnedAnnouncements(userId: string): Promise<AnnouncementResponseDTO[]>
-    findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementPinnedResponseDTO>
-    updatePinnedStatus(announcementId: string, userId: string, status: "pin" | "unpin"): Promise<AnnouncementPinnedResponseDTO>
+    findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementDetailsResponseDTO>
+    findAnnouncementsByAuthor(userId:string): Promise<AnnouncementResponseDTO[]>
+    updatePinnedStatus(announcementId: string, userId: string, status: "pin" | "unpin"): Promise<AnnouncementDetailsResponseDTO>
     findAnnouncements(schoolId?: string | null, classId?: string, userId?: string): Promise<AnnouncementResponseDTO[]>
 }
 

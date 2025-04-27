@@ -58,11 +58,13 @@ export interface AnnouncementResponseDTO {
       _id?: string;
       title: string;
       content: string;
-      author: mongoose.Types.ObjectId | string; 
+      author: string; 
+      sendTo?: mongoose.Types.ObjectId[] | string[]
       createdAt?: Date;
       updatedAt?: Date;
 }
 
-export interface AnnouncementPinnedResponseDTO extends AnnouncementResponseDTO {
+
+export interface AnnouncementDetailsResponseDTO extends AnnouncementResponseDTO {
       isPinned: boolean
 }

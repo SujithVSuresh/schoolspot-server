@@ -13,11 +13,10 @@ const studentController = new StudentController(studentService);
 
 const studentRouter = Router();
 
-
-studentRouter.post("/add-student", protectRoute(["admin"]), upload.single("profilePhoto"), studentController.addStudent.bind(studentController));
-studentRouter.get("/get-students", protectRoute(["admin"]), studentController.getStudents.bind(studentController));
-studentRouter.get("/get-student/:userId", protectRoute(["admin", "teacher", "student"]), studentController.getStudentProfile.bind(studentController))
-studentRouter.get("/get-students-by-query", protectRoute(["admin"]), studentController.getStudentByQuery.bind(studentController));
-studentRouter.get("/get-students/:classId", protectRoute(["admin", "teacher"]), studentController.getStudentsByClassId.bind(studentController));
+studentRouter.post("/", protectRoute(["admin"]), upload.single("profilePhoto"), studentController.addStudent.bind(studentController));
+studentRouter.get("/students", protectRoute(["admin"]), studentController.getStudents.bind(studentController));
+studentRouter.get("/:userId", protectRoute(["admin", "teacher", "student"]), studentController.getStudentProfile.bind(studentController))
+// studentRouter.get("/get-students-by-query", protectRoute(["admin"]), studentController.getStudentByQuery.bind(studentController));
+studentRouter.get("/students/:classId", protectRoute(["admin", "teacher"]), studentController.getStudentsByClassId.bind(studentController));
 
 export default studentRouter;

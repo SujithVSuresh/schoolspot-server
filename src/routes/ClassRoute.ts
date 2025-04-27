@@ -17,14 +17,15 @@ const classController = new ClassController(classService);
 const classRouter = Router();
 
 
-classRouter.post('/add-class', protectRoute(["admin"]), classController.createClass.bind(classController));
+classRouter.post('/class', protectRoute(["admin"]), classController.createClass.bind(classController));
 classRouter.get('/get-classes', protectRoute(["admin"]), classController.findAllClasses.bind(classController));
 classRouter.get('/get-classes/teacher', protectRoute(["teacher"]), classController.findClassesByTeacherId.bind(classController));
 classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher", "student"]), classController.findClassById.bind(classController));
 
+classRouter.get('/announcements/author', protectRoute(["admin"]), classController.findAnnouncementsByAuthor.bind(classController))
 classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))
 classRouter.put('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.updateAnnouncement.bind(classController))
-classRouter.get('/announcement/:announcementId', protectRoute(["student"]), classController.findAnnouncementDetails.bind(classController))
+classRouter.get('/announcement/:announcementId', protectRoute(["student", "admin"]), classController.findAnnouncementDetails.bind(classController))
 classRouter.get('/announcements/pin', protectRoute(["student"]), classController.findPinnedAnnouncements.bind(classController))
 classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher", "student"]), classController.findAnnouncements.bind(classController))
 classRouter.delete('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.deleteAnnouncement.bind(classController))

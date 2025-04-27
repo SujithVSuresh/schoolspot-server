@@ -11,6 +11,7 @@ export interface IClassController {
     updatePinnedStatus(req: Request, res: Response, next: NextFunction): Promise<void>
     deleteAnnouncement(req: Request, res: Response, next: NextFunction): Promise<void>
     findAnnouncements(req: Request, res: Response, next: NextFunction): Promise<void>
+    findAnnouncementsByAuthor(req: Request, res: Response, next: NextFunction): Promise<void>
     findAnnouncementDetails(req: Request, res: Response, next: NextFunction): Promise<void>
     findPinnedAnnouncements(req: Request, res: Response, next: NextFunction): Promise<void>
 }

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { StudentProfileType } from "../types/types";
+import { StudentProfileEntityType } from "../types/StudentType";
 
 const StudentSchema = new mongoose.Schema(
   {
@@ -65,6 +65,6 @@ const StudentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const StudentProfile = mongoose.model<StudentProfileType>("Student", StudentSchema, "Students");
+const StudentProfile = mongoose.model<StudentProfileEntityType>("Student", StudentSchema, "Students");
 
 export default StudentProfile;

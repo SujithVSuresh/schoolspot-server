@@ -35,9 +35,23 @@ class ClassRepository
 
   async findAllClasses(schoolId: string): Promise<ClassEntityType[]> {
     try {
-      return await this.findByQuery({
-        school: new mongoose.Types.ObjectId(schoolId),
-      });
+      const classes = await Class.aggregate([
+        {
+          $match: {
+            school: new mongoose.Types.ObjectId(schoolId)
+          }
+        },
+        {
+          $addFields: {
+            nameAsNumber: { $toInt: "$name" }
+          }
+        },
+        {
+          $sort: { nameAsNumber: 1 }
+        }
+      ]);
+
+      return classes
 
     } catch (error) {
       console.error("Error finding classes", error);

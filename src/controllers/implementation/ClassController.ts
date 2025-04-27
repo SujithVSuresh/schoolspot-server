@@ -99,6 +99,8 @@ export class ClassController implements IClassController {
       const { schoolId, userId } = req.user as PayloadType;
       const { title, content, sendTo } = req.body;
 
+      console.log(schoolId, userId, title, content, sendTo, "lalalala")
+
       const announcementData: AnnouncementDTO = {
         title,
         content,
@@ -196,6 +198,19 @@ export class ClassController implements IClassController {
       const {announcementId} = req.params
 
       const response = await this._classService.findAnnouncementDetails(announcementId, userId)
+
+      res.status(HttpStatus.OK).json(response)
+
+    }catch(err){
+      next(err)
+    }
+  }
+
+  async findAnnouncementsByAuthor(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {userId} = req.user as PayloadType;
+
+      const response = await this._classService.findAnnouncementsByAuthor(userId)
 
       res.status(HttpStatus.OK).json(response)
 

@@ -1,20 +1,16 @@
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IClassRepository } from "../../repositories/interface/IClassRepository";
-import {
-  GetStudentsResponseType,
-  StudentUserProfileType,
-} from "../../types/types";
+
 import { IStudentService } from "../interface/IStudentService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { hashPassword } from "../../utils/PasswordHash";
-import { GetParamsType } from "../../types/types";
 import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import mongoose from "mongoose";
-import { StudentResponseDTO } from "../../dto/StudentDTO";
+import { CreateStudentDTO, StudentPagenationResponseDTO, StudentResponseDTO, StudentSearchQueryDTO } from "../../dto/StudentDTO";
 
 export class StudentService implements IStudentService {
   constructor(
@@ -24,7 +20,7 @@ export class StudentService implements IStudentService {
   ) {}
 
   async addStudent(
-    data: StudentUserProfileType,
+    data: CreateStudentDTO,
     file: Express.Multer.File,
     schoolId: string,
     classId: string
@@ -39,7 +35,7 @@ export class StudentService implements IStudentService {
       throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
     }
 
-    const rollExist = await this._studentRepository.getStudentByQuery({
+    const rollExist = await this._studentRepository.getStudent({
       roll: data.roll,
       classId: classId,
     });
@@ -84,11 +80,11 @@ export class StudentService implements IStudentService {
       profilePhotoURL = uploadResult.secure_url;
     }
 
-    let studentProfile = await this._studentRepository.createStudentProfile({
+    await this._studentRepository.createStudentProfile({
       fullName: data.fullName,
       class: classExist.name,
       section: classExist.section,
-      classId: new mongoose.Types.ObjectId(classId),
+      classId: classId,
       address: data.address,
       dob: data.dob,
       roll: data.roll,
@@ -97,8 +93,8 @@ export class StudentService implements IStudentService {
       motherName: data.motherName,
       contactNumber: data.contactNumber,
       profilePhoto: profilePhotoURL as string,
-      userId: user._id,
-      schoolId: new mongoose.Types.ObjectId(schoolId),
+      userId: String(user._id),
+      schoolId: schoolId,
     });
 
     return {
@@ -109,24 +105,35 @@ export class StudentService implements IStudentService {
   }
 
 
-  async getStudents(
-    data: GetParamsType,
+  async getStudentsBySchool(
+    data: StudentSearchQueryDTO,
     schoolId: string
-  ): Promise<GetStudentsResponseType> {
-    const students = await this._studentRepository.getAllStudents(
-      {
-        limit: data.limit ? Number(data.limit) : 3,
-        page: data.page ? Number(data.page) : 1,
-        search: data.search ? data.search : "",
-        sortBy: data.sortBy ? data.sortBy : "createdAt",
-        sortOrder: data.sortOrder ? data.sortOrder : "desc",
-        status: data.status ? data.status : "",
-        classfilter: data.classfilter,
-      },
-      schoolId
-    );
+  ): Promise<StudentPagenationResponseDTO> {
 
-    return students;
+    const studentsData = await this._studentRepository.getStudentsBySchool(data, schoolId)
+    const totalStudents = await this._studentRepository.findStudentsCountBySchool(schoolId)
+    
+    return {
+      totalStudents,
+      totalPages: Math.ceil(totalStudents / (data.limit as number)),
+      currentPage: data.page as number,
+      students: studentsData.map((student) => {
+        return {
+          _id: String(student._id),
+          fullName: student.fullName,
+          class: student.class,
+          section: student.section,
+          roll: student.roll,
+          profilePhoto: student.profilePhoto,
+          user: {
+            _id: String(student.user._id),
+            email: student.user.email,
+            status: student.user.status
+          }          
+        }
+      })
+
+    };
   }
 
   async getStudentById(userId: string): Promise<StudentResponseDTO> {
@@ -164,10 +171,10 @@ export class StudentService implements IStudentService {
     schoolId: string
   ): Promise<StudentResponseDTO[]> {
     const query = { classId: new mongoose.Types.ObjectId(classId) };
-    return await this._studentRepository.getStudentsByQuery(query, schoolId);
+    return await this._studentRepository.getStudents(query, schoolId);
   }
 
   async getStudentsByQuery(query: any, schoolId: string): Promise<any> {
-    return await this._studentRepository.getStudentsByQuery(query, schoolId);
+    return await this._studentRepository.getStudents(query, schoolId);
   }
 }

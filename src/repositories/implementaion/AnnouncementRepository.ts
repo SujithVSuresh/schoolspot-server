@@ -118,6 +118,20 @@ class AnnouncementRepository
   }
 
 
+  async findAnnouncementsByAuthor(userId: string): Promise<AnnouncementEntityType[] | null> {
+    try{
+      const response = await Announcement.find({author: new mongoose.Types.ObjectId(userId)}).sort({
+        createdAt: -1
+      })
+      return response
+
+    }catch(error){
+      console.error("Error finding announcement", error);
+      throw new Error("Error finding announcement");
+    }
+  }
+
+
   async findPinnedAnnouncements(userId: string): Promise<AnnouncementEntityType[]> {
     const response = await this.findByQuery({
       pinned: new mongoose.Types.ObjectId(userId)
