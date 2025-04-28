@@ -19,18 +19,19 @@ class StudentRepository
   ): Promise<StudentProfileEntityType> {
     try {
       return await this.create({
-        
         classId: new mongoose.Types.ObjectId(data.classId),
         userId: new mongoose.Types.ObjectId(data.userId),
         schoolId: new mongoose.Types.ObjectId(data.schoolId),
-        
-
+        ...data,
       });
     } catch (error) {
       console.error("Error creating user", error);
       throw new Error("Error creating user");
     }
   }
+
+
+
 
   async getStudentsBySchool(
     {
@@ -81,13 +82,13 @@ class StudentRepository
         },
         {
           $addFields: {
-              classField: { $toInt: "$class" }
-          }
+            classField: { $toInt: "$class" },
+          },
         },
         {
           $sort: {
-              classField: -1
-          }
+            classField: -1,
+          },
         },
         { $sort: { [sortBy]: sortOrder === "asc" ? 1 : -1 } },
         { $skip: skip },
@@ -131,6 +132,7 @@ class StudentRepository
           },
         },
       ]);
+      console.log(student, "this stuuuuuu 123")
 
       return {
         ...student[0],

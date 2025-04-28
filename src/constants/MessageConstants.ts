@@ -20,6 +20,7 @@ const Messages = {
     CLASS_EXIST: "Class already exist",
     CLASS_NOT_FOUNT: "Class doesn't exist",
     SUBJECT_EXIST: "Subject already exist",
+    SUBJECT_NOT_FOUND: "Subject not found",
     ATTENDANCE_ALREADY_EXIST: "Attendance already exist",
     ROLL_EXIST: "Roll number already exist",
     ATTENDANCE_NOT_FOUND: "Attendance not found",

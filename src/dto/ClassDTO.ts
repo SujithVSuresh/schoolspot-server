@@ -6,9 +6,15 @@ import { SubjectResponseDTO } from "./SubjectDTO";
 export interface CreateClassDTO {
       name: string;
       section: string;
-      strength: number
-      teacher: mongoose.Types.ObjectId;
-      school: mongoose.Types.ObjectId;
+      teacher: string;
+      school: string;
+}
+
+export interface UpdateClassDTO {
+      name: string;
+      section: string;
+      teacher: string;
+      schoolId: string;
 }
 
 export interface ClassResponseDTO {

@@ -14,6 +14,19 @@ export interface CreateStudentDTO {
     password: string;
 }
 
+export interface UpdateStudentDTO {
+  fullName: string;
+  profilePhoto?: string;
+  gender: "male" | "female";
+  dob: Date;
+  roll: number;
+  address: string;
+  fatherName: string;
+  motherName: string;
+  contactNumber: string;
+  email: string;
+}
+
 export interface StudentResponseDTO {
   _id: string;
   fullName: string;

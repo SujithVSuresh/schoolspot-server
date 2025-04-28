@@ -6,7 +6,8 @@ import { TeacherProfileUserEntityType } from "../../types/types";
 
 export interface ITeacherRepository {
     createTeacherProfile(data: TeacherProfileType): Promise<TeacherProfileType>;
-    getAllTeachers({page, limit, search, sortBy, sortOrder, status}: GetParamsType, schoolId: string): Promise<GetTeacherResponseType> 
+    getAllTeachers({search}: {search: string}, schoolId: string): Promise<TeacherProfileUserEntityType[]> 
     getTeacherBySchool(schoolId: string): Promise<TeacherProfileType[]>
     findTeacherProfile(userId: string): Promise<TeacherProfileUserEntityType | null>
+    updateTeacherProfile(profileId: string, data: Partial<TeacherProfileType>): Promise<TeacherProfileType>
 }

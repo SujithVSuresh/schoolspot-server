@@ -1,4 +1,4 @@
-import { SubjectEntityType } from "../../types/types";
+import { SubjectEntityType, SubjectWithClassEntityType } from "../../types/types";
 
 
 export interface ISubjectRepository {
@@ -6,5 +6,7 @@ export interface ISubjectRepository {
     findSubjectById(subjectId: string): Promise<SubjectEntityType | null>;
     findSubjectsByClassId(classId: string): Promise<SubjectEntityType[]>;
     findSubject(query: any): Promise<SubjectEntityType | null>;
+    deleteSubject(subjectId: string): Promise<boolean | null>
+    findClassesByTeacherIdUsingSubjects(teacherId: string): Promise<SubjectWithClassEntityType[]>
     updateSubject(subjectId: string, data: Partial<SubjectEntityType>): Promise<SubjectEntityType | null>;
 }

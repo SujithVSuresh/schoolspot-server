@@ -9,6 +9,6 @@ export interface IStudentRepository {
     getStudentById(userId: string): Promise<StudentProfileUserEntityType | null>
     getStudent(query: any): Promise<StudentProfileEntityType | null>
     getStudents(query: any, schoolId: string): Promise<any>
-    updateStudentProfile(profileId: string, data: StudentProfileEntityType): Promise<StudentProfileEntityType>
+    updateStudentProfile(profileId: string, data: Partial<StudentProfileEntityType>): Promise<StudentProfileEntityType>
 }
 

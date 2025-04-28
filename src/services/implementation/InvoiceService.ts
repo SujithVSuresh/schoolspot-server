@@ -1,5 +1,6 @@
 import {
   CreateInvoiceDTO,
+  InvoiceByClassResponseDTO,
   InvoiceDetailsResponseDTO,
   InvoiceResponseDTO,
 } from "../../dto/InvoiceDTO";
@@ -58,30 +59,27 @@ export class InvoiceService implements IInvoiceService {
     };
   }
 
-  async findInvoicesByClassId(classId: string): Promise<InvoiceResponseDTO[]> {
-    const invoices: InvoiceEntityType[] =
-      await this._invoiceRepository.findInvoicesByQuery({
-        class: new mongoose.Types.ObjectId(classId),
-      });
+  async findInvoicesByClassId(classId: string): Promise<InvoiceByClassResponseDTO[]> {
+    const invoices = await this._invoiceRepository.findInvoicesByClassId(classId);
 
-    const invoicesData: InvoiceResponseDTO[] = invoices.map(
-      (invoice: InvoiceEntityType) => {
-        return {
-          _id: String(invoice._id),
-          student: String(invoice.student),
-          title: invoice.title,
-          class: String(invoice.class),
-          invoiceNumber: invoice.invoiceNumber,
-          dueDate: invoice.dueDate,
-          feeBreakdown: invoice.feeBreakdown ? invoice.feeBreakdown : [],
-          status: invoice.status,
-          totalAmount: invoice.totalAmount,
-          remarks: invoice.remarks ? invoice.remarks : "",
-          createdAt: invoice.createdAt as Date,
-          updatedAt: invoice.updatedAt as Date,
-        };
-      }
-    );
+    const invoicesData: InvoiceByClassResponseDTO[] = invoices.map((invoice) => {
+      return {
+        _id: String(invoice._id),
+        student: {
+          fullName: invoice.student.fullName,
+          userId: String(invoice.student.userId),
+        },
+        title: invoice.title,
+        class: String(invoice.class),
+        invoiceNumber: invoice.invoiceNumber,
+        dueDate: invoice.dueDate,
+        status: invoice.status,
+        totalAmount: invoice.totalAmount,
+        createdAt: invoice.createdAt as Date,
+        updatedAt: invoice.updatedAt as Date,
+      };
+    });
+    
 
     return invoicesData;
   }
@@ -266,5 +264,17 @@ export class InvoiceService implements IInvoiceService {
       createdAt: invoice.createdAt as Date,
       updatedAt: invoice.updatedAt as Date,
     };
+  }
+
+  async deleteInvoice(invoiceId: string): Promise<{ _id: string; }> {
+    const response = this._invoiceRepository.deleteInvoice(invoiceId)
+
+    if(!response){
+      throw new CustomError(Messages.INVOICE_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: invoiceId
+    }
   }
 }

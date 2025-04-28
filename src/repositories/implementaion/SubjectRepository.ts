@@ -1,4 +1,4 @@
-import { SubjectEntityType } from "../../types/types";
+import { SubjectEntityType, SubjectWithClassEntityType } from "../../types/types";
 import { ISubjectRepository } from "../interface/ISubjectRepository";
 import { BaseRepository } from "./BaseRepository";
 import Subject from "../../models/Subject"; 
@@ -21,9 +21,42 @@ class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISu
         }
     }
 
+
+
     async findSubjectById(subjectId: string): Promise<SubjectEntityType | null> {
         try{
-            return await this.findById(subjectId)
+            const subject = await this.findById(subjectId)
+            console.log("kakaka", subject)
+            return subject
+
+        }catch(error){
+            console.error("Error finding subject", error);
+            throw new Error("Error finding subject")
+        }
+    }
+
+    async findClassesByTeacherIdUsingSubjects(teacherId: string): Promise<SubjectWithClassEntityType[]> {
+        try{
+            const subject = await Subject.aggregate([
+                {
+                    $match: {
+                        teacher: new mongoose.Types.ObjectId(teacherId)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "Classes",
+                        localField: "class",
+                        foreignField: "_id",
+                        as: "class"
+                    }
+                },
+                {
+                    $unwind: "$class"
+                },
+            ])
+
+            return subject
 
         }catch(error){
             console.error("Error finding subject", error);
@@ -74,6 +107,7 @@ class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISu
                     }
                 }
             ])
+
             return subjects
 
         }catch(error){
@@ -84,12 +118,25 @@ class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISu
 
     async updateSubject(subjectId: string, data: Partial<SubjectEntityType>): Promise<SubjectEntityType | null> {
         try{
-            return await this.update(subjectId, data)
+            const result =  await this.update(subjectId, data)
+            return result
         } catch(error){
             console.error("Error updating subject", error);
             throw new Error("Error updating subject")
         }
     }
+
+    async deleteSubject(subjectId: string): Promise<boolean | null> {
+        try{
+            const result = await this.delete(subjectId)
+            return result
+        }catch(error){
+            console.error("Error updating subject", error);
+            throw new Error("Error updating subject")
+        }
+    }
+
+    
 }
 
 export default new SubjectRepository();

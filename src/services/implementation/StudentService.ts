@@ -10,7 +10,13 @@ import { hashPassword } from "../../utils/PasswordHash";
 import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import mongoose from "mongoose";
-import { CreateStudentDTO, StudentPagenationResponseDTO, StudentResponseDTO, StudentSearchQueryDTO } from "../../dto/StudentDTO";
+import {
+  CreateStudentDTO,
+  StudentPagenationResponseDTO,
+  StudentResponseDTO,
+  StudentSearchQueryDTO,
+  UpdateStudentDTO,
+} from "../../dto/StudentDTO";
 
 export class StudentService implements IStudentService {
   constructor(
@@ -80,7 +86,7 @@ export class StudentService implements IStudentService {
       profilePhotoURL = uploadResult.secure_url;
     }
 
-    await this._studentRepository.createStudentProfile({
+    const profile = await this._studentRepository.createStudentProfile({
       fullName: data.fullName,
       class: classExist.name,
       section: classExist.section,
@@ -97,6 +103,8 @@ export class StudentService implements IStudentService {
       schoolId: schoolId,
     });
 
+    await this._classRepository.updateClassStrength(String(profile.classId), 1);
+
     return {
       email: user.email,
       userId: String(user._id),
@@ -104,15 +112,114 @@ export class StudentService implements IStudentService {
     };
   }
 
+  async updateStudent(
+    data: UpdateStudentDTO,
+    studentId: string,
+    file?: Express.Multer.File
+  ): Promise<{ email: string; userId: string; classId: string }> {
+    const existingUser = await this._userRepository.findByEmail(data.email);
+    if (existingUser && String(existingUser._id) != studentId) {
+      throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
+    }
+
+    const studentProfile = await this._studentRepository.getStudentById(
+      studentId
+    );
+
+    if (!studentProfile) {
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    const rollExist = await this._studentRepository.getStudent({
+      roll: data.roll,
+      classId: studentProfile?.classId,
+    });
+
+    if (
+      rollExist &&
+      rollExist._id?.toString() != studentProfile?._id?.toString()
+    ) {
+      throw new CustomError(Messages.ROLL_EXIST, HttpStatus.CONFLICT);
+    }
+
+    let user = await this._userRepository.updateUser(
+      studentProfile?.user._id as string,
+      {
+        email: data.email,
+      }
+    );
+
+    if (!user) {
+      throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    let profilePhotoURL = null;
+
+    if (file) {
+      console.log("Uploading image to Cloudinary...");
+
+      const uploadResult: UploadApiResponse = await new Promise(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "student_profiles" },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else if (result) {
+                resolve(result);
+              } else {
+                reject(new Error("Cloudinary upload failed"));
+              }
+            }
+          );
+          stream.end(file.buffer);
+        }
+      );
+
+      profilePhotoURL = uploadResult.secure_url;
+    }
+
+    const profile = await this._studentRepository.updateStudentProfile(
+      studentProfile?._id as string,
+      {
+        fullName: data.fullName,
+        address: data.address,
+        dob: data.dob,
+        roll: data.roll,
+        gender: data.gender,
+        fatherName: data.fatherName,
+        motherName: data.motherName,
+        contactNumber: data.contactNumber,
+        profilePhoto: profilePhotoURL
+          ? profilePhotoURL
+          : studentProfile?.profilePhoto,
+      }
+    );
+
+    if (!profile) {
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    console.log(user, "lll");
+
+    return {
+      email: user?.email,
+      userId: String(user._id),
+      classId: String(profile.classId),
+    };
+  }
 
   async getStudentsBySchool(
     data: StudentSearchQueryDTO,
     schoolId: string
   ): Promise<StudentPagenationResponseDTO> {
+    const studentsData = await this._studentRepository.getStudentsBySchool(
+      data,
+      schoolId
+    );
+    const totalStudents =
+      await this._studentRepository.findStudentsCountBySchool(schoolId);
 
-    const studentsData = await this._studentRepository.getStudentsBySchool(data, schoolId)
-    const totalStudents = await this._studentRepository.findStudentsCountBySchool(schoolId)
-    
     return {
       totalStudents,
       totalPages: Math.ceil(totalStudents / (data.limit as number)),
@@ -128,11 +235,10 @@ export class StudentService implements IStudentService {
           user: {
             _id: String(student.user._id),
             email: student.user.email,
-            status: student.user.status
-          }          
-        }
-      })
-
+            status: student.user.status,
+          },
+        };
+      }),
     };
   }
 

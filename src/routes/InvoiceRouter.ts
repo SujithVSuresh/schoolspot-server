@@ -20,6 +20,7 @@ invoiceRouter.get('/student', protectRoute(["student"]), invoiceController.findI
 invoiceRouter.post('/invoice-session', protectRoute(["student"]), invoiceController.createInvoiceSession.bind(invoiceController));
 invoiceRouter.post('/webhook', express.raw({ type: 'application/json' }), invoiceController.stripeWebhookHandler.bind(invoiceController));
 invoiceRouter.get('/:invoiceId', protectRoute(["student"]), invoiceController.findInvoiceById.bind(invoiceController));
+invoiceRouter.delete('/:invoiceId', protectRoute(["admin"]), invoiceController.deleteInvoice.bind(invoiceController));
 
 
 export default invoiceRouter

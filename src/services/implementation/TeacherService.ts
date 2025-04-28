@@ -13,7 +13,7 @@ import {
   GetTeacherParamsType,
   GetTeacherResponseType,
 } from "../../types/types";
-import { TeacherBySchoolResponseDTO, TeacherProfileResponseDTO } from "../../dto/TeacherDTO";
+import { TeacherBySchoolResponseDTO, TeacherProfileResponseDTO, UpdateTeacherDTO } from "../../dto/TeacherDTO";
 
 export class TeacherService implements ITeacherService {
   constructor(
@@ -81,23 +81,102 @@ export class TeacherService implements ITeacherService {
     return user.email;
   }
 
+
+  async updateTeacher(
+    userId: string,
+    data: UpdateTeacherDTO,
+    file: Express.Multer.File,
+  ): Promise<{email: string; userId: string}> {
+    const existingUser = await this._userRepository.findByEmail(data.email);
+    if (existingUser && String(existingUser._id) != userId) {
+      throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
+    }
+
+    let user = await this._userRepository.updateUser(userId, {
+      email: data.email,
+    });
+
+
+    if(!user){
+      throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    const teacher = await this._teacherRepository.findTeacherProfile(userId)
+
+    let profilePhotoURL = null;
+
+    if (file) {
+      console.log("Uploading image to Cloudinary...");
+
+      const uploadResult: UploadApiResponse = await new Promise(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "student_profiles" },
+            (error, result) => {
+              if (error) {
+                reject(error); 
+              } else if (result) {
+                resolve(result); 
+              } else {
+                reject(new Error("Cloudinary upload failed"));
+              }
+            }
+          );
+
+          stream.end(file.buffer);
+        }
+      );
+
+      profilePhotoURL = uploadResult.secure_url;
+    }
+
+    let teacherProfile = await this._teacherRepository.updateTeacherProfile(String(teacher?._id), {
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      subjectSpecialized: data.subjectSpecialized,
+      qualification: data.qualification,
+      experience: data.experience,
+      profilePhoto: profilePhotoURL ? profilePhotoURL : teacher?.profilePhoto,
+    });
+
+    if(!teacherProfile){
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      email: user?.email,
+      userId: String(user._id),
+    };
+  }
+
   async getTeachers(
     data: GetTeacherParamsType,
     schoolId: string
-  ): Promise<GetTeacherResponseType> {
+  ): Promise<TeacherProfileResponseDTO[]> {
     const teachers = await this._teacherRepository.getAllTeachers(
       {
-        limit: data.limit ? Number(data.limit) : 3,
-        page: data.page ? Number(data.page) : 1,
         search: data.search ? data.search : "",
-        sortBy: data.sortBy ? data.sortBy : "createdAt",
-        sortOrder: data.sortOrder ? data.sortOrder : "desc",
-        status: data.status ? data.status : "",
       },
       schoolId
     );
 
-    return teachers;
+    return teachers.map((teacher) => {
+      return {
+        _id: String(teacher._id),
+        fullName: teacher.fullName,
+        phoneNumber: teacher.phoneNumber,
+        subjectSpecialized: teacher.subjectSpecialized,
+        qualification: teacher.qualification,
+        experience: teacher.experience,
+        profilePhoto: teacher.profilePhoto ? teacher.profilePhoto : "",
+        schoolId: String(teacher.schoolId),
+        user: {
+          _id: String(teacher.user?._id),
+          email: teacher.user.email,
+          status: teacher.user.status,
+        }
+      }
+    });
   }
 
   async getTeacherBySchool(schoolId: string): Promise<TeacherBySchoolResponseDTO[]> {

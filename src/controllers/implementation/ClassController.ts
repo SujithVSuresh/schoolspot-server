@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CustomRequest, PayloadType } from "../../types/types";
 import { IClassController } from "../interface/IClassController";
 import IClassService from "../../services/interface/IClassService";
-import { AnnouncementDTO, CreateClassDTO } from "../../dto/ClassDTO";
+import { AnnouncementDTO, CreateClassDTO, UpdateClassDTO } from "../../dto/ClassDTO";
 import HttpStatus from "../../constants/StatusConstants";
 import mongoose from "mongoose";
 
@@ -16,8 +16,10 @@ export class ClassController implements IClassController {
   ): Promise<void> {
     try {
       const createClassDTO: CreateClassDTO = {
-        ...req.body,
-        school: req.user?.schoolId,
+        name: req.body.name,
+        section: req.body.section,
+        teacher: req.body.teacher,
+        school: String(req.user?.schoolId),
       };
 
       const newClass = await this._classService.createClass(createClassDTO);
@@ -27,6 +29,41 @@ export class ClassController implements IClassController {
       next(err);
     }
   }
+
+
+  async updateClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {classId} = req.params
+      const {schoolId} = req.user as PayloadType
+
+      const updateClass: UpdateClassDTO = {
+        name: req.body.name,
+        section: req.body.section,
+        teacher: req.body.teacher,
+        schoolId: schoolId
+      };
+
+      const newClass = await this._classService.updateClass(classId, updateClass);
+
+      res.status(HttpStatus.CREATED).json(newClass);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteClass(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {classId} = req.params
+      console.log(classId, "jajaja")
+
+      const response = await this._classService.deleteClass(classId)
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 
   async findAllClasses(
     req: CustomRequest,

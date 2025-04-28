@@ -18,5 +18,8 @@ teacherRouter.post("/", protectRoute(["admin"]), upload.single("profilePhoto"), 
 teacherRouter.get("/teachers", protectRoute(["admin"]), teacherController.getTeachers.bind(teacherController));
 teacherRouter.get("/teachers/school", protectRoute(["admin"]), teacherController.getTeacherBySchool.bind(teacherController))
 teacherRouter.get("/profile", protectRoute(["teacher"]), teacherController.getTeacherProfile.bind(teacherController))
+teacherRouter.get("/profile/:userId", protectRoute(["admin"]), teacherController.getTeacherProfileById.bind(teacherController))
+teacherRouter.put("/:userId", protectRoute(["admin"]), upload.single("profilePhoto"), teacherController.updateTeacher.bind(teacherController));
+
 
 export default teacherRouter;

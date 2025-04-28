@@ -93,11 +93,29 @@ export class InvoiceController implements IInvoiceController {
         }
     }
 
+
+    async deleteInvoice(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {invoiceId} = req.params
+            console.log(invoiceId, "kkkk")
+            const response = await this._invoiceService.deleteInvoice(invoiceId)
+
+            res.status(HttpStatus.OK).json(response);
+
+        }catch(err){
+            next(err)
+        }
+    }
+
     async findInvoiceById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try{
         const {invoiceId} = req.params
 
         const response = await this._invoiceService.findInvoiceById(invoiceId)
 
         res.status(HttpStatus.OK).json(response)
+    }catch(err){
+        next(err)
+    }
     }
 }

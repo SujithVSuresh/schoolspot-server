@@ -160,7 +160,7 @@ export interface ClassEntityType {
   name: string;
   section: string;
   teacher: mongoose.Types.ObjectId | string;
-  school: mongoose.Types.ObjectId;
+  school: mongoose.Types.ObjectId | string;
   strength?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -295,6 +295,16 @@ export interface SubjectEntityType {
   updatedAt?: Date;
 }
 
+export interface SubjectWithClassEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  name: string;
+  teacher: mongoose.Types.ObjectId | string;
+  class: ClassEntityType;
+  school: mongoose.Types.ObjectId | string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 
 
 export interface LeaveLetterEntityType {
@@ -338,6 +348,23 @@ export interface InvoiceEntityType {
 }
 
 
+export interface InvoiceWithUserEntityType {
+  _id?: mongoose.Types.ObjectId | string;
+  title: string;
+  student: StudentProfileEntityType;
+  class: mongoose.Types.ObjectId | string;
+  school: mongoose.Types.ObjectId | string;
+  invoiceNumber: string;
+  dueDate: Date;
+  feeBreakdown?: FeeBreakdownItemType[];
+  totalAmount: number;
+  status: 'Unpaid' | 'Paid';
+  remarks?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
 export interface InvoiceDetailsEntityType {
   _id: mongoose.Types.ObjectId | string;
   title: string;
@@ -355,6 +382,7 @@ export interface InvoiceDetailsEntityType {
   studentProfile: StudentProfileEntityType;
   user: UserEntityType;
 }
+
 
 // -----------------------------------------
 

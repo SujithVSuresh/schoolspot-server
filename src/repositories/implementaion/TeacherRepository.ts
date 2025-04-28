@@ -20,11 +20,9 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
         }
     }
 
-    async getAllTeachers({page, limit, search, sortBy, sortOrder, status}: GetTeacherParamsType, schoolId: string): Promise<GetTeacherResponseType> {
+    async getAllTeachers({search}: {search: string}, schoolId: string): Promise<TeacherProfileUserEntityType[]> {
         try{
       
-            const skip = (page as number - 1) * (limit as number);
-
             const matchQuery: any = {}
 
             matchQuery.schoolId = new mongoose.Types.ObjectId(schoolId)
@@ -33,9 +31,8 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
                 matchQuery.fullName = {$regex: search, $options: "i"}
             }
 
-            if(status){
-                matchQuery["userDetails.status"] = status; 
-            }
+            console.log(matchQuery, "queryyy")
+
             
             const totalTeachers = await Teacher.countDocuments(matchQuery);
 
@@ -68,17 +65,14 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
                       }
                     }
                 },
-                { $sort: { [sortBy as string]: sortOrder === "asc" ? 1 : -1 } },
-                { $skip: skip },
-                { $limit: limit as number }
+                // { $sort: { [sortBy as string]: sortOrder === "asc" ? 1 : -1 } },
+                // { $skip: skip },
+                // { $limit: limit as number }
             ])
 
-            return {
-                teachers,
-                totalTeachers,
-                totalPages: Math.ceil(totalTeachers / (limit as number)),
-                currentPage: page as number,
-            }
+            console.log(teachers, "teachers....")
+
+            return teachers
 
         }catch(error){
             console.error("Error fetching teacher data", error);
@@ -134,6 +128,20 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
             throw new Error("Error fetching teacher")
         }
     }
+
+      async updateTeacherProfile(
+        profileId: string,
+        data: Partial<TeacherProfileType>
+      ): Promise<TeacherProfileType> {
+        try {
+          const teacher = await this.update(profileId, data);
+    
+          return teacher as TeacherProfileType
+        } catch (err) {
+          console.error("Error fetching student data", err);
+          throw new Error("Error creating user");
+        }
+      }
 
 }
     

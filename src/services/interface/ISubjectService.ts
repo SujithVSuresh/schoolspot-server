@@ -5,5 +5,7 @@ import { CreateSubjectDTO, SubjectResponseDTO, UpdateSubjectDTO } from "../../dt
 export interface ISubjectService{
     createSubject(data: CreateSubjectDTO): Promise<SubjectResponseDTO>
     findSubjectsByClass(classId: string): Promise<SubjectResponseDTO[]> 
+    deleteSubject(subjectId: string): Promise<{_id: string}>
+    findSubjectById(subjectId: string): Promise<SubjectResponseDTO>
     updateSubject(subjectId: string, classId: string,  data: UpdateSubjectDTO): Promise<SubjectResponseDTO> 
 }

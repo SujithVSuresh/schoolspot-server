@@ -17,10 +17,12 @@ const classController = new ClassController(classService);
 const classRouter = Router();
 
 
-classRouter.post('/class', protectRoute(["admin"]), classController.createClass.bind(classController));
+classRouter.post('/', protectRoute(["admin"]), classController.createClass.bind(classController));
 classRouter.get('/get-classes', protectRoute(["admin"]), classController.findAllClasses.bind(classController));
-classRouter.get('/get-classes/teacher', protectRoute(["teacher"]), classController.findClassesByTeacherId.bind(classController));
-classRouter.get('/get-class/:classId', protectRoute(["admin", "teacher", "student"]), classController.findClassById.bind(classController));
+classRouter.get('/classes/teacher', protectRoute(["teacher"]), classController.findClassesByTeacherId.bind(classController));
+classRouter.put('/:classId', protectRoute(["admin"]), classController.updateClass.bind(classController));
+classRouter.get('/:classId', protectRoute(["admin", "teacher", "student"]), classController.findClassById.bind(classController));
+classRouter.delete('/:classId', protectRoute(["admin"]), classController.deleteClass.bind(classController));
 
 classRouter.get('/announcements/author', protectRoute(["admin"]), classController.findAnnouncementsByAuthor.bind(classController))
 classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))

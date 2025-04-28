@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { CreateSubjectDTO, SubjectResponseDTO, UpdateSubjectDTO } from "../../dto/SubjectDTO";
@@ -15,14 +16,24 @@ export class SubjectService implements ISubjectService {
 
   async createSubject(data: CreateSubjectDTO): Promise<SubjectResponseDTO> {
       const subjectExist = await this._subjectRepository.findSubject({
-        name: { $regex: `^${name}$`, $options: 'i' },
+        name: { $regex: `^${data.name}$`, $options: 'i' },
         class: data.class
   })
 
       if(subjectExist){
-        throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT)
+        throw new CustomError(Messages.SUBJECT_EXIST, HttpStatus.CONFLICT)
       }
 
+      const teacherExist = await this._subjectRepository.findSubject(
+        {
+          class: data.class,
+          teacher: new mongoose.Types.ObjectId(data.teacher)
+        }
+      )
+
+      if(teacherExist){
+        throw new CustomError("Teacher already exist in this class", HttpStatus.CONFLICT)
+      }
 
      const subject =  await this._subjectRepository.createSubject(data)
      
@@ -47,16 +58,48 @@ export class SubjectService implements ISubjectService {
     return subjectsData
   }
 
+  async deleteSubject(subjectId: string): Promise<{ _id: string; }> {
+    const response = await this._subjectRepository.deleteSubject(subjectId)
+
+    if(!response){
+      throw new CustomError(Messages.SUBJECT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: subjectId
+    }
+  }
+
+  async findSubjectById(subjectId: string): Promise<SubjectResponseDTO> {
+    const response = await this._subjectRepository.findSubjectById(subjectId)
+
+    if(!response){
+      throw new CustomError(Messages.SUBJECT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: String(response._id),
+      name: response.name,
+      teacher: String(response.teacher)
+    }
+  }
+
   async updateSubject(subjectId: string, classId: string, data: UpdateSubjectDTO): Promise<SubjectResponseDTO> {
+
     const subjectExist = await this._subjectRepository.findSubject({
-      name: { $regex: `^${name}$`, $options: 'i' },
+      name: { $regex: `^${data.name}$`, $options: 'i' },
       class: classId
-})
-    if(subjectExist?._id){
+    })
+
+    if(subjectExist?._id && subjectExist._id != subjectId){
       throw new CustomError(Messages.SUBJECT_EXIST, HttpStatus.CONFLICT)
     }
 
     const updatedSubject = await this._subjectRepository.updateSubject(subjectId, data)
+
+    if(!updatedSubject){
+      throw new CustomError(Messages.SUBJECT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
 
     return {
       _id: String(updatedSubject?._id),

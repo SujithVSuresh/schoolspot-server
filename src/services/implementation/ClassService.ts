@@ -4,6 +4,7 @@ import {
   ClassByIdResponseDTO,
   ClassListResponseDTO,
   CreateClassDTO,
+  UpdateClassDTO,
 } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
@@ -34,20 +35,19 @@ export class ClassService implements IClassService {
   async createClass(dto: CreateClassDTO): Promise<ClassResponseDTO> {
     const classEntity: ClassEntityType = {
       name: dto.name,
-      section: dto.section,
-      strength: dto.strength,
-      teacher: new mongoose.Types.ObjectId(dto.teacher),
-      school: new mongoose.Types.ObjectId(dto.school),
+      section: dto.section.toUpperCase(),
+      teacher: dto.teacher,
+      school: dto.school,
     };
 
     const classExist = await this._classRepository.findClass({
       name: classEntity.name,
       section: classEntity.section,
-      school: classEntity.school,
+      school: String(classEntity.school),
     });
 
     if (classExist) {
-      throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
+      throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
     }
 
     const response = await this._classRepository.createClass(classEntity);
@@ -59,6 +59,51 @@ export class ClassService implements IClassService {
       strength: response.strength,
       createdAt: response.createdAt,
     };
+  }
+
+  async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
+    const classEntity = {
+      name: dto.name,
+      section: dto.section.toUpperCase(),
+      teacher: dto.teacher,
+      school: dto.schoolId
+    };
+
+    const classExist = await this._classRepository.findClass({
+      name: classEntity.name,
+      section: classEntity.section,
+      school: classEntity.school,
+    });
+
+    if (classExist) {
+      throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
+    }
+
+    const response = await this._classRepository.updateClass(classId, classEntity);
+
+    if(!response){
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: response._id,
+      name: response.name,
+      section: response.section,
+      strength: response.strength,
+      createdAt: response.createdAt,
+    };
+  }
+
+  async deleteClass(classId: string): Promise<{ _id: string; }> {
+    const response = await this._classRepository.deleteClass(classId)
+
+    if(!response){
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: classId
+    }
   }
 
   async findAllClasses(schoolId: string): Promise<ClassResponseDTO[]> {
@@ -141,73 +186,71 @@ export class ClassService implements IClassService {
 
   async findAllClassesByTeacherId(
     teacherId: string
-  ): Promise<ClassListResponseDTO[]> {
-    const response = await this._classRepository.findClassByTeacherId(
-      teacherId
-    );
+  ): Promise<any> {
+    const response = await this._subjectRepository.findClassesByTeacherIdUsingSubjects(teacherId)
 
     const data: ClassListResponseDTO[] = response.map((item) => {
       return {
-        _id: String(item._id),
-        name: item.name,
-        section: item.section,
-        strength: item.strength,
+        _id: String(item.class._id),
+        name: item.class.name,
+        section: item.class.section, 
+        strength: item.class.strength
       };
     });
 
     return data;
   }
 
-  async getClassIdsForUsers(
-    userId: string,
-    role: "superadmin" | "admin" | "teacher" | "student",
-    schoolId: string
-  ): Promise<{ name: string; section: string; id: string }[]> {
-    let classIds: { name: string; section: string; id: string }[] = [];
+  // async getClassIdsForUsers(
+  //   userId: string,
+  //   role: "superadmin" | "admin" | "teacher" | "student",
+  //   schoolId: string
+  // ): Promise<{ name: string; section: string; id: string }[]> {
+  //   let classIds: { name: string; section: string; id: string }[] = [];
 
-    switch (role) {
-      case "admin":
-        const adminClasses = await this._classRepository.findAllClasses(
-          schoolId
-        );
-        classIds = adminClasses.map((classData) => {
-          return {
-            id: String(classData._id),
-            name: classData.name,
-            section: classData.section,
-          };
-        });
-        break;
-      case "teacher":
-        const teacherClasses = await this._classRepository.findClassByTeacherId(
-          userId
-        );
-        classIds = teacherClasses.map((classData) => {
-          return {
-            id: String(classData._id),
-            name: classData.name,
-            section: classData.section,
-          };
-        });
-        break;
-      case "student":
-        const studentClass = await this._studentRepository.getStudentById(
-          userId
-        );
-        classIds = [
-          {
-            id: String(studentClass?._id),
-            name: studentClass?.class as string,
-            section: studentClass?.section as string,
-          },
-        ];
-        break;
-      default:
-        console.log("No user role matches");
-    }
+  //   switch (role) {
+  //     case "admin":
+  //       const adminClasses = await this._classRepository.findAllClasses(
+  //         schoolId
+  //       );
+  //       classIds = adminClasses.map((classData) => {
+  //         return {
+  //           id: String(classData._id),
+  //           name: classData.name,
+  //           section: classData.section,
+  //         };
+  //       });
+  //       break;
+  //     case "teacher":
+  //       const teacherClasses = await this._classRepository.findClassByTeacherId(
+  //         userId
+  //       );
+  //       classIds = teacherClasses.map((classData) => {
+  //         return {
+  //           id: String(classData._id),
+  //           name: classData.name,
+  //           section: classData.section,
+  //         };
+  //       });
+  //       break;
+  //     case "student":
+  //       const studentClass = await this._studentRepository.getStudentById(
+  //         userId
+  //       );
+  //       classIds = [
+  //         {
+  //           id: String(studentClass?._id),
+  //           name: studentClass?.class as string,
+  //           section: studentClass?.section as string,
+  //         },
+  //       ];
+  //       break;
+  //     default:
+  //       console.log("No user role matches");
+  //   }
 
-    return classIds;
-  }
+  //   return classIds;
+  // }
 
 
   // ------------------------------------------------------------------
