@@ -31,7 +31,8 @@ const Messages = {
     ASSIGNMENT_SUBMISSION_NOT_FOUND: "Assignment submission doesn't exist.",
     ANNOUNCEMENT_NOT_FOUND: "Assignment submission doesn't exist.",
     ANNOUNCEMENT_PIN_LIMIT: "Pinning more than two announcements is not allowed",
-    INVOICE_NOT_FOUND: "Invoice not found"
+    INVOICE_NOT_FOUND: "Invoice not found",
+    LEAVELETTER_NOT_FOUND: "Leave letter not found"
   };
 
   export default Messages

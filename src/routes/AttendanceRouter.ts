@@ -12,13 +12,15 @@ const attendanceController = new AttendanceController(attendaceService);
 const attendaceRouter = Router();
 
 
-attendaceRouter.post('/add-attendance', protectRoute(["admin", "teacher"]), attendanceController.addAttendance.bind(attendanceController));
-attendaceRouter.get('/get-attendance', protectRoute(["admin", "teacher"]), attendanceController.findAttendanceByClass.bind(attendanceController));
-attendaceRouter.put('/update-attendance-status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
-attendaceRouter.get('/monthly-attendance', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceByMonth.bind(attendanceController))
+attendaceRouter.post('/', protectRoute(["admin", "teacher"]), attendanceController.addAttendance.bind(attendanceController));
+attendaceRouter.get('/', protectRoute(["admin", "teacher"]), attendanceController.findAttendanceByClass.bind(attendanceController));
+attendaceRouter.put('/status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
+attendaceRouter.get('/monthly', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceByMonth.bind(attendanceController))
 
 attendaceRouter.post('/leave-letter', protectRoute(["student"]), attendanceController.createLeaveLetter.bind(attendanceController))
-attendaceRouter.get('/monthly-leaves', protectRoute(["student"]), attendanceController.getLeaveLetterByMonth.bind(attendanceController))
+attendaceRouter.put('/leave-letter/:id', protectRoute(["student"]), attendanceController.editLeaveLetter.bind(attendanceController))
+attendaceRouter.delete('/leave-letter/:id', protectRoute(["student"]), attendanceController.deleteLeaveLetter.bind(attendanceController))
+attendaceRouter.get('/leave-letter/monthly', protectRoute(["student"]), attendanceController.getLeaveLetterByMonth.bind(attendanceController))
 
 export default attendaceRouter;
 

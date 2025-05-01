@@ -3,7 +3,7 @@ import IAttendanceService from "../../services/interface/IAttendanceService";
 import { IAttendanceController } from "../interface/IAttendanceController";
 import { CustomRequest, PayloadType } from "../../types/types";
 import HttpStatus from "../../constants/StatusConstants";
-import { CreateLeaveLetterDTO } from "../../dto/AttendanceDTO";
+import { CreateLeaveLetterDTO, EditLeaveLetterDTO } from "../../dto/AttendanceDTO";
 
 export class AttendanceController implements IAttendanceController {
   constructor(private _attendanceService: IAttendanceService) {}
@@ -100,6 +100,28 @@ export class AttendanceController implements IAttendanceController {
     } catch (err) {
       next(err);
     }
+  }
+
+  async editLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const {id} = req.params
+
+    const leaveLetter: EditLeaveLetterDTO = {
+      reason: req.body.reason,
+      fromDate: req.body.fromDate,
+      toDate: req.body.toDate
+    }
+
+    const response = await this._attendanceService.editLeaveLetter(id, leaveLetter)
+
+    res.status(HttpStatus.OK).json(response)
+  }
+
+  async deleteLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const {id} = req.params
+
+    const response = await this._attendanceService.deleteleaveLetter(id)
+
+    res.status(HttpStatus.OK).json(response)
   }
 
   async getLeaveLetterByMonth(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {

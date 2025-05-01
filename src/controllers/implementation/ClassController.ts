@@ -136,7 +136,6 @@ export class ClassController implements IClassController {
       const { schoolId, userId } = req.user as PayloadType;
       const { title, content, sendTo } = req.body;
 
-      console.log(schoolId, userId, title, content, sendTo, "lalalala")
 
       const announcementData: AnnouncementDTO = {
         title,

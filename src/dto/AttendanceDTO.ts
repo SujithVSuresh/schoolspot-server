@@ -32,6 +32,12 @@ export interface CreateLeaveLetterDTO {
   status: "pending" | "approved" | "rejected";
 }
 
+export interface EditLeaveLetterDTO {
+  reason: string;
+  fromDate: Date;
+  toDate: Date;
+}
+
 
 export interface LeaveLetterResponseDTO {
   _id: string
@@ -41,5 +47,6 @@ export interface LeaveLetterResponseDTO {
   status: "pending" | "approved" | "rejected";
   studentId?: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 

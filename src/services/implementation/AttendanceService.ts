@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { CreateAttendanceDTO, CreateLeaveLetterDTO, LeaveLetterResponseDTO } from "../../dto/AttendanceDTO";
+import {
+  CreateAttendanceDTO,
+  CreateLeaveLetterDTO,
+  EditLeaveLetterDTO,
+  LeaveLetterResponseDTO,
+} from "../../dto/AttendanceDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
 import { AttendaceEntityType } from "../../types/types";
 import IAttendanceService from "../interface/IAttendanceService";
@@ -9,7 +14,6 @@ import HttpStatus from "../../constants/StatusConstants";
 import { AttendaceResponseDTO } from "../../dto/AttendanceDTO";
 import { generateMonthRange } from "../../utils/DateFormatter";
 import { ILeaveLetterRepository } from "../../repositories/interface/ILeaveLetterRepository";
-
 
 export class AttendanceService implements IAttendanceService {
   constructor(
@@ -21,9 +25,10 @@ export class AttendanceService implements IAttendanceService {
     dto: CreateAttendanceDTO[],
     schoolId: string,
     recordedBy: string
-  ): Promise<{classId: string, presentCount: number, absentCount: number}> {
+  ): Promise<{ classId: string; presentCount: number; absentCount: number }> {
     const today = new Date().toISOString().split("T")[0];
-    const attendanceExist = await this._attendanceRepository.findAttendanceByQuery({
+    const attendanceExist =
+      await this._attendanceRepository.findAttendanceByQuery({
         class: new mongoose.Types.ObjectId(dto[0].class as string),
         createdAt: {
           $gte: new Date(today + "T00:00:00.000Z"),
@@ -51,25 +56,27 @@ export class AttendanceService implements IAttendanceService {
       attendanceData
     );
 
-    const attendanceCount = response.reduce((acc, curr) => {
-      if(curr.status == "Present"){
-        acc.presentCount += 1
-      }else if(curr.status == "Absent"){
-        acc.absentCount += 1
-      }
+    const attendanceCount = response.reduce(
+      (acc, curr) => {
+        if (curr.status == "Present") {
+          acc.presentCount += 1;
+        } else if (curr.status == "Absent") {
+          acc.absentCount += 1;
+        }
 
-      return acc
-
-    }, {presentCount: 0, absentCount: 0})
+        return acc;
+      },
+      { presentCount: 0, absentCount: 0 }
+    );
 
     return {
       ...attendanceCount,
-      classId: String(response[0].class)
+      classId: String(response[0].class),
     };
   }
 
   async getAttendanceByClass(classId: string, date: string): Promise<any> {
-    return await this._attendanceRepository.findManyAttendanceByQuery({
+    return await this._attendanceRepository.findAttendances({
       class: new mongoose.Types.ObjectId(classId),
       createdAt: {
         $gte: new Date(date + "T00:00:00.000Z"),
@@ -78,10 +85,14 @@ export class AttendanceService implements IAttendanceService {
     });
   }
 
-  async updateAttendanceStatus(attendanceId: string, status: "Present" | "Absent"): Promise<AttendaceResponseDTO> {
-    const attendanceExist = await this._attendanceRepository.findAttendanceByQuery({
-      _id: new mongoose.Types.ObjectId(attendanceId),
-    });
+  async updateAttendanceStatus(
+    attendanceId: string,
+    status: "Present" | "Absent"
+  ): Promise<AttendaceResponseDTO> {
+    const attendanceExist =
+      await this._attendanceRepository.findAttendanceByQuery({
+        _id: new mongoose.Types.ObjectId(attendanceId),
+      });
 
     if (!attendanceExist) {
       throw new CustomError(
@@ -90,14 +101,17 @@ export class AttendanceService implements IAttendanceService {
       );
     }
 
-    const response = await this._attendanceRepository.updateAttendanceStatus(attendanceId, {
-      class: attendanceExist.class,
-      schoolId: attendanceExist.schoolId,
-      status: status,
-      student: attendanceExist.student,
-    })
+    const response = await this._attendanceRepository.updateAttendanceStatus(
+      attendanceId,
+      {
+        class: attendanceExist.class,
+        schoolId: attendanceExist.schoolId,
+        status: status,
+        student: attendanceExist.student,
+      }
+    );
 
-    if(!response){
+    if (!response) {
       throw new CustomError(
         Messages.SERVER_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -107,15 +121,16 @@ export class AttendanceService implements IAttendanceService {
     return {
       _id: response._id,
       status: response.status,
-    }
-    
+    };
   }
 
+  async getAttendanceByMonth(
+    userId: string,
+    date: string
+  ): Promise<AttendaceResponseDTO[]> {
+    const { startOfMonth, endOfMonth } = generateMonthRange(new Date(date));
 
-  async getAttendanceByMonth(userId: string, date: string): Promise<AttendaceResponseDTO[]> {
-    const {startOfMonth, endOfMonth} = generateMonthRange(new Date(date));
-
-    const attendanceData = await this._attendanceRepository.findManyAttendanceByQuery({
+    const attendanceData = await this._attendanceRepository.findAttendances({
       student: new mongoose.Types.ObjectId(userId),
       createdAt: {
         $gt: startOfMonth,
@@ -137,9 +152,12 @@ export class AttendanceService implements IAttendanceService {
     }));
   }
 
-
-  async createLeaveLetter(dto: CreateLeaveLetterDTO): Promise<LeaveLetterResponseDTO> {
-    const leaveLetter = await this._leaveLetterRepository.createLeaveLetter(dto);
+  async createLeaveLetter(
+    dto: CreateLeaveLetterDTO
+  ): Promise<LeaveLetterResponseDTO> {
+    const leaveLetter = await this._leaveLetterRepository.createLeaveLetter(
+      dto
+    );
     if (!leaveLetter) {
       throw new CustomError(
         Messages.SERVER_ERROR,
@@ -153,15 +171,60 @@ export class AttendanceService implements IAttendanceService {
       fromDate: leaveLetter.fromDate,
       toDate: leaveLetter.toDate,
       createdAt: leaveLetter.createdAt,
-      status: leaveLetter.status
+      status: leaveLetter.status,
     };
   }
 
+  async editLeaveLetter(
+    id: string,
+    dto: EditLeaveLetterDTO
+  ): Promise<LeaveLetterResponseDTO> {
+    const leaveLetter = await this._leaveLetterRepository.editLeaveLetter(
+      id,
+      dto
+    );
 
-  async getLeaveLetterByMonth(userId: string, date: string): Promise<LeaveLetterResponseDTO[]> {
-    const {startOfMonth, endOfMonth} = generateMonthRange(new Date(date));
+    if (!leaveLetter) {
+      throw new CustomError(
+        Messages.LEAVELETTER_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
 
-    const attendanceData = await this._leaveLetterRepository.findLeaveLetterByQuery({
+    return {
+      _id: String(leaveLetter._id),
+      reason: leaveLetter.reason,
+      fromDate: leaveLetter.fromDate,
+      toDate: leaveLetter.toDate,
+      status: leaveLetter.status,
+      createdAt: leaveLetter.createdAt,
+      updatedAt: leaveLetter.updatedAt,
+      studentId: String(leaveLetter.studentId),
+    };
+  }
+
+  async deleteleaveLetter(id: string): Promise<{ _id: string }> {
+    const leaveLetter = await this._leaveLetterRepository.deleteLeaveLetter(id);
+
+    if (!leaveLetter) {
+      throw new CustomError(
+        Messages.LEAVELETTER_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return {
+      _id: id,
+    };
+  }
+
+  async getLeaveLetterByMonth(
+    userId: string,
+    date: string
+  ): Promise<LeaveLetterResponseDTO[]> {
+    const { startOfMonth, endOfMonth } = generateMonthRange(new Date(date));
+
+    const attendanceData = await this._leaveLetterRepository.findLeaveLetters({
       studentId: new mongoose.Types.ObjectId(userId),
       createdAt: {
         $gt: startOfMonth,
@@ -176,12 +239,10 @@ export class AttendanceService implements IAttendanceService {
         fromDate: data.fromDate,
         toDate: data.toDate,
         createdAt: data.createdAt,
-        status: data.status
-      }
-    })
+        status: data.status,
+      };
+    });
 
-    return attendance
+    return attendance;
   }
-
-  
 }

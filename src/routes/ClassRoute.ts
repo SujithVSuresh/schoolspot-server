@@ -27,7 +27,7 @@ classRouter.delete('/:classId', protectRoute(["admin"]), classController.deleteC
 classRouter.get('/announcements/author', protectRoute(["admin"]), classController.findAnnouncementsByAuthor.bind(classController))
 classRouter.post('/announcement', protectRoute(["admin", "teacher"]), classController.addAnnouncement.bind(classController))
 classRouter.put('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.updateAnnouncement.bind(classController))
-classRouter.get('/announcement/:announcementId', protectRoute(["student", "admin"]), classController.findAnnouncementDetails.bind(classController))
+classRouter.get('/announcement/:announcementId', protectRoute(["student", "admin", "teacher"]), classController.findAnnouncementDetails.bind(classController))
 classRouter.get('/announcements/pin', protectRoute(["student"]), classController.findPinnedAnnouncements.bind(classController))
 classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher", "student"]), classController.findAnnouncements.bind(classController))
 classRouter.delete('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.deleteAnnouncement.bind(classController))

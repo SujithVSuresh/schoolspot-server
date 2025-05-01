@@ -34,7 +34,7 @@ class AttendanceRepository
     }
   }
 
-  async findManyAttendanceByQuery(
+  async findAttendances(
     query: any
   ): Promise<AttendaceResponseDTO[]> {
     try {

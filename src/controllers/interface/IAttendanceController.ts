@@ -8,5 +8,7 @@ export interface IAttendanceController {
     getAttendanceByMonth(req: Request, res: Response, next: NextFunction): Promise<void>
 
     createLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void>
+    editLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void>
+    deleteLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void>
     getLeaveLetterByMonth(req: Request, res: Response, next: NextFunction): Promise<void>
 }

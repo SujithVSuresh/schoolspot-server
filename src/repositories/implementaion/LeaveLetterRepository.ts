@@ -24,7 +24,7 @@ class LeaveLetterRepository extends BaseRepository<LeaveLetterEntityType> implem
     }
   }
 
-  async editLeaveLetter(id: string, data: LeaveLetterEntityType): Promise<LeaveLetterEntityType | null> {
+  async editLeaveLetter(id: string, data: Partial<LeaveLetterEntityType>): Promise<LeaveLetterEntityType | null> {
     try {
       return await this.update(id, data);
     } catch (error) {
@@ -34,19 +34,30 @@ class LeaveLetterRepository extends BaseRepository<LeaveLetterEntityType> implem
   }
   
 
-  async deleteLeaveLetter(id: string): Promise<string | null> {
+  async deleteLeaveLetter(id: string): Promise<boolean | null> {
    try{
     const response = await this.delete(id);
-    return response ? id : null;
+    return response
    }catch(error){
     console.error("Error deleting leave letter", error);
     throw new Error("Error deleting leave letter");
    }    
   }
 
-  async findLeaveLetterByQuery(query: any): Promise<LeaveLetterEntityType[]> {
+  async findLeaveLetters(query: any): Promise<LeaveLetterEntityType[]> {
     try {
       return await this.findByQuery(query);
+    } catch (error) {
+      console.error("Error finding leave letter", error);
+      throw new Error("Error finding leave letter");
+    }
+  }
+
+  async findLeaveLetterById(id: string): Promise<LeaveLetterEntityType | null> {
+    try {
+      const leaveLetter = await this.findById(id)
+
+      return leaveLetter
     } catch (error) {
       console.error("Error finding leave letter", error);
       throw new Error("Error finding leave letter");
