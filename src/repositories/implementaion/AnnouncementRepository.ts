@@ -12,9 +12,7 @@ class AnnouncementRepository
     super(Announcement);
   }
 
-  async addAnnouncement(
-    data: AnnouncementEntityType
-  ): Promise<AnnouncementEntityType> {
+  async addAnnouncement(data: AnnouncementEntityType): Promise<AnnouncementEntityType> {
     try {
       return await this.create(data);
     } catch (error) {

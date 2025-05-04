@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { ConversationEntityType } from "../types/ChatType";
 
 const ConversationSchema = new Schema(
   {
@@ -21,6 +22,11 @@ const ConversationSchema = new Schema(
       required: true,
       ref: "User",
     },
+    subjectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Subject",
+    },
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
@@ -31,4 +37,4 @@ const ConversationSchema = new Schema(
   }
 );
 
-export default mongoose.model<any>("Conversation", ConversationSchema, "Conversations");
+export default mongoose.model<ConversationEntityType>("Conversation", ConversationSchema, "Conversations");

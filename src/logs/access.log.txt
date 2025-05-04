@@ -1,7 +1,1 @@
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250322-0000-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250404-0900-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250405-0000-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250406-0000-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250414-0000-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250415-0000-01-access.log
-C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250420-0000-01-access.log
+C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250505-0000-01-access.log

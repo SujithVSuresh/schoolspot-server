@@ -1,14 +1,5 @@
-// {
-//     _id: ObjectId,
-//     conversationId: ObjectId, // reference to Conversations
-//     senderId: ObjectId, // user ID
-//     messageType: String, // "text", "image", "video", etc.
-//     content: String, // actual text or media URL
-//     createdAt: Date,
-//     readBy: [ObjectId] // user IDs who have read this message
-//   }
-
 import mongoose, { Schema } from "mongoose";
+import { MessageEntityType } from "../types/ChatType";
 
 const MessageSchema = new Schema(
   {
@@ -20,23 +11,23 @@ const MessageSchema = new Schema(
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     messageType: {
       type: String,
       enum: ["text", "file"],
       default: "text",
-      required: true,
+      required: true
     },
     content: {
       type: String,
-      required: true,
+      required: true
     },
     readBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: false
       },
     ],
   },
@@ -45,4 +36,4 @@ const MessageSchema = new Schema(
   }
 );
 
-export default mongoose.model<any>("Message", MessageSchema, "Messages");
+export default mongoose.model<MessageEntityType>("Message", MessageSchema, "Messages");
