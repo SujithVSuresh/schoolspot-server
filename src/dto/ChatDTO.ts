@@ -21,6 +21,7 @@ export interface ConversationResponseDTO {
 export interface ConversationListResponseDTO {
     _id: string
     isGroup: boolean;
+    participants?: string[];
     name?: string;
     subjectId: string;
     lastMessage: {
@@ -50,7 +51,7 @@ export interface ConversationListResponseDTO {
     updatedAt: Date;
   }
 
-  export interface MessageListResponseDTO {
+  export interface MessageWithSenderResponseDTO {
     _id: string;
     conversationId: string;
     senderId: {

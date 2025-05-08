@@ -38,7 +38,7 @@ class ConversationRepository extends BaseRepository<ConversationEntityType> impl
         }
     }
 
-    async findConversationsBySubjectId(subjectId?: string, userId?: string): Promise<ConversationEntityType[]>{
+    async findConversations(subjectId?: string, userId?: string): Promise<ConversationEntityType[]>{
         try{
 
             const query: any = {}
@@ -68,7 +68,17 @@ class ConversationRepository extends BaseRepository<ConversationEntityType> impl
                         path: "$lastMessage",
                         preserveNullAndEmptyArrays: true
                     }
-                }
+                },
+                {
+                    $addFields: {
+                      sortTime: { $ifNull: ["$lastMessage.createdAt", "$createdAt"] }
+                    }
+                  },
+                  {
+                    $sort: {
+                      sortTime: -1
+                    }
+                  }
             ])
 
             return conversations

@@ -20,7 +20,7 @@ attendaceRouter.get('/monthly', protectRoute(["admin", "student", "teacher"]), a
 attendaceRouter.post('/leave-letter', protectRoute(["student"]), attendanceController.createLeaveLetter.bind(attendanceController))
 attendaceRouter.put('/leave-letter/:id', protectRoute(["student"]), attendanceController.editLeaveLetter.bind(attendanceController))
 attendaceRouter.delete('/leave-letter/:id', protectRoute(["student"]), attendanceController.deleteLeaveLetter.bind(attendanceController))
-attendaceRouter.get('/leave-letter/monthly', protectRoute(["student"]), attendanceController.getLeaveLetterByMonth.bind(attendanceController))
+attendaceRouter.get('/leave-letters', protectRoute(["student", "teachers"]), attendanceController.getLeaveLetterByMonth.bind(attendanceController))
 
 export default attendaceRouter;
 

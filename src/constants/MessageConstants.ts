@@ -33,7 +33,9 @@ const Messages = {
     ANNOUNCEMENT_PIN_LIMIT: "Pinning more than two announcements is not allowed",
     INVOICE_NOT_FOUND: "Invoice not found",
     LEAVELETTER_NOT_FOUND: "Leave letter not found",
-    CONVERSATION_NOT_FOUND: "conversation not found"
+    CONVERSATION_NOT_FOUND: "Conversation not found",
+    EXAM_NOT_FOUND: "Exam not found",
+    TIMETABLE_NOT_FOUND: "Timetable not found"
   };
 
   export default Messages

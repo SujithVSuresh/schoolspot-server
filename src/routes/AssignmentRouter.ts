@@ -7,10 +7,12 @@ import StudentRepository from "../repositories/implementaion/StudentRepository";
 import AssignmentSubmissionRepository from "../repositories/implementaion/AssignmentSubmissionRepository";
 import StudyMaterialRepository from "../repositories/implementaion/StudyMaterialRepository";
 import {fileUpload} from '../middlewares/UploadMiddleware'
+import { NotificationService } from "../services/implementation/NotificationService";
+import NotificationRepository from "../repositories/implementaion/NotificationRepository";
 
+const notificationService = new NotificationService(NotificationRepository)
 
-
-const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository);
+const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository, notificationService);
 const assignmentController = new AssignmentController(assignmentService);
 
 const assignmentRouter = Router();

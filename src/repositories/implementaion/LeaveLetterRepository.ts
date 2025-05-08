@@ -46,7 +46,9 @@ class LeaveLetterRepository extends BaseRepository<LeaveLetterEntityType> implem
 
   async findLeaveLetters(query: any): Promise<LeaveLetterEntityType[]> {
     try {
-      return await this.findByQuery(query);
+      const response = await this.findByQuery(query);
+      console.log(response, "klklkl")
+      return response
     } catch (error) {
       console.error("Error finding leave letter", error);
       throw new Error("Error finding leave letter");

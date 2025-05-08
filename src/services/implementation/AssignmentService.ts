@@ -20,13 +20,17 @@ import { IAssignmentSubmissionRepository } from "../../repositories/interface/IA
 import { IStudyMaterialRepository } from "../../repositories/interface/IStudyMaterialRepository";
 import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
+import { INotificationService } from "../interface/INotificationService";
+import mongoose from "mongoose";
+
 
 export class AssignmentService implements IAssignmentService {
   constructor(
     private _assignmentRepository: IAssignmentRepository,
     private _studentRepository: IStudentRepository,
     private _assignmentSubmissionRepository: IAssignmentSubmissionRepository,
-    private _studyMaterialRepository: IStudyMaterialRepository
+    private _studyMaterialRepository: IStudyMaterialRepository,
+    private _notificationService: INotificationService
   ) {}
 
   async createAssignment(
@@ -48,10 +52,20 @@ export class AssignmentService implements IAssignmentService {
       };
     });
 
-    const submissions =
-      await this._assignmentRepository.createAssignmentSubmissions(
+
+    await this._assignmentRepository.createAssignmentSubmissions(
         assignmentSubmissions
       );
+
+      const studentIds = students.map((student: any) => {
+        return String(student.user._id)
+    })
+
+      await this._notificationService.sendNotification({
+        userId: studentIds,
+        notificationType: "assignment",
+        message: response.title
+      })
 
     return {
       _id: String(response._id),
@@ -314,6 +328,18 @@ export class AssignmentService implements IAssignmentService {
     const response = await this._studyMaterialRepository.createStudyMaterial(
       data
     );
+
+    const students = await this._studentRepository.getStudents({
+      classId: new mongoose.Types.ObjectId(data.classId)
+    }, data.schoolId)
+
+    const studentIds = students.map((student: any) => student.user._id)
+
+    await this._notificationService.sendNotification({
+      userId: studentIds,
+      notificationType: "study_material",
+      message: response.title
+    })
 
     return {
       title: response.title,

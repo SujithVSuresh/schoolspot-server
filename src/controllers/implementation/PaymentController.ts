@@ -13,9 +13,7 @@ export class PaymentController implements IPaymentController{
 
     async getPaymentsByInvoiceId(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
         try{
-            console.log("lalala")
             const {invoiceId} = req.params
-            console.log(invoiceId, "dadaada123")
 
             const response = await this._paymentService.findPaymentsByInvoiceId(invoiceId as string)
 

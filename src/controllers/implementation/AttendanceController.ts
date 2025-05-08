@@ -129,6 +129,8 @@ export class AttendanceController implements IAttendanceController {
       const { userId } = req.user as PayloadType;
       const {date} = req.query;
 
+      console.log(date, "dadaadda")
+
       const response = await this._attendanceService.getLeaveLetterByMonth(userId, date as string)
 
       res.status(HttpStatus.OK).json(response);

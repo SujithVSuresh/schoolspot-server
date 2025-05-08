@@ -4,8 +4,12 @@ import ConversationRepository from "../repositories/implementaion/ConversationRe
 import ChatService from "../services/implementation/ChatService"
 import { protectRoute } from "../middlewares/AuthHandler"
 import MessageRepository from "../repositories/implementaion/MessageRepository"
+import UserRepository from "../repositories/implementaion/UserRepository"
+import { NotificationService } from "../services/implementation/NotificationService"
+import NotificationRepository from "../repositories/implementaion/NotificationRepository"
 
-const chatService = new ChatService(ConversationRepository, MessageRepository)
+const notificationService = new NotificationService(NotificationRepository)
+const chatService = new ChatService(ConversationRepository, MessageRepository, UserRepository, notificationService)
 
 const chatController = new ChatController(chatService)
 
@@ -15,8 +19,8 @@ const chatRouter = Router()
 chatRouter.get("/conversations/:subjectId", protectRoute(["teacher"]), chatController.fetchConversationsBySubjects.bind(chatController))
 chatRouter.get("/conversations", protectRoute(["teacher", "student"]), chatController.fetchConversationsByParticipant.bind(chatController))
 chatRouter.post('/conversation',  protectRoute(["teacher"]), chatController.createConversation.bind(chatController))
-chatRouter.post('/message',  protectRoute(["teacher"]), chatController.createMessage.bind(chatController))
-chatRouter.get('/messages/:conversationId',  protectRoute(["teacher"]), chatController.fetchMessagesByConversation.bind(chatController))
+chatRouter.post('/message',  protectRoute(["teacher", "student"]), chatController.createMessage.bind(chatController))
+chatRouter.get('/messages/:conversationId',  protectRoute(["teacher", "student"]), chatController.fetchMessagesByConversation.bind(chatController))
 
 
 export default chatRouter

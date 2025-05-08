@@ -24,6 +24,9 @@ import { SocketManager } from "./socket/socket";
 import invoiceWebhookRouter from "./routes/invoiceWebhookRouter";
 import paymentRouter from "./routes/PaymentRouter";
 import chatRouter from "./routes/ChatRouter";
+import notificationRouter from "./routes/NotificationRouter";
+import examRouter from "./routes/ExamRouter";
+import timetableRouter from "./routes/TimeTableRouter";
 
 class App {
   public app;
@@ -89,6 +92,9 @@ class App {
     this.app.use("/invoice", invoiceRouter);
     this.app.use("/payment", paymentRouter);
     this.app.use("/chat", chatRouter);
+    this.app.use("/notification", notificationRouter);
+    this.app.use("/exam", examRouter);
+    this.app.use("/timetable", timetableRouter);
     this.app.use(errorHandler);
   }
 

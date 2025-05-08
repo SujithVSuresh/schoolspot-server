@@ -1,17 +1,20 @@
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
-import { CreateConversationDTO, ConversationResponseDTO, ConversationListResponseDTO, CreateMessageDTO, MessageResponseDTO, MessageListResponseDTO } from "../../dto/ChatDTO";
+import { CreateConversationDTO, ConversationResponseDTO, ConversationListResponseDTO, CreateMessageDTO, MessageResponseDTO, MessageWithSenderResponseDTO } from "../../dto/ChatDTO";
 import { IConversationRepository } from "../../repositories/interface/IConversationRepository";
 import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
-import { ConversationEntityType, MessageEntityType } from "../../types/ChatType";
+import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { CustomError } from "../../utils/CustomError";
 import { IChatService } from "../interface/IChatService";
+import { INotificationService } from "../interface/INotificationService";
 
 
 export class ChatService implements IChatService {
     constructor(
        private _conversationRepository: IConversationRepository,
-       private _messageRepository: IMessageRepository
+       private _messageRepository: IMessageRepository,
+       private _userRepository: IUserRepository,
+       private _notificationService: INotificationService
     ){}
 
     async createConversation(data: CreateConversationDTO): Promise<ConversationResponseDTO> {
@@ -34,13 +37,14 @@ export class ChatService implements IChatService {
             throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
-        const response = await this._conversationRepository.findConversationsBySubjectId(subjectId, userId)
+        const response = await this._conversationRepository.findConversations(subjectId, userId)
 
         const conversations: ConversationListResponseDTO[] = response.map((conversation: any) => {
             return {
                 _id: String(conversation._id),
                 isGroup: conversation.isGroup,
                 name: conversation.name,
+                participants: conversation.participants.map((userId: any) => String(userId)),
                 subjectId: String(conversation.subjectId),
                 lastMessage: !conversation.lastMessage ? {} :  {
                     content: conversation.lastMessage.content,
@@ -56,7 +60,7 @@ export class ChatService implements IChatService {
     }
 
 
-    async createMessage(data: CreateMessageDTO): Promise<MessageResponseDTO> {
+    async createMessage(data: CreateMessageDTO): Promise<MessageWithSenderResponseDTO> {
 
         const message = await this._messageRepository.createMessage(data)
 
@@ -68,10 +72,26 @@ export class ChatService implements IChatService {
             throw new CustomError(Messages.CONVERSATION_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
 
+        const user = await this._userRepository.findUserById(String(message.senderId))
+
+        if(!user){
+            throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        await this._notificationService.sendNotification({
+            userId: updateLastMessage.participants.map((id) => String(id)),
+            notificationType: "message",
+            message: message.content
+          })
+
         return {
             _id: String(message._id),
             conversationId: String(message.conversationId),
-            senderId: String(message.senderId),
+            senderId: {
+                _id: String(user._id),
+                email: user.email,
+                role: user.role
+            },
             messageType: message.messageType,
             content: message.content,
             createdAt: message.createdAt as Date,
@@ -79,10 +99,10 @@ export class ChatService implements IChatService {
         }
     }
 
-    async getMessagesByConversation(conversationId: string): Promise<MessageListResponseDTO[]> {
+    async getMessagesByConversation(conversationId: string): Promise<MessageWithSenderResponseDTO[]> {
         const response = await this._messageRepository.findMessaagesByConversationId(conversationId)
 
-        const messages: MessageListResponseDTO[] = response.map((message) => {
+        const messages: MessageWithSenderResponseDTO[] = response.map((message) => {
             return {
                 _id: String(message._id),
                 conversationId: String(message.conversationId),
