@@ -35,6 +35,7 @@ const Messages = {
     LEAVELETTER_NOT_FOUND: "Leave letter not found",
     CONVERSATION_NOT_FOUND: "Conversation not found",
     EXAM_NOT_FOUND: "Exam not found",
+    EXAMRESULT_NOT_FOUND: "Exam result not found",
     TIMETABLE_NOT_FOUND: "Timetable not found"
   };
 

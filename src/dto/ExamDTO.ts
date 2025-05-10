@@ -35,3 +35,5 @@ export interface ExamTimetableDTO {
     examTimetable: ExamTimetableDTO[];
   }
 
+  
+

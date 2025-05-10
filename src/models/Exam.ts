@@ -17,6 +17,10 @@ const ExamSchema = new mongoose.Schema({
         ref: 'Class',
         required: true,
     },
+    startDate: {
+      type: Date,
+      required: true,
+    },
     endDate: {
       type: Date,
       required: true,

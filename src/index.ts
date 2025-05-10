@@ -27,6 +27,8 @@ import chatRouter from "./routes/ChatRouter";
 import notificationRouter from "./routes/NotificationRouter";
 import examRouter from "./routes/ExamRouter";
 import timetableRouter from "./routes/TimeTableRouter";
+import examResultRouter from "./routes/ExamResultRouter";
+import subscriptionRouter from "./routes/Subscriptionrouter";
 
 class App {
   public app;
@@ -94,7 +96,9 @@ class App {
     this.app.use("/chat", chatRouter);
     this.app.use("/notification", notificationRouter);
     this.app.use("/exam", examRouter);
+    this.app.use("/exam-result", examResultRouter);
     this.app.use("/timetable", timetableRouter);
+    this.app.use("/subscription", subscriptionRouter);
     this.app.use(errorHandler);
   }
 
