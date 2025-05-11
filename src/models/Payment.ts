@@ -2,7 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 import { PaymentEntityType } from "../types/types";
 
 const PaymentSchema = new Schema({
-  student: {
+  user: {
     type: Types.ObjectId,
     ref: 'User',
     required: true,

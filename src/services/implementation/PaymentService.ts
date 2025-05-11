@@ -15,7 +15,7 @@ export class PaymentService implements IPaymentService {
         const data: PaymentResponseDTO[] = payments.map((payment) => {
             return {
                 _id: String(payment._id),
-                student: String(payment.student),
+                student: String(payment.user),
                 paymentFor: payment.paymentFor,
                 relatedId: String(payment.relatedId),
                 amountPaid: payment.amountPaid,

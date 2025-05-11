@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SubscriptionEntityType } from "../types/SubscriptionType";
 
 const subscriptionSchema = new mongoose.Schema(
   {
@@ -36,7 +37,7 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model<null>(
+export default mongoose.model<SubscriptionEntityType>(
   "Subscription",
   subscriptionSchema,
   "Subscriptions"

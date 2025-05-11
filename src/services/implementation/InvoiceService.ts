@@ -168,7 +168,7 @@ export class InvoiceService implements IInvoiceService {
         }
 
         const payment = await this._paymentRepository.createPayment({
-          student: invoice.student,
+          user: invoice.student,
           paymentFor: "Invoice",
           relatedId: invoice._id ? invoice._id : "",
           amountPaid: session.amount_total as number,
@@ -206,7 +206,7 @@ export class InvoiceService implements IInvoiceService {
         }
 
         const payment = await this._paymentRepository.createPayment({
-          student: invoice.student,
+          user: invoice.student,
           paymentFor: "Invoice",
           relatedId: invoice._id ? invoice._id : "",
           amountPaid: invoice.totalAmount,
@@ -220,7 +220,7 @@ export class InvoiceService implements IInvoiceService {
       }
 
       default:
-        console.log(`⚠️ Unhandled event type: ${event.type}`);
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
     return "completed";

@@ -15,7 +15,7 @@ class PaymentRepository
     try {
       return await this.create({
         ...data,
-        student: new mongoose.Types.ObjectId(data.student),
+        user: new mongoose.Types.ObjectId(data.user),
         relatedId: new mongoose.Types.ObjectId(data.relatedId)
       })
     } catch (error) {

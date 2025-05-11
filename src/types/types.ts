@@ -388,7 +388,7 @@ export interface InvoiceDetailsEntityType {
 
 export interface PaymentEntityType {
   _id?: mongoose.Types.ObjectId | string; 
-  student: mongoose.Types.ObjectId | string; 
+  user: mongoose.Types.ObjectId | string; 
   paymentFor: 'Invoice' | 'Subscription';
   relatedId: mongoose.Types.ObjectId | string; 
   amountPaid: number;
