@@ -36,7 +36,9 @@ const Messages = {
     CONVERSATION_NOT_FOUND: "Conversation not found",
     EXAM_NOT_FOUND: "Exam not found",
     EXAMRESULT_NOT_FOUND: "Exam result not found",
-    TIMETABLE_NOT_FOUND: "Timetable not found"
+    SUBSCRIPTION_NOT_FOUND: "Subscription not found",
+    TIMETABLE_NOT_FOUND: "Timetable not found",
+    PLAN_NOT_FOUND: "Plan not found",
   };
 
   export default Messages

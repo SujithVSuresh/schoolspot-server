@@ -1,2 +1,3 @@
 C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250505-0000-01-access.log
 C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250506-0000-01-access.log
+C:\Users\sujit\Documents\Brototype\SchoolSpot\backend\src\logs\20250512-0000-01-access.log

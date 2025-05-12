@@ -3,5 +3,6 @@ import { SubscriptionStatusType } from "../../types/SubscriptionType";
 
 export interface ISubscriptionRepository {
     createSubscription(data: SubscriptionEntityType): Promise<SubscriptionEntityType>
-    changeSubscriptionStatus(id: string, status: SubscriptionStatusType): Promise<SubscriptionEntityType | null>
+    updateSubscription(id: string, data: Partial<SubscriptionEntityType>): Promise<SubscriptionEntityType | null>
+    findSubscription(data: {schoolId: string; status: SubscriptionStatusType}): Promise<SubscriptionEntityType | null>
 }

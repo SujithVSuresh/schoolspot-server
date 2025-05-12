@@ -4,8 +4,12 @@ import SchoolRepository from "../repositories/implementaion/SchoolRepository";
 import { AuthService } from "../services/implementation/AuthService";
 import { AuthController } from "../controllers/implementation/AuthController";
 import { protectRoute } from "../middlewares/AuthHandler";
+import { SubscriptionService } from "../services/implementation/SubscriptionService";
+import SubscriptionRepository from "../repositories/implementaion/SubscriptionRepository";
+import PlanRepository from "../repositories/implementaion/PlanRepository";
 
-const authService = new AuthService(UserRepository, SchoolRepository);
+const subscriptionService = new SubscriptionService(PlanRepository, SubscriptionRepository)
+const authService = new AuthService(UserRepository, SchoolRepository, SubscriptionRepository, subscriptionService);
 
 const authController = new AuthController(authService);
 

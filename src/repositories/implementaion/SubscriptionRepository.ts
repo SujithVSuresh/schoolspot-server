@@ -23,7 +23,7 @@ class SubscriptionRepository
         ...data,
         userId: new mongoose.Types.ObjectId(data.userId),
         schoolId: new mongoose.Types.ObjectId(data.schoolId),
-        planId: new mongoose.Types.ObjectId(data.planId),
+        planId: new mongoose.Types.ObjectId(data.planId as string),
       });
 
       return response;
@@ -33,14 +33,11 @@ class SubscriptionRepository
     }
   }
 
-  async changeSubscriptionStatus(
-    id: string,
-    status: SubscriptionStatusType
-  ): Promise<SubscriptionEntityType | null> {
+  async updateSubscription(id: string, data: Partial<SubscriptionEntityType>): Promise<SubscriptionEntityType | null> {
     try {
       const response = await this.update(
         id,
-        { status } 
+        { ...data } 
       );
 
       return response;
@@ -48,6 +45,35 @@ class SubscriptionRepository
       console.error("Error creating subscription", error);
       throw new Error("Error creating subscription");
     }
+  }
+
+  async findSubscription(data: { schoolId: string; status: SubscriptionStatusType; }): Promise<SubscriptionEntityType | null> {
+         try {
+      const response = await Subscription.aggregate([
+        {
+            $match: {
+                schoolId: new mongoose.Types.ObjectId(data.schoolId),
+                status: "active"
+            }
+        },
+        {
+            $lookup: {
+                from: 'Plan',
+                foreignField: '_id',
+                localField: 'planId',
+                as: 'planId'
+            }
+        },
+        {
+            $unwind: "$planId"
+        }
+      ])
+
+      return response[0];
+    } catch (error) {
+      console.error("Error finding subscription", error);
+      throw new Error("Error finding subscription");
+    } 
   }
 }
 

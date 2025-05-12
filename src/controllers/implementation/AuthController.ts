@@ -153,6 +153,7 @@ export class AuthController implements IAuthController {
 
   async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      console.log(req.cookies, "cokkkkkkkkkkk")
       if(!req.cookies) {
         res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
         return;

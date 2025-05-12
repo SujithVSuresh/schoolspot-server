@@ -28,7 +28,7 @@ import notificationRouter from "./routes/NotificationRouter";
 import examRouter from "./routes/ExamRouter";
 import timetableRouter from "./routes/TimeTableRouter";
 import examResultRouter from "./routes/ExamResultRouter";
-import subscriptionRouter from "./routes/Subscriptionrouter";
+import subscriptionRouter from "./routes/SubscriptionRouter";
 
 class App {
   public app;
@@ -66,6 +66,7 @@ class App {
   }
 
   private initializeMiddleware(): void {
+
     this.app.use(
       cors({
         origin: ["http://localhost:3000", "http://localhost:5173"],
@@ -73,10 +74,10 @@ class App {
         credentials: true,
       })
     );
+    this.app.use(cookieParser());
   
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(cookieParser());
     this.app.use(consoleLogger);
     this.app.use(fileLogger);
   }

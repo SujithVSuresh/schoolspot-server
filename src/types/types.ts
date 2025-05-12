@@ -28,9 +28,10 @@ export interface UserResponseType extends BaseUser {
 export interface PayloadType {
   userId: string;
   role: string;
-  iat: number;
+  iat?: number;
   exp?: number;
   schoolId: string;
+  subscribed?: boolean;
 }
 
 export interface CustomRequest extends Request {
