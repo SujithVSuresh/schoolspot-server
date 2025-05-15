@@ -14,7 +14,7 @@ const timetableRouter = Router()
 timetableRouter.post("/", protectRoute(["admin"]), timetableController.createTimetable.bind(timetableController));
 timetableRouter.put("/", protectRoute(["admin"]), timetableController.updateTimetable.bind(timetableController));
 timetableRouter.delete("/", protectRoute(["admin"]), timetableController.deleteTimetable.bind(timetableController));
-timetableRouter.get("/", protectRoute(["admin"]), timetableController.findTimetable.bind(timetableController));
+timetableRouter.get("/:classId", protectRoute(["admin"]), timetableController.findTimetableByClass.bind(timetableController));
 
 
 export default timetableRouter

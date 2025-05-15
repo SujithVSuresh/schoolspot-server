@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import { MessageType, MessageStatusType, ConversationStatusType } from "../types/ChatType";
+
 
 export interface CreateConversationDTO {
     isGroup: boolean;
@@ -9,14 +10,22 @@ export interface CreateConversationDTO {
 }
 
 
+export interface UpdateConversationDTO {
+    participants: string[]; 
+    name: string;
+}
+
+
 export interface ConversationResponseDTO {
     _id: string
     isGroup: boolean;
     name?: string;
+    status: ConversationStatusType;
     subjectId: string;
     createdBy: string; 
     createdAt: Date;
 }
+
 
 export interface ConversationListResponseDTO {
     _id: string
@@ -24,20 +33,22 @@ export interface ConversationListResponseDTO {
     participants?: string[];
     name?: string;
     subjectId: string;
+    status: ConversationStatusType;
     lastMessage: {
         content: string;
-        messageType: "text" | "file",
+        messageType: MessageType,
         createdAt: Date;
     } | {};
     createdBy: string; 
     createdAt: Date;
 }
 
+ 
 
   export interface CreateMessageDTO {
     conversationId: string;
     senderId: string;
-    messageType: "text" | "file";
+    messageType: MessageType;
     content: string;
   }
 
@@ -45,8 +56,9 @@ export interface ConversationListResponseDTO {
     _id: string;
     conversationId: string;
     senderId: string;
-    messageType: "text" | "file";
+    messageType: MessageType;
     content: string;
+    status: MessageStatusType
     createdAt: Date;
     updatedAt: Date;
   }
@@ -59,8 +71,9 @@ export interface ConversationListResponseDTO {
         email: string;
         role: 'superadmin' | 'admin' | 'teacher' | 'student';
     };
-    messageType: "text" | "file";
+    messageType: MessageType;
     content: string;
+    status: MessageStatusType;
     createdAt: Date;
     updatedAt: Date;
   }

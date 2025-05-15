@@ -17,6 +17,11 @@ const ConversationSchema = new Schema(
     name: {
       type: String,
     },
+    status: {
+      type: String,
+      enum: ["active", "deleted"],
+      default: "active",
+    }, 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -30,7 +35,7 @@ const ConversationSchema = new Schema(
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
-    },
+    }
   },
   {
     timestamps: true,

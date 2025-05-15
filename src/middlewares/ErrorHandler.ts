@@ -10,6 +10,8 @@ export const errorHandler = (err: CustomError , req: Request, res: Response, nex
         message = err.message;
     }
 
+    console.error(err);
+
     res.status(statusCode).json({
         status: statusCode,
         message: message

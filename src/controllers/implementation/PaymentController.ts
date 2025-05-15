@@ -18,7 +18,6 @@ export class PaymentController implements IPaymentController{
             const response = await this._paymentService.findPaymentsByInvoiceId(invoiceId as string)
 
             res.status(HttpStatus.CREATED).json(response)
-
         }catch(err){
             next(err)
         }

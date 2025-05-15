@@ -28,6 +28,8 @@ export class ExamController implements IExamController {
                     }
                 })
             }
+
+            console.log(examData, "jiljil")
             const response = await this._examService.createExam(examData)
 
             res.status(HttpStatus.OK).json(response)

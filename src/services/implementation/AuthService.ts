@@ -24,13 +24,16 @@ import { ISchoolRepository } from "../../repositories/interface/ISchoolRepositor
 import { ChangePasswordRequestDTO } from "../../dto/AuthDTO";
 import { ISubscriptionRepository } from "../../repositories/interface/ISubscriptionRepository";
 import { ISubscriptionService } from "../interface/ISubscriptionService";
+import { IPlanRepository } from "../../repositories/interface/IPlanRespository";
+
 
 export class AuthService implements IAuthService {
   constructor(
     private _userRepository: IUserRepository,
     private _schoolRepository: ISchoolRepository,
     private _subscriptionRepository: ISubscriptionRepository,
-    private _subscriptionService: ISubscriptionService
+    private _subscriptionService: ISubscriptionService,
+    private _planRepository: IPlanRepository
   ) {}
 
   async signup(user: UserType, school: SchoolProfileType): Promise<string> {
@@ -115,28 +118,32 @@ export class AuthService implements IAuthService {
       schoolId: schoolData._id,
     });
 
-    const subscription = await this._subscriptionRepository.createSubscription({
+    const plan = await this._planRepository.findPlanByDuration(30)
+
+    if(!plan) {
+      throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    await this._subscriptionRepository.createSubscription({
       userId: String(userData._id),
       schoolId: String(userData.schoolId),
-      planId: "dsaf",
+      planId: String(plan._id),
+      planPrice: plan.price,
       startDate: new Date(),
       endDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
       status: "active",
     });
 
-    const accessToken = authToken.generateAccessToken({
+    const payload: PayloadType = {
       userId: String(userData._id),
       role: "admin",
       schoolId: String(schoolData._id),
       subscribed: true,
-    });
+    }
 
-    const refreshToken = authToken.generateRefreshToken({
-      userId: String(userData._id),
-      role: "admin",
-      schoolId: String(schoolData._id),
-      subscribed: true,
-    });
+    const accessToken = authToken.generateAccessToken(payload);
+
+    const refreshToken = authToken.generateRefreshToken(payload);
 
     return {
       _id: String(userData._id),
@@ -184,6 +191,7 @@ export class AuthService implements IAuthService {
     role: string
   ): Promise<UserResponseType> {
     const user = await this._userRepository.findByEmail(email);
+    console.log(String(user?.schoolId), "user");
 
     if (!user || (user && !user.password)) {
       throw new CustomError(
@@ -234,6 +242,8 @@ export class AuthService implements IAuthService {
         String(subscription.endDate)
       );
     }
+
+   
 
     const payload: PayloadType = {
       userId: String(user._id),
@@ -341,7 +351,6 @@ export class AuthService implements IAuthService {
           schoolId: school._id,
         });
 
-        console.log(userData, "blaaaa");
 
         // subscription = await this._subscriptionRepository.createSubscription({
         //   userId: String(userData._id),
@@ -399,14 +408,16 @@ export class AuthService implements IAuthService {
       throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.FORBIDDEN);
     }
 
-    // const subscription = await this._subscriptionService.handleSubscription(String(user.schoolId))
+    const subscription = await this._subscriptionService.handleSubscription(String(user.schoolId))
 
     const accessToken = authToken.generateAccessToken({
-      userId: String(user._id),
-      role: "admin",
-      schoolId: String(user.schoolId),
+      userId: String(payload.userId),
+      role: payload.role,
+      schoolId: String(payload.schoolId),
       subscribed: true,
     });
+
+    console.log(accessToken, "user55555555555555");
 
     return {
       _id: String(user._id),

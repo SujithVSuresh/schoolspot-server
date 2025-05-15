@@ -23,6 +23,11 @@ const MessageSchema = new Schema(
       type: String,
       required: true
     },
+    status: {
+      type: String,
+      enum: ["active", "deleted"],
+      default: "active",
+    }, 
     readBy: [
       {
         type: mongoose.Schema.Types.ObjectId,

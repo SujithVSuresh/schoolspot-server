@@ -33,12 +33,12 @@ class SubscriptionRepository
     }
   }
 
-  async updateSubscription(id: string, data: Partial<SubscriptionEntityType>): Promise<SubscriptionEntityType | null> {
+  async updateSubscription(
+    id: string,
+    data: Partial<SubscriptionEntityType>
+  ): Promise<SubscriptionEntityType | null> {
     try {
-      const response = await this.update(
-        id,
-        { ...data } 
-      );
+      const response = await this.update(id, { ...data });
 
       return response;
     } catch (error) {
@@ -47,34 +47,93 @@ class SubscriptionRepository
     }
   }
 
-  async findSubscription(data: { schoolId: string; status: SubscriptionStatusType; }): Promise<SubscriptionEntityType | null> {
-         try {
+  async findSubscription(data: {
+    schoolId: string;
+    status: SubscriptionStatusType;
+  }): Promise<SubscriptionEntityType | null> {
+    try {
       const response = await Subscription.aggregate([
         {
-            $match: {
-                schoolId: new mongoose.Types.ObjectId(data.schoolId),
-                status: "active"
-            }
+          $match: {
+            schoolId: new mongoose.Types.ObjectId(data.schoolId),
+            status: data.status,
+          },
         },
         {
-            $lookup: {
-                from: 'Plan',
-                foreignField: '_id',
-                localField: 'planId',
-                as: 'planId'
-            }
+          $lookup: {
+            from: "Plans",
+            foreignField: "_id",
+            localField: "planId",
+            as: "planId",
+          },
         },
         {
-            $unwind: "$planId"
-        }
-      ])
+          $unwind: "$planId",
+        },
+      ]);
 
       return response[0];
     } catch (error) {
       console.error("Error finding subscription", error);
       throw new Error("Error finding subscription");
-    } 
+    }
   }
+
+
+  async findSubscriptionById(id: string): Promise<SubscriptionEntityType | null> {
+        try {
+      const response = await Subscription.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(id),
+          },
+        },
+        {
+          $lookup: {
+            from: "Plans",
+            foreignField: "_id",
+            localField: "planId",
+            as: "planId",
+          },
+        },
+        {
+          $unwind: "$planId",
+        },
+      ]);
+
+      return response[0];
+    } catch (error) {
+      console.error("Error finding subscription", error);
+      throw new Error("Error finding subscription");
+    }
+  }
+
+
+  async findSubscriptionsBySchoolId(
+    schoolId: string
+  ): Promise<SubscriptionEntityType[]> {
+    try {
+      const response = await this.findByQuery({
+        schoolId: new mongoose.Types.ObjectId(schoolId),
+      });
+
+      return response;
+    } catch (error) {
+      console.error("Error finding subscriptions", error);
+      throw new Error("Error finding subscriptions");
+    }
+  }
+
+  async deleteSubscription(id: string): Promise<boolean> {
+    try{
+      return this.delete(id);
+
+    } catch (error) {
+      console.error("Error deleting subscription", error);
+      throw new Error("Error deleting subscription");
+    }
+  }
+
 }
 
 export default new SubscriptionRepository();

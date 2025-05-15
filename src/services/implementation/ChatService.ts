@@ -1,12 +1,15 @@
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
-import { CreateConversationDTO, ConversationResponseDTO, ConversationListResponseDTO, CreateMessageDTO, MessageResponseDTO, MessageWithSenderResponseDTO } from "../../dto/ChatDTO";
+import { CreateConversationDTO, ConversationResponseDTO, ConversationListResponseDTO, CreateMessageDTO, MessageWithSenderResponseDTO, UpdateConversationDTO } from "../../dto/ChatDTO";
 import { IConversationRepository } from "../../repositories/interface/IConversationRepository";
 import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
+import { ConversationEntityType, ConversationStatusType } from "../../types/ChatType";
 import { CustomError } from "../../utils/CustomError";
 import { IChatService } from "../interface/IChatService";
 import { INotificationService } from "../interface/INotificationService";
+import { MessageStatusType } from "../../types/ChatType";
+
 
 
 export class ChatService implements IChatService {
@@ -25,9 +28,48 @@ export class ChatService implements IChatService {
             _id: String(conversation._id),
             name: conversation.name,
             isGroup: conversation.isGroup,
+            status: conversation.status as ConversationStatusType,
             subjectId: String(conversation.subjectId),
             createdBy: String(conversation.createdBy),
             createdAt: conversation.createdAt as Date
+        }
+    }
+
+
+    async updateConversation(id: string, data: UpdateConversationDTO): Promise<ConversationResponseDTO> {
+        const conversation = await this._conversationRepository.updateConversation(id, data)
+
+        if(!conversation){
+            throw new CustomError(Messages.CONVERSATION_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        return {
+            _id: String(conversation._id),
+            name: conversation.name,
+            isGroup: conversation.isGroup,
+            status: conversation.status as ConversationStatusType,
+            subjectId: String(conversation.subjectId),
+            createdBy: String(conversation.createdBy),
+            createdAt: conversation.createdAt as Date
+        }
+    }
+
+    async deleteConversation(id: string, userId: string): Promise<{ _id: string; }> {
+
+        const conversation = await this._conversationRepository.findConversationById(id)
+
+        if(!conversation){
+            throw new CustomError(Messages.CONVERSATION_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        if(String(conversation.createdBy) != userId){
+            throw new CustomError(Messages.CANNOT_DELETE_CONVERSATION, HttpStatus.UNAUTHORIZED)
+        }
+
+        const response = await this._conversationRepository.deleteConversation(id)
+
+        return {
+            _id: String(response?._id) as string
         }
     }
 
@@ -46,6 +88,7 @@ export class ChatService implements IChatService {
                 name: conversation.name,
                 participants: conversation.participants.map((userId: any) => String(userId)),
                 subjectId: String(conversation.subjectId),
+                status: conversation.status,
                 lastMessage: !conversation.lastMessage ? {} :  {
                     content: conversation.lastMessage.content,
                     messageType: conversation.lastMessage.messageType,
@@ -82,7 +125,7 @@ export class ChatService implements IChatService {
             userId: updateLastMessage.participants.map((id) => String(id)),
             notificationType: "message",
             message: message.content
-          })
+        })
 
         return {
             _id: String(message._id),
@@ -92,6 +135,7 @@ export class ChatService implements IChatService {
                 email: user.email,
                 role: user.role
             },
+            status: message.status as MessageStatusType,
             messageType: message.messageType,
             content: message.content,
             createdAt: message.createdAt as Date,
@@ -111,6 +155,7 @@ export class ChatService implements IChatService {
                     email: message.senderId.email,
                     role: message.senderId.role
                 },
+                status: message.status as MessageStatusType,
                 messageType: message.messageType,
                 content: message.content,
                 createdAt: message.createdAt as Date,
@@ -119,6 +164,30 @@ export class ChatService implements IChatService {
         })
 
         return messages
+    }
+
+
+    async deleteMessage(messageId: string, userId: string): Promise<{ _id: string; }> {
+
+        const message = await this._messageRepository.findMessageById(messageId)
+
+        const conversation = message?.conversationId as ConversationEntityType;
+
+        if(String(message?.senderId) !== userId && String(conversation.createdBy) !== userId){
+            throw new CustomError(Messages.CANNOT_DELETE_MESSAGE, HttpStatus.UNAUTHORIZED)
+        }
+
+        console.log("ga")
+
+        const deleteMessage = await this._messageRepository.deleteMessage(messageId)
+
+        if(!deleteMessage){
+            throw new CustomError(Messages.MESSAGE_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+
+        return {
+            _id: String(deleteMessage._id)
+        }
     }
 
 

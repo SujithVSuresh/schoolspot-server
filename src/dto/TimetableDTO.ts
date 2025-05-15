@@ -23,5 +23,5 @@ export interface Period {
   export interface TimetableResponseDTO {
     _id: string;
     classId: string;
-    timetable: DaySchedule[];
+    timetable?: DaySchedule[];
   }

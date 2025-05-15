@@ -15,6 +15,8 @@ export class TimeTableController implements ITimeTableController {
         try{
             const data = req.body
 
+            console.log(data ,"ddaa", data.classId)
+
             const timetableData: CreateTimetableDTO = {
                 classId: data.classId,
                 timetable: data.timetable
@@ -62,11 +64,11 @@ export class TimeTableController implements ITimeTableController {
         }
     }
 
-    async findTimetable(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async findTimetableByClass(req: Request, res: Response, next: NextFunction): Promise<void> {
         try{
-            const {id} = req.params
+            const {classId} = req.params
 
-            const response = await this._timetableService.findTimetable(id)
+            const response = await this._timetableService.findTimetableByClass(classId)
 
             res.status(HttpStatus.OK).json(response)
 

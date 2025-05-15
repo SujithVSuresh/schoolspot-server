@@ -22,6 +22,7 @@ export interface CreateSubscriptionDTO {
   userId: string;
   schoolId: string;
   planId: string;
+  planPrice: number;
   startDate: Date;
   endDate: Date;
   status: SubscriptionStatusType;
@@ -32,6 +33,18 @@ export interface SubscriptionResponseDTO {
   userId: string;
   schoolId: string;
   planId: string;
+  planPrice: number;
+  startDate: Date;
+  endDate: Date;
+  status: SubscriptionStatusType;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SubscriptionListResponseDTO {
+  _id: string
+  planId: string;
+  planPrice: number;
   startDate: Date;
   endDate: Date;
   status: SubscriptionStatusType;

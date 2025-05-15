@@ -43,13 +43,33 @@ class PlanRepository
     }
   }
 
-  async findPlans(): Promise<PlanEntityType[]> {
+  async findAllPlans(): Promise<PlanEntityType[]> {
     try {
       const plans = await this.findAll();
       return plans;
     } catch (error) {
       console.error("Error finding plans", error);
       throw new Error("Error finding plans");
+    }
+  }
+
+  async findPlanByDuration(duration: number): Promise<PlanEntityType | null> {
+    try {
+      const plans = await this.findOne({durationInDays: duration})
+      return plans;
+    } catch (error) {
+      console.error("Error finding plans", error);
+      throw new Error("Error finding plans");
+    }
+  }
+
+  async findPlanById(id: string): Promise<PlanEntityType | null> {
+    try {
+      const plan = await this.findById(id);
+      return plan;
+    } catch (error) {
+      console.error("Error finding plan", error);
+      throw new Error("Error finding plan");
     }
   }
 }

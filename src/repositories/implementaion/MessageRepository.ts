@@ -15,7 +15,7 @@ class MessageRepository
   async createMessage(data: MessageEntityType): Promise<MessageEntityType> {
     try {
       return await this.create({
-        conversationId: new mongoose.Types.ObjectId(data.conversationId),
+        conversationId: new mongoose.Types.ObjectId(data.conversationId as string),
         senderId: new mongoose.Types.ObjectId(data.senderId as string),
         messageType: data.messageType,
         content: data.content,
@@ -56,6 +56,54 @@ class MessageRepository
         console.error("Error creating message", error);
         throw new Error("Error creating message");
       }
+  }
+
+
+  async deleteMessage(messageId: string): Promise<MessageEntityType | null> {
+    try{
+
+      const message = await this.update(messageId, {
+        status: "deleted"
+      })
+
+      return message
+
+    }catch(error){
+        console.error("Error deleting message", error);
+        throw new Error("Error deleting message");
+    }
+  }
+
+  async findMessageById(messageId: string): Promise<MessageEntityType | null> {
+    try{
+
+      const message = await Message.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(messageId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'Conversations',
+                    localField: 'conversationId',
+                    foreignField: '_id',
+                    as: 'conversationId'
+                }
+            },
+            {
+                $unwind: {
+                    path: "$conversationId"
+                }
+            }
+        ])
+
+        return message[0]
+        
+    }catch(error){
+        console.error("Error finding message", error);
+        throw new Error("Error deleting message");
+    }
   }
 }
 

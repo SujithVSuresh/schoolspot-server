@@ -2,6 +2,7 @@ import TimeTable from "../../models/TimeTable";
 import { TimeTableEntityType } from "../../types/TimeTableType";
 import { ITimeTableRepository } from "../interface/ITimeTableRepository";
 import { BaseRepository } from "./BaseRepository";
+import mongoose from "mongoose";
 
 
 
@@ -43,6 +44,19 @@ class TimeTableRepository extends BaseRepository<TimeTableEntityType> implements
         }catch(error){
             console.error("Error deleting timetable", error);
             throw new Error("Error deleting timetable")
+        }
+    }
+
+    async findTimeTableByClassId(id: string): Promise<TimeTableEntityType | null> {
+        try{
+            return await this.findOne({
+                classId: new mongoose.Types.ObjectId(id)
+            })
+
+            
+        }catch(error){
+            console.error("Error finding timetable", error);
+            throw new Error("Error finding timetable")
         }
     }
 }

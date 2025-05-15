@@ -34,6 +34,8 @@ export class InvoiceService implements IInvoiceService {
       data.school
     );
 
+    console.log(students, "students");
+
     const studentInvoices: InvoiceEntityType[] = students.map(
       (student: StudentProfileUserEntityType) => {
         return {

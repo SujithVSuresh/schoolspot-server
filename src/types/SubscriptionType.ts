@@ -10,13 +10,14 @@ export interface PlanEntityType {
   updatedAt?: Date;
 }
 
-export type SubscriptionStatusType = "pending" | "active" | "expired" | "cancelled"
+export type SubscriptionStatusType = "pending" | "queued" | "active" | "expired" | "cancelled"
 
 export interface SubscriptionEntityType {
   _id?: mongoose.Types.ObjectId | string;
   userId:  mongoose.Types.ObjectId | string;
   schoolId:  mongoose.Types.ObjectId | string;
   planId:  mongoose.Types.ObjectId | string | PlanEntityType;
+  planPrice: number;
   startDate: Date;
   endDate: Date;
   status: SubscriptionStatusType;

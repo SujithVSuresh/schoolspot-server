@@ -9,16 +9,16 @@ import { ITimeTableService } from "../interface/ITimeTableService";
 
 export class TimeTableService implements ITimeTableService {
     constructor(
-        _timetableRepository: ITimeTableRepository
+        private _timetableRepository: ITimeTableRepository
     ){}
 
     async createTimetable(data: CreateTimetableDTO): Promise<TimetableResponseDTO> {
-        const response = await this.createTimetable(data)
+        const response = await this._timetableRepository.createTimeTable(data)
         
         return {
-            _id: response._id,
-            classId: response.classId,
-            timetable: response.timetable
+            _id: String(response._id),
+            classId: String(response.classId),
+            // timetable: response.timetable
         }
     }
 
@@ -48,8 +48,8 @@ export class TimeTableService implements ITimeTableService {
         }
     }
 
-    async findTimetable(id: string): Promise<TimetableResponseDTO> {
-        const response = await this.findTimetable(id)
+    async findTimetableByClass(id: string): Promise<TimetableResponseDTO> {
+        const response = await this._timetableRepository.findTimeTableByClassId(id)
 
         if(!response){
             throw new CustomError(Messages.TIMETABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -58,7 +58,14 @@ export class TimeTableService implements ITimeTableService {
         return {
             _id: String(response._id),
             classId: String(response.classId),
-            timetable: response.timetable
+            timetable: response.timetable.map((daySchedule) => ({
+                day: daySchedule.day,
+                periods: daySchedule.periods.map((period) => ({
+                    subject: String(period.subject),
+                    startTime: period.startTime,
+                    endTime: period.endTime
+                }))
+        }))
         }
     }
 }

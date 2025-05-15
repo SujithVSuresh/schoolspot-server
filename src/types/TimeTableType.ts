@@ -13,6 +13,7 @@ export interface Period {
   }
   
   export interface TimeTableEntityType {
+    _id?: mongoose.Types.ObjectId | string;
     classId: mongoose.Types.ObjectId | string;
     timetable: DaySchedule[];
     createdAt?: Date;

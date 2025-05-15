@@ -39,6 +39,10 @@ const Messages = {
     SUBSCRIPTION_NOT_FOUND: "Subscription not found",
     TIMETABLE_NOT_FOUND: "Timetable not found",
     PLAN_NOT_FOUND: "Plan not found",
+    MESSAGE_NOT_FOUND: "Message not found",
+    CANNOT_DELETE_MESSAGE: "You do not have access to delete this message",
+    SUBSCRIPTION_ALREADY_EXISTS: "You already have subscribed to a plan",
+    CANNOT_DELETE_CONVERSATION: "You do not have access to delete tis conversation",
   };
 
   export default Messages

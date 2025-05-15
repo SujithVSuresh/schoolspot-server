@@ -29,6 +29,7 @@ import examRouter from "./routes/ExamRouter";
 import timetableRouter from "./routes/TimeTableRouter";
 import examResultRouter from "./routes/ExamResultRouter";
 import subscriptionRouter from "./routes/SubscriptionRouter";
+import subscriptionWebhookRouter from "./routes/subscriptionWebhookRouter";
 
 class App {
   public app;
@@ -105,6 +106,7 @@ class App {
 
   private initializeWebhookRouter(): void {
     this.app.use("/invoice", invoiceWebhookRouter)
+    this.app.use("/subscription", subscriptionWebhookRouter)
   }
 
   public listen(): void {

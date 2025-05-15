@@ -14,6 +14,8 @@ export const protectRoute = (
     try {
       const authHeader = req.headers.authorization;
 
+      console.log(authHeader, "autthhh..123")
+
       if (!authHeader || !authHeader.startsWith("Bearer")) {
         res.status(401).json({ message: "Access denied, No token provided" });
         return;
@@ -21,15 +23,14 @@ export const protectRoute = (
 
       const token = authHeader.split(" ")[1];
 
+      let role = req.headers["x-user-role"];
+
       try {
         const decoded = jwt.verify(
           token,
           process.env.ACCESS_TOKEN_SECRET as string
         ) as PayloadType;
 
-        console.log("Decoded token:", decoded, decoded?.exp && decoded.exp * 1000 < Date.now());
-
-console.log("Token expired:", decoded?.exp && decoded.exp * 1000, Date.now());
 
         if (!allowedRole.includes(decoded.role)) {
           res.status(403).json({
@@ -40,7 +41,7 @@ console.log("Token expired:", decoded?.exp && decoded.exp * 1000, Date.now());
         }
 
         if(decoded?.exp && decoded.exp * 1000 < Date.now()){
-          res.status(401).json({ message: "Token has expired", code: 'EXPIRED' });
+          res.status(401).json({ message: "Token has expired", code: 'EXPIRED', role: role });
           return
         }
 
@@ -48,7 +49,7 @@ console.log("Token expired:", decoded?.exp && decoded.exp * 1000, Date.now());
         next();
       } catch (jwtError: any) {
         if (jwtError.name === "TokenExpiredError") {
-          res.status(401).json({ message: "Token has expired", code: 'EXPIRED' });
+          res.status(401).json({ message: "Token has expired", code: 'EXPIRED', role: role });
         } else {
           res.status(403).json({ message: "Invalid token" });
         }

@@ -132,7 +132,7 @@ export class AuthController implements IAuthController {
       const { _id, email, role, status, accessToken, refreshToken, authProvider } =
         await this._authService.googleAuth(credential, clientId, schoolData);
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie(`${role}RefreshToken`, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
@@ -154,12 +154,13 @@ export class AuthController implements IAuthController {
   async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       console.log(req.cookies, "cokkkkkkkkkkk")
+      const { role } = req.body
       if(!req.cookies) {
         res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
         return;
       }
 
-      const refreshToken = req.cookies.refreshToken;
+      const refreshToken = req.cookies[`${role}RefreshToken`];
 
       if(!refreshToken) {
         res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})

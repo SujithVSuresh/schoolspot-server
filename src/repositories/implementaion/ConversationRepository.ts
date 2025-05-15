@@ -19,15 +19,27 @@ class ConversationRepository extends BaseRepository<ConversationEntityType> impl
             }
     }
 
+    async findConversationById(id: string): Promise<ConversationEntityType | null> {
+            try {
+                return await this.findById(id)
+            } catch (error) {
+              console.error("Error creating conversation", error);
+              throw new Error("Error creating conversation");
+            }
+    }
 
-    async deleteConversation(id: string): Promise<boolean | null> {
+
+    async deleteConversation(id: string): Promise<ConversationEntityType | null> {
         try {
-            return await this.delete(id)
+            return await this.update(id, {
+                status: "deleted"
+            })
         } catch (error) {
           console.error("Error deleting conversation", error);
           throw new Error("Error deleting conversation");
         }
     }
+
 
     async updateConversation(id: string, data: Partial<ConversationEntityType>): Promise<ConversationEntityType | null> {
         try {

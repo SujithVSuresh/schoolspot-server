@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { UserEntityType } from "./types";
 
+export type MessageType = "text" | "file"
+export type MessageStatusType = "active" | "deleted";
+export type ConversationStatusType = "active" | "deleted";
 
 export interface ConversationEntityType {
     _id?: mongoose.Types.ObjectId | string;
@@ -8,6 +11,7 @@ export interface ConversationEntityType {
     participants: mongoose.Types.ObjectId[] | string[]; 
     name?: string;
     createdBy: mongoose.Types.ObjectId | string; 
+    status?: ConversationStatusType;
     lastMessage?: mongoose.Types.ObjectId | MessageEntityType; 
     subjectId: mongoose.Types.ObjectId | string; 
     createdAt?: Date;
@@ -16,10 +20,11 @@ export interface ConversationEntityType {
 
   export interface MessageEntityType {
     _id?: mongoose.Types.ObjectId | string;
-    conversationId: mongoose.Types.ObjectId | string;
+    conversationId: mongoose.Types.ObjectId | string | ConversationEntityType;
     senderId: mongoose.Types.ObjectId | UserEntityType | string;
-    messageType: "text" | "file";
+    messageType: MessageType;
     content: string;
+    status?: MessageStatusType
     readBy?: mongoose.Types.ObjectId[] | string[];
     createdAt?: Date;
     updatedAt?: Date;
@@ -29,8 +34,9 @@ export interface ConversationEntityType {
     _id?: mongoose.Types.ObjectId | string;
     conversationId: mongoose.Types.ObjectId | string;
     senderId: UserEntityType
-    messageType: "text" | "file";
+    messageType: MessageType;
     content: string;
+    status?: MessageStatusType
     readBy?: mongoose.Types.ObjectId[] | string[];
     createdAt?: Date;
     updatedAt?: Date;

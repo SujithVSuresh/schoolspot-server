@@ -7,9 +7,10 @@ import { protectRoute } from "../middlewares/AuthHandler";
 import { SubscriptionService } from "../services/implementation/SubscriptionService";
 import SubscriptionRepository from "../repositories/implementaion/SubscriptionRepository";
 import PlanRepository from "../repositories/implementaion/PlanRepository";
+import PaymentRepository from "../repositories/implementaion/PaymentRepository";
 
-const subscriptionService = new SubscriptionService(PlanRepository, SubscriptionRepository)
-const authService = new AuthService(UserRepository, SchoolRepository, SubscriptionRepository, subscriptionService);
+const subscriptionService = new SubscriptionService(PlanRepository, SubscriptionRepository, PaymentRepository)
+const authService = new AuthService(UserRepository, SchoolRepository, SubscriptionRepository, subscriptionService, PlanRepository);
 
 const authController = new AuthController(authService);
 
