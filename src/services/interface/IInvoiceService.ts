@@ -2,7 +2,7 @@ import { CreateInvoiceDTO, InvoiceByClassResponseDTO, InvoiceDetailsResponseDTO,
 import Stripe from "stripe";
 
 export interface IInvoiceService {
-    createInvoice(data: CreateInvoiceDTO): Promise<{classId: string}>;
+    createInvoice(data: CreateInvoiceDTO, studentIds: string[]): Promise<{classId: string}>;
     findInvoicesByClassId(classId: string): Promise<InvoiceByClassResponseDTO[]>
     findInvoicesByStudentId(studentId: string): Promise<InvoiceResponseDTO[]>
     createInvoiceSession(invoiceId: string, amount: number): Promise<Stripe.Checkout.Session>

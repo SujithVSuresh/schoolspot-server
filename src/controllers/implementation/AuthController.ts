@@ -5,14 +5,43 @@ import HttpStatus from "../../constants/StatusConstants";
 import Messages from "../../constants/MessageConstants";
 import { CustomRequest } from "../../types/types";
 import { ChangePasswordRequestDTO } from "../../dto/AuthDTO";
+import { CreateSchoolProfileDTO } from "../../dto/SchoolDTO";
+import { CreateUserDTO } from "../../dto/UserDTO";
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {schoolData, userData} = req.body
-      const email = await this._authService.signup(userData, schoolData);
+      const { schoolData, userData } = req.body;
+
+      const schoolDataToCache: CreateSchoolProfileDTO  = {
+      schoolName: schoolData.schoolName,
+      phoneNumber: schoolData.phoneNumber,
+      board: schoolData.board,
+      principalName: schoolData.principalName,
+      regNumber: schoolData.regNumber,
+      totalStudents: schoolData.totalStudents,
+      totalTeachers: schoolData.totalTeachers,
+      websiteUrl: schoolData.websiteUrl,
+      yearEstablished: schoolData.yearEstablished,
+      address: {
+        city: schoolData.city,
+        country: schoolData.country,
+        state: schoolData.state,
+        postalCode: schoolData.postalCode
+      } 
+    }
+
+    const userDataToCache: CreateUserDTO = {
+      email: userData.email,
+      password: userData.password,
+      role: "admin",
+      authProvider: "email",
+      schoolId: "",
+      status: "inactive"
+    }
+      const email = await this._authService.signup(userDataToCache, schoolDataToCache, schoolData.academicYear);
       res.status(HttpStatus.OK).json({ email });
     } catch (err) {
       next(err);
@@ -22,9 +51,17 @@ export class AuthController implements IAuthController {
   async verify(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { otp, email } = req.body;
-      const {accessToken, refreshToken, _id, email: userEmail, role, status, schoolId} = await this._authService.verify(otp, email);
+      const {
+        accessToken,
+        refreshToken,
+        _id,
+        email: userEmail,
+        role,
+        status,
+        schoolId,
+      } = await this._authService.verify(otp, email);
 
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie("adminRefreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
@@ -37,7 +74,7 @@ export class AuthController implements IAuthController {
         role,
         status,
         accessToken,
-        schoolId
+        schoolId,
       });
     } catch (err) {
       next(err);
@@ -60,7 +97,7 @@ export class AuthController implements IAuthController {
 
   async signin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, password, role:userRole } = req.body;
+      const { email, password, role: userRole } = req.body;
       const {
         _id,
         email: userEmail,
@@ -128,9 +165,16 @@ export class AuthController implements IAuthController {
   ): Promise<void> {
     try {
       const { credential, clientId } = req.body.payload;
-      const schoolData = req.body.schoolData
-      const { _id, email, role, status, accessToken, refreshToken, authProvider } =
-        await this._authService.googleAuth(credential, clientId, schoolData);
+      const schoolData = req.body.schoolData;
+      const {
+        _id,
+        email,
+        role,
+        status,
+        accessToken,
+        refreshToken,
+        authProvider,
+      } = await this._authService.googleAuth(credential, clientId, schoolData);
 
       res.cookie(`${role}RefreshToken`, refreshToken, {
         httpOnly: true,
@@ -144,41 +188,55 @@ export class AuthController implements IAuthController {
         role,
         status,
         accessToken,
-        authProvider
+        authProvider,
       });
     } catch (err) {
       next(err);
     }
   }
 
-  async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async refreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      console.log(req.cookies, "cokkkkkkkkkkk")
-      const { role } = req.body
-      if(!req.cookies) {
-        res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
+      console.log(req.cookies, "cokkkkkkkkkkk");
+      const { role } = req.body;
+      if (!req.cookies) {
+        res.status(HttpStatus.FORBIDDEN).json({ error: Messages.NO_TOKEN });
         return;
       }
 
       const refreshToken = req.cookies[`${role}RefreshToken`];
 
-      if(!refreshToken) {
-        res.status(HttpStatus.FORBIDDEN).json({error: Messages.NO_TOKEN})
+      if (!refreshToken) {
+        res.status(HttpStatus.FORBIDDEN).json({ error: Messages.NO_TOKEN });
         return;
       }
-      const response = await this._authService.refreshToken(refreshToken)
-      res.status(HttpStatus.OK).json(response)
+      const response = await this._authService.refreshToken(refreshToken);
+      res.status(HttpStatus.OK).json(response);
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 
+  async createUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email, password, role, status, schoolId } = req.body;
 
-  async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try{
-      const {email, password, role, status} = req.body
-
-      const user = await this._authService.createUser({email, password, role, status})
+      const user = await this._authService.createUser({
+        email,
+        password,
+        role,
+        status,
+        schoolId,
+        authProvider: "email"
+      });
 
       res.status(HttpStatus.CREATED).json({
         _id: user._id,
@@ -186,53 +244,63 @@ export class AuthController implements IAuthController {
         role: user.email,
         status: user.status,
       });
-
-    }catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
   }
 
-  async getAllStudents(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try{
+  // async getAllStudents(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //   try{
 
-      const users = await this._authService.getAllStudents()
+  //     const users = await this._authService.getAllStudents()
 
-      res.status(HttpStatus.CREATED).json(users);
+  //     res.status(HttpStatus.CREATED).json(users);
 
-    }catch(err){
-      next(err)
-    }
-  }
+  //   }catch(err){
+  //     next(err)
+  //   }
+  // }
 
-  async changeAccountStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try{
-      const {status, userId} = req.body
+  async changeAccountStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { status, userId } = req.body;
 
-      const response = await this._authService.changeAccountStatus(userId, status)
+      const response = await this._authService.changeAccountStatus(
+        userId,
+        status
+      );
 
       res.status(HttpStatus.OK).json(response);
-
-    }catch(err){
-      next(err)
+    } catch (err) {
+      next(err);
     }
   }
 
-  async changePassword(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
-    try{
-      const userId = req.user?.userId
+  async changePassword(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.user?.userId;
 
       const data: ChangePasswordRequestDTO = {
         oldPassword: req.body.oldPassword,
-        newPassword: req.body.newPassword
-      }
+        newPassword: req.body.newPassword,
+      };
 
-      const response = await this._authService.changePassword(userId as string, data)
+      const response = await this._authService.changePassword(
+        userId as string,
+        data
+      );
 
-
-      res.status(HttpStatus.OK).json({email: response})
-
-    }catch(err){
-      next(err)
+      res.status(HttpStatus.OK).json({ email: response });
+    } catch (err) {
+      next(err);
     }
   }
 }

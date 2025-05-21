@@ -58,6 +58,7 @@ export class StudentService implements IStudentService {
       role: "student",
       status: "active",
       schoolId: new mongoose.Types.ObjectId(schoolId),
+      authProvider: "email"
     });
 
     let profilePhotoURL = null;

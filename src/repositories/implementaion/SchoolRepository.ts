@@ -1,15 +1,15 @@
 import School from '../../models/School'
 import { BaseRepository } from './BaseRepository';
-import { SchoolProfileType } from '../../types/types';
 import { ISchoolRepository } from '../interface/ISchoolRepository';
+import { SchoolProfileEntityType } from '../../types/SchoolProfileType';
 
 
-class SchoolRepository extends BaseRepository<SchoolProfileType> implements ISchoolRepository {
+class SchoolRepository extends BaseRepository<SchoolProfileEntityType> implements ISchoolRepository {
     constructor(){
         super(School)
     }
 
-    async createSchoolProfile(data: SchoolProfileType): Promise<SchoolProfileType> {
+    async createSchoolProfile(data: SchoolProfileEntityType): Promise<SchoolProfileEntityType> {
         try{
             return await this.create(data)
         }catch(error){
@@ -18,18 +18,18 @@ class SchoolRepository extends BaseRepository<SchoolProfileType> implements ISch
         }
     }
 
-        async findSchoolById(id: string): Promise<SchoolProfileType>{
+        async findSchoolById(id: string): Promise<SchoolProfileEntityType | null>{
             try{
-                return await this.findById(id) as SchoolProfileType
+                return await this.findById(id)
             } catch(error){
                 console.error("Error updating user", error);
                 throw new Error("Error updating user")
             }
         }
 
-        async updateSchoolProfile(id: string, data:SchoolProfileType): Promise<SchoolProfileType | null>{
+        async updateSchoolProfile(id: string, data:SchoolProfileEntityType): Promise<SchoolProfileEntityType | null>{
             try{
-                return await this.update(id, data) as SchoolProfileType
+                return await this.update(id, data)
             }catch(error){
                 console.error("Error updating user", error);
                 throw new Error("Error updating user")

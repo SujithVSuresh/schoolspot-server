@@ -7,7 +7,7 @@ import { protectRoute } from "../middlewares/AuthHandler"
 import express from 'express'
 import PaymentRepository from "../repositories/implementaion/PaymentRepository"
 
-const invoiceService = new InvoiceService(InvoiceRepository, StudentRepository, PaymentRepository)
+const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository)
 
 const invoiceController = new InvoiceController(invoiceService)
 

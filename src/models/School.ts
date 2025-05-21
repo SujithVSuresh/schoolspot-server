@@ -1,9 +1,8 @@
-import mongoose, {Schema} from "mongoose";
-import { SchoolProfileType } from "../types/types";
+import mongoose from "mongoose";
+import { SchoolProfileEntityType } from "../types/SchoolProfileType";
 
 const SchoolProfileSchema = new mongoose.Schema({
     schoolName: { type: String, required: true },
-    email: {type: String},
     phoneNumber: { type: String, required: true },
     regNumber: { type: String, required: true },
     yearEstablished: { type: Number, required: true },
@@ -20,5 +19,5 @@ const SchoolProfileSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-const SchoolProfile = mongoose.model<SchoolProfileType>("School", SchoolProfileSchema, "Schools");
+const SchoolProfile = mongoose.model<SchoolProfileEntityType>("School", SchoolProfileSchema, "Schools");
 export default SchoolProfile

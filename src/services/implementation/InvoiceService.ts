@@ -22,24 +22,15 @@ import { IPaymentRepository } from "../../repositories/interface/IPaymentReposit
 export class InvoiceService implements IInvoiceService {
   constructor(
     private _invoiceRepository: IInvoiceRepository,
-    private _studentRepository: IStudentRepository,
     private _paymentRepository: IPaymentRepository
   ) {}
 
-  async createInvoice(data: CreateInvoiceDTO): Promise<{ classId: string }> {
-    const students = await this._studentRepository.getStudents(
-      {
-        classId: new mongoose.Types.ObjectId(data.class),
-      },
-      data.school
-    );
+  async createInvoice(data: CreateInvoiceDTO, studentIds: string[]): Promise<{ classId: string }> {
 
-    console.log(students, "students");
-
-    const studentInvoices: InvoiceEntityType[] = students.map(
-      (student: StudentProfileUserEntityType) => {
+    const studentInvoices: InvoiceEntityType[] = studentIds.map(
+      (id) => {
         return {
-          student: student.user._id,
+          student: id,
           title: data.title,
           class: data.class,
           school: data.school,

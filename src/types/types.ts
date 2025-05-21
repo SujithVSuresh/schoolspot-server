@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Request } from "express";
 import { StudentProfileEntityType } from "./StudentType";
+import { SchoolProfileEntityType } from "./SchoolProfileType";
 
 export interface BaseUser {
   email: string;
@@ -15,7 +16,6 @@ export interface BaseUser {
 export interface UserType extends BaseUser {
   _id?: mongoose.Types.ObjectId;
   password?: string;
-  
 }
 
 export interface UserResponseType extends BaseUser {
@@ -59,35 +59,7 @@ export interface GetTeacherParamsType {
 }
 
 
-export interface SchoolProfileBaseType {
-  _id?: mongoose.Types.ObjectId;
-  schoolName: string;
-  email?: string;
-  phoneNumber: string;
-  regNumber: string;
-  yearEstablished: number;
-  principalName: string;
-  websiteUrl: string;
-  totalStudents: number;
-  totalTeachers: number;
-  board: string;
-}
 
-export interface SchoolProfileType extends SchoolProfileBaseType {
-  address: {
-    city: string;
-    state: string;
-    country: string;
-    postalCode: string;
-  };
-}
-
-export interface SchoolProfileReqType extends SchoolProfileBaseType {
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-}
 
 export interface TeacherProfileType {
   _id?: mongoose.Types.ObjectId;
@@ -371,7 +343,7 @@ export interface InvoiceDetailsEntityType {
   title: string;
   student: mongoose.Types.ObjectId | string;
   class: ClassEntityType
-  school: SchoolProfileType
+  school: SchoolProfileEntityType
   invoiceNumber: string;
   dueDate: Date;
   feeBreakdown: FeeBreakdownItemType[]

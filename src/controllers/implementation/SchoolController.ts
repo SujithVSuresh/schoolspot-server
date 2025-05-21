@@ -3,7 +3,7 @@ import { ISchoolService } from "../../services/interface/ISchoolService";
 import { Request, Response, NextFunction } from "express";
 import HttpStatus from "../../constants/StatusConstants";
 import { CustomRequest } from "../../types/types";
-import { SchoolProfileDTO } from "../../dto/SchoolDTO";
+import { SchoolProfileResponseDTO } from "../../dto/SchoolDTO";
 
 export class SchoolController implements ISchoolController {
   constructor(private _schoolService: ISchoolService) {}
@@ -26,9 +26,8 @@ export class SchoolController implements ISchoolController {
 
         const schoolId = req.params.schoolId
 
-                const schoolData: SchoolProfileDTO = {
+                const schoolData: SchoolProfileResponseDTO = {
                     schoolName: req.body.schoolName,
-                    email: req.body.email,
                     phoneNumber: req.body.phoneNumber,
                     regNumber: req.body.regNumber,
                     yearEstablished: req.body.yearEstablished,
@@ -42,7 +41,7 @@ export class SchoolController implements ISchoolController {
                         state: req.body.state,
                         country: req.body.country,
                         postalCode: req.body.postalCode
-                    }
+                    },
                 }
 
             

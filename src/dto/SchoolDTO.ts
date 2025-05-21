@@ -1,10 +1,27 @@
 import mongoose from "mongoose";
 
 
-export interface SchoolProfileDTO {
-  _id?: mongoose.Types.ObjectId;
+export interface CreateSchoolProfileDTO {
+  address: {
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+  };
+  board: string;
+  phoneNumber: string;
   schoolName: string;
-  email?: string;
+  principalName: string;
+  regNumber: string;
+  totalStudents: number;
+  totalTeachers: number;
+  websiteUrl: string;
+  yearEstablished: number;
+}
+
+export interface SchoolProfileResponseDTO {
+  _id?: string;
+  schoolName: string;
   phoneNumber: string;
   regNumber: string;
   yearEstablished: number;

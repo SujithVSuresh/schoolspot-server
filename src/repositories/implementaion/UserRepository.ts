@@ -1,15 +1,15 @@
 import { BaseRepository } from "./BaseRepository";
-import { UserType } from "../../types/types";
 import { IUserRepository } from "../interface/IUserRepository";
 import User from "../../models/User";
+import { UserEntityType } from "../../types/UserType";
 
 
-class UserRepository extends BaseRepository<UserType> implements IUserRepository {
+class UserRepository extends BaseRepository<UserEntityType> implements IUserRepository {
     constructor(){
         super(User)
     }
 
-    async createUser(data: Partial<UserType>): Promise<UserType> {
+    async createUser(data: Partial<UserEntityType>): Promise<UserEntityType> {
         try{
             return await this.create(data)
         }catch(error){
@@ -18,7 +18,7 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
         }
     }             
 
-    async findByEmail(email: string): Promise<UserType | null> {
+    async findByEmail(email: string): Promise<UserEntityType | null> {
         try{
             return await this.findOne({email})
         }catch(error){
@@ -27,7 +27,7 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
         }
     }
 
-    async updateUser(id: string, data: Partial<UserType>): Promise<UserType | null> {
+    async updateUser(id: string, data: Partial<UserEntityType>): Promise<UserEntityType | null> {
         try{
             return await this.update(id, data)
         } catch(error){
@@ -36,7 +36,7 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
         }
     }
 
-    async findUserById(id: string): Promise<UserType | null>{
+    async findUserById(id: string): Promise<UserEntityType | null>{
         try{
             return await this.findById(id)
         } catch(error){
@@ -46,7 +46,7 @@ class UserRepository extends BaseRepository<UserType> implements IUserRepository
     }
 
 
-    async listAllStudents(): Promise<UserType[]> {
+    async listAllStudents(): Promise<UserEntityType[]> {
         try {
           return await this.findByQuery({role: "student"}, {password: 0});
         } catch (err) {

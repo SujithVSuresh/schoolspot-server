@@ -8,28 +8,72 @@ import { SubscriptionService } from "../services/implementation/SubscriptionServ
 import SubscriptionRepository from "../repositories/implementaion/SubscriptionRepository";
 import PlanRepository from "../repositories/implementaion/PlanRepository";
 import PaymentRepository from "../repositories/implementaion/PaymentRepository";
+import { SchoolService } from "../services/implementation/SchoolService";
+import { AcademicYearService } from "../services/implementation/AcademicYearService";
+import AcademicYearRepository from "../repositories/implementaion/AcademicYearRepository";
 
-const subscriptionService = new SubscriptionService(PlanRepository, SubscriptionRepository, PaymentRepository)
-const authService = new AuthService(UserRepository, SchoolRepository, SubscriptionRepository, subscriptionService, PlanRepository);
+const schoolService = new SchoolService(SchoolRepository);
+
+const subscriptionService = new SubscriptionService(
+  PlanRepository,
+  SubscriptionRepository,
+  PaymentRepository
+);
+
+const academicYearService = new AcademicYearService(AcademicYearRepository)
+
+
+const authService = new AuthService(
+  UserRepository,
+  SchoolRepository,
+  SubscriptionRepository,
+  subscriptionService,
+  PlanRepository,
+  schoolService,
+  academicYearService
+);
 
 const authController = new AuthController(authService);
 
 const authRouter = Router();
-
 
 // Use .bind(this) when passing class methods as callbacks to keep this referring to the correct instance.
 authRouter.post("/signup", authController.signup.bind(authController));
 authRouter.post("/verify", authController.verify.bind(authController));
 authRouter.post("/resend-otp", authController.resendOtp.bind(authController));
 authRouter.post("/signin", authController.signin.bind(authController));
-authRouter.post("/password-reset-request", authController.passwordResetRequest.bind(authController))
-authRouter.post("/password-reset", authController.resetPassword.bind(authController))
-authRouter.post("/google-auth", authController.googleAuth.bind(authController))
-authRouter.post("/create-user", protectRoute(["admin"]), authController.createUser.bind(authController))
-authRouter.get("/get-students", protectRoute(["admin"]), authController.getAllStudents.bind(authController))
-authRouter.post('/refreshToken', authController.refreshToken.bind(authController))
-authRouter.patch('/change-account-status', protectRoute(["admin"]), authController.changeAccountStatus.bind(authController))
-authRouter.patch('/change-password', protectRoute(["admin", "teacher", "student"]), authController.changePassword.bind(authController))
-
+authRouter.post(
+  "/password-reset-request",
+  authController.passwordResetRequest.bind(authController)
+);
+authRouter.post(
+  "/password-reset",
+  authController.resetPassword.bind(authController)
+);
+authRouter.post("/google-auth", authController.googleAuth.bind(authController));
+authRouter.post(
+  "/create-user",
+  protectRoute(["admin"]),
+  authController.createUser.bind(authController)
+);
+// authRouter.get(
+//   "/get-students",
+//   protectRoute(["admin"]),
+//   authController.getAllStudents.bind(authController)
+// );
+authRouter.post(
+  "/refreshToken",
+  authController.refreshToken.bind(authController)
+);
+authRouter.patch(
+  "/change-account-status",
+  protectRoute(["admin"]),
+  authController.changeAccountStatus.bind(authController)
+);
+authRouter.patch(
+  "/change-password",
+  protectRoute(["admin", "teacher", "student"]),
+  authController.changePassword.bind(authController)
+);
 
 export default authRouter;

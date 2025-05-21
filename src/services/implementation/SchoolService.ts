@@ -1,4 +1,4 @@
-import { SchoolProfileDTO } from "../../dto/SchoolDTO";
+import { CreateSchoolProfileDTO, SchoolProfileResponseDTO } from "../../dto/SchoolDTO";
 import { ISchoolRepository } from "../../repositories/interface/ISchoolRepository";
 import { ISchoolService } from "../interface/ISchoolService";
 import Messages from "../../constants/MessageConstants";
@@ -10,7 +10,7 @@ export class SchoolService implements ISchoolService{
     constructor(
         private _schoolRepository: ISchoolRepository
     ){}
-    async getSchool(schoolId: string): Promise<SchoolProfileDTO> {
+    async getSchool(schoolId: string): Promise<SchoolProfileResponseDTO> {
         const school = await this._schoolRepository.findSchoolById(schoolId)
 
         if(!school){
@@ -18,9 +18,8 @@ export class SchoolService implements ISchoolService{
         }
 
         return {
-            _id: school._id,
+            _id: String(school._id),
             schoolName: school.schoolName,
-            email: school.email,
             phoneNumber: school.phoneNumber,
             regNumber: school.regNumber,
             yearEstablished: school.yearEstablished,
@@ -38,14 +37,54 @@ export class SchoolService implements ISchoolService{
         }
     }
 
-    async editSchoolProfile(id: string, data: SchoolProfileDTO): Promise<SchoolProfileDTO> {
+    async createSchool(data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO> {
+        const school = await this._schoolRepository.createSchoolProfile(data)
 
-        const schoolProfile = await this._schoolRepository.updateSchoolProfile(id, data)
+        return {
+            _id: String(school._id),
+            schoolName: school.schoolName,
+            phoneNumber: school.phoneNumber,
+            regNumber: school.regNumber,
+            yearEstablished: school.yearEstablished,
+            principalName: school.principalName,
+            websiteUrl: school.websiteUrl,
+            totalStudents: school.totalStudents,
+            totalTeachers: school.totalTeachers,
+            board: school.board,
+            address: {
+                city: school.address.city,
+                state: school.address.state,
+                country: school.address.country,
+                postalCode: school.address.postalCode
+            }
+        }
+    }
 
-        if(!schoolProfile){
+    async editSchoolProfile(id: string, data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO> {
+
+        const school = await this._schoolRepository.updateSchoolProfile(id, data)
+
+        if(!school){
             throw new CustomError(Messages.SCHOOL_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
 
-        return schoolProfile
+                return {
+            _id: String(school._id),
+            schoolName: school.schoolName,
+            phoneNumber: school.phoneNumber,
+            regNumber: school.regNumber,
+            yearEstablished: school.yearEstablished,
+            principalName: school.principalName,
+            websiteUrl: school.websiteUrl,
+            totalStudents: school.totalStudents,
+            totalTeachers: school.totalTeachers,
+            board: school.board,
+            address: {
+                city: school.address.city,
+                state: school.address.state,
+                country: school.address.country,
+                postalCode: school.address.postalCode
+            }
+        }
     }
 }

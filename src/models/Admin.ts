@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { AdminProfileEntityType } from "../types/types";
 
+
 const AdminSchema = new Schema({
     fullName: {
         type: String,

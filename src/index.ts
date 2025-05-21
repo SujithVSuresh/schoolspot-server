@@ -30,6 +30,7 @@ import timetableRouter from "./routes/TimeTableRouter";
 import examResultRouter from "./routes/ExamResultRouter";
 import subscriptionRouter from "./routes/SubscriptionRouter";
 import subscriptionWebhookRouter from "./routes/subscriptionWebhookRouter";
+import academicYearRouter from "./routes/AcademicYear";
 
 class App {
   public app;
@@ -101,6 +102,7 @@ class App {
     this.app.use("/exam-result", examResultRouter);
     this.app.use("/timetable", timetableRouter);
     this.app.use("/subscription", subscriptionRouter);
+    this.app.use("/academicYear", academicYearRouter);
     this.app.use(errorHandler);
   }
 

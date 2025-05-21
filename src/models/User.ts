@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose";
-import { UserType } from "../types/types";
+import { UserEntityType } from "../types/UserType";
 
 
 const User = new Schema({
@@ -26,15 +26,17 @@ const User = new Schema({
     },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "School"
+        ref: "School",
+        required: true
     },
     authProvider: {
         type: ['email', 'google'],
-        default: "email"
+        default: "email",
+        required: true
     }
 }, {
     timestamps: true
 })
 
-export default mongoose.model<UserType>('User', User, "Users")
+export default mongoose.model<UserEntityType>('User', User, "Users")
 

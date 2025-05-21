@@ -38,6 +38,7 @@ export class TeacherService implements ITeacherService {
       role: "teacher",
       status: "active",
       schoolId: new mongoose.Types.ObjectId(schoolId),
+      authProvider: "email"
     });
 
     let profilePhotoURL = null;

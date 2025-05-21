@@ -1,11 +1,5 @@
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import {
-  UserResponseType,
-  UserType,
-  SchoolProfileType,
-  SchoolProfileReqType,
-  PayloadType,
-} from "../../types/types";
+import { UserResponseType, UserType, PayloadType } from "../../types/types";
 import { IAuthService } from "../interface/IAuthService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -25,7 +19,10 @@ import { ChangePasswordRequestDTO } from "../../dto/AuthDTO";
 import { ISubscriptionRepository } from "../../repositories/interface/ISubscriptionRepository";
 import { ISubscriptionService } from "../interface/ISubscriptionService";
 import { IPlanRepository } from "../../repositories/interface/IPlanRespository";
-
+import { CreateSchoolProfileDTO } from "../../dto/SchoolDTO";
+import { ISchoolService } from "../interface/ISchoolService";
+import { CreateUserDTO, UserResponseDTO } from "../../dto/UserDTO";
+import { IAcademicYearService } from "../interface/IAcademicYearService";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -33,10 +30,16 @@ export class AuthService implements IAuthService {
     private _schoolRepository: ISchoolRepository,
     private _subscriptionRepository: ISubscriptionRepository,
     private _subscriptionService: ISubscriptionService,
-    private _planRepository: IPlanRepository
+    private _planRepository: IPlanRepository,
+    private _schoolService: ISchoolService,
+    private _academicYearService: IAcademicYearService
   ) {}
 
-  async signup(user: UserType, school: SchoolProfileType): Promise<string> {
+  async signup(
+    user: CreateUserDTO,
+    school: CreateSchoolProfileDTO,
+    academicYear: string
+  ): Promise<string> {
     const existingUser = await this._userRepository.findByEmail(user.email);
     if (existingUser) {
       throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
@@ -64,7 +67,13 @@ export class AuthService implements IAuthService {
       JSON.stringify({ otp })
     );
 
-    if (!dataResponse || !otpResponse || !schoolDataResponse) {
+    const academicYearResponse = await redisClient.setEx(
+      `academicYear-${user.email}`,
+      300,
+      JSON.stringify({ academicYear })
+    ); 
+
+    if (!dataResponse || !otpResponse || !schoolDataResponse || !academicYearResponse) {
       throw new CustomError(
         Messages.SERVER_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -74,7 +83,7 @@ export class AuthService implements IAuthService {
     return user.email;
   }
 
-  async verify(otpCode: number, email: string): Promise<UserResponseType> {
+  async verify(otpCode: number, email: string): Promise<UserResponseDTO> {
     const otpResponse = await redisClient.get(`otp-${email}`);
     if (!otpResponse) {
       throw new CustomError(Messages.OTP_EXPIRY, HttpStatus.FORBIDDEN);
@@ -86,42 +95,42 @@ export class AuthService implements IAuthService {
       throw new CustomError(Messages.INVALID_OTP, HttpStatus.UNAUTHORIZED);
     }
 
-    const userDataResponse = await redisClient.get(`userData-${email}`);
 
-    if (!otpResponse) {
-      throw new CustomError(
-        "Your session has expired. Signup again to continue",
-        HttpStatus.FORBIDDEN
-      );
-    }
+    // if (!otpResponse) {
+    //   throw new CustomError(
+    //     "Your session has expired. Signup again to continue",
+    //     HttpStatus.FORBIDDEN
+    //   );
+    // }
 
     const schoolDataResponse = await redisClient.get(`schoolData-${email}`);
 
+    const academicYearResponse = await redisClient.get(`academicYear-${email}`);
+
+    const userDataResponse = await redisClient.get(`userData-${email}`);
+
+
     const { school } = JSON.parse(schoolDataResponse as string);
-
-    const schoolData = await this._schoolRepository.createSchoolProfile({
-      address: {
-        city: school.city,
-        country: school.postalCode,
-        state: school.state,
-        postalCode: school.postalCode,
-      },
-      ...school,
-    });
-
     const { user } = JSON.parse(userDataResponse as string);
+    const { academicYear } = JSON.parse(academicYearResponse as string);
+
+    if(!school || !user || !academicYear){
+      throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    const schoolData = await this._schoolService.createSchool(school);
 
     let userData = await this._userRepository.createUser({
       ...user,
-      role: "admin",
-      status: "inactive",
       schoolId: schoolData._id,
     });
 
-    const plan = await this._planRepository.findPlanByDuration(30)
+    console.log("1")
 
-    if(!plan) {
-      throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND)
+    const plan = await this._planRepository.findPlanByDuration(30);
+
+    if (!plan) {
+      throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     await this._subscriptionRepository.createSubscription({
@@ -134,25 +143,36 @@ export class AuthService implements IAuthService {
       status: "active",
     });
 
+      console.log("2")
+
     const payload: PayloadType = {
       userId: String(userData._id),
       role: "admin",
       schoolId: String(schoolData._id),
       subscribed: true,
-    }
+    };
 
     const accessToken = authToken.generateAccessToken(payload);
-
+    
     const refreshToken = authToken.generateRefreshToken(payload);
+    
+    await this._academicYearService.createAcademicYear({
+      name: academicYear,
+      isActive: true,
+      schoolId: String(schoolData._id)
+    })
+
+      console.log("3", refreshToken)
 
     return {
       _id: String(userData._id),
       email: userData.email,
       role: userData.role,
       status: userData.status,
+      authProvider: userData.authProvider,
       accessToken,
       refreshToken,
-      schoolId: userData.schoolId,
+      schoolId: String(userData.schoolId),
     };
   }
 
@@ -189,7 +209,7 @@ export class AuthService implements IAuthService {
     email: string,
     password: string,
     role: string
-  ): Promise<UserResponseType> {
+  ): Promise<UserResponseDTO> {
     const user = await this._userRepository.findByEmail(email);
     console.log(String(user?.schoolId), "user");
 
@@ -223,7 +243,7 @@ export class AuthService implements IAuthService {
       );
     }
 
-    let isSubscriptionActive = null; 
+    let isSubscriptionActive = null;
 
     if (user.role != "superadmin") {
       const subscription = await this._subscriptionRepository.findSubscription({
@@ -238,22 +258,18 @@ export class AuthService implements IAuthService {
         );
       }
 
-      isSubscriptionActive = checkSubscription(
-        String(subscription.endDate)
-      );
+      isSubscriptionActive = checkSubscription(String(subscription.endDate));
     }
-
-   
 
     const payload: PayloadType = {
       userId: String(user._id),
       role: user.role,
-      schoolId: String(user.schoolId)
-    }
+      schoolId: String(user.schoolId),
+    };
 
-    if(isSubscriptionActive !== null){
+    if (isSubscriptionActive !== null) {
       payload.subscribed = isSubscriptionActive;
-    } 
+    }
 
     const accessToken = authToken.generateAccessToken(payload);
 
@@ -263,6 +279,8 @@ export class AuthService implements IAuthService {
       _id: String(user._id),
       email: user.email,
       role: user.role,
+      schoolId: String(user.schoolId),
+      authProvider: user.authProvider,
       status: user.status,
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -305,8 +323,8 @@ export class AuthService implements IAuthService {
   async googleAuth(
     credential: string,
     clientId: string,
-    schoolData: SchoolProfileReqType
-  ): Promise<UserResponseType> {
+    schoolData: CreateSchoolProfileDTO
+  ): Promise<UserResponseDTO> {
     const client = new OAuth2Client();
 
     const ticket = await client.verifyIdToken({
@@ -328,10 +346,10 @@ export class AuthService implements IAuthService {
       } else {
         school = await this._schoolRepository.createSchoolProfile({
           address: {
-            city: schoolData.city,
-            state: schoolData.state,
-            country: schoolData.country,
-            postalCode: schoolData.postalCode,
+            city: schoolData.address.city,
+            state: schoolData.address.state,
+            country: schoolData.address.country,
+            postalCode: schoolData.address.postalCode,
           },
           board: schoolData.board,
           phoneNumber: schoolData.phoneNumber,
@@ -348,9 +366,9 @@ export class AuthService implements IAuthService {
           email: payload.email,
           role: "admin",
           status: "inactive",
-          schoolId: school._id,
+          schoolId: String(school._id),
+          authProvider: "google"
         });
-
 
         // subscription = await this._subscriptionRepository.createSubscription({
         //   userId: String(userData._id),
@@ -383,6 +401,7 @@ export class AuthService implements IAuthService {
         email: userData.email,
         role: userData.role,
         status: userData.status,
+        schoolId: String(userData.schoolId),
         accessToken: accessToken,
         refreshToken: refreshToken,
         authProvider: userData.authProvider,
@@ -395,7 +414,7 @@ export class AuthService implements IAuthService {
     }
   }
 
-  async refreshToken(token: string): Promise<UserResponseType> {
+  async refreshToken(token: string): Promise<UserResponseDTO> {
     const payload = authToken.verifyRefreshToken(token);
 
     if (!payload) {
@@ -408,7 +427,9 @@ export class AuthService implements IAuthService {
       throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.FORBIDDEN);
     }
 
-    const subscription = await this._subscriptionService.handleSubscription(String(user.schoolId))
+    const subscription = await this._subscriptionService.handleSubscription(
+      String(user.schoolId)
+    );
 
     const accessToken = authToken.generateAccessToken({
       userId: String(payload.userId),
@@ -417,18 +438,18 @@ export class AuthService implements IAuthService {
       subscribed: true,
     });
 
-    console.log(accessToken, "user55555555555555");
-
     return {
       _id: String(user._id),
       email: user.email,
       role: user.role,
       status: user.status,
+      schoolId: String(user.schoolId),
+      authProvider: user.authProvider,
       accessToken: accessToken,
     };
   }
 
-  async createUser(user: UserType): Promise<UserResponseType> {
+  async createUser(user: CreateUserDTO): Promise<UserResponseDTO> {
     const existingUser = await this._userRepository.findByEmail(user.email);
     if (existingUser) {
       throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
@@ -445,6 +466,8 @@ export class AuthService implements IAuthService {
       email: userData.email,
       role: userData.role,
       status: userData.status,
+      schoolId: String(userData.schoolId),
+      authProvider: userData.authProvider
     };
   }
 
@@ -474,11 +497,11 @@ export class AuthService implements IAuthService {
     };
   }
 
-  async getAllStudents(): Promise<UserType[]> {
-    const students = await this._userRepository.listAllStudents();
+  // async getAllStudents(): Promise<UserType[]> {
+  //   const students = await this._userRepository.listAllStudents();
 
-    return students ?? [];
-  }
+  //   return students ?? [];
+  // }
 
   async changePassword(
     userId: string,

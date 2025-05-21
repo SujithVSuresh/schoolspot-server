@@ -1,6 +1,7 @@
-import { SchoolProfileDTO } from "../../dto/SchoolDTO"
+import { CreateSchoolProfileDTO, SchoolProfileResponseDTO } from "../../dto/SchoolDTO"
 
 export interface ISchoolService{
-    getSchool(schoolId: string): Promise<SchoolProfileDTO>
-    editSchoolProfile(id: string, data: SchoolProfileDTO): Promise<SchoolProfileDTO>
+    getSchool(schoolId: string): Promise<SchoolProfileResponseDTO>
+    createSchool(data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO>
+    editSchoolProfile(id: string, data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO>
 }

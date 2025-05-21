@@ -11,7 +11,7 @@ class AuthToken {
     constructor(){
         this._accessTokenSecret = process.env.ACCESS_TOKEN_SECRET as string
         this._refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string
-        this._accessTokenExpiry = "120m"
+        this._accessTokenExpiry = "2m"
         this._refreshTokenExpiry = "7d"
     }
 
