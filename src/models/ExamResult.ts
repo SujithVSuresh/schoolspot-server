@@ -13,9 +13,8 @@ const ExamResultSchema = new mongoose.Schema(
       ref: "Class",
       required: true,
     },
-    subjectId: {
-      type: mongoose.Types.ObjectId,
-      ref: "Subject",
+    subject: {
+      type: String,
       required: true,
     },
     studentId: {

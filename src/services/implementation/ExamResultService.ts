@@ -21,7 +21,7 @@ export class ExamResultService implements IExamResultService {
             classId: String(response.classId),
             examId: String(response.examId),
             studentId: String(response.studentId),
-            subjectId: String(response.subjectId),
+            subject: String(response.subject),
             marksObtained: response.marksObtained,
             totalMarks: response.totalMarks,
             grade: response?.grade ?? ""
@@ -40,7 +40,7 @@ export class ExamResultService implements IExamResultService {
             classId: String(response.classId),
             examId: String(response.examId),
             studentId: String(response.studentId),
-            subjectId: String(response.subjectId),
+            subject: response.subject,
             marksObtained: response.marksObtained,
             totalMarks: response.totalMarks,
             grade: response?.grade ?? ""
@@ -57,6 +57,33 @@ export class ExamResultService implements IExamResultService {
         return {
             _id: id
         }
+    }
+
+    async findExamResultsByStudent(examId: string, userId: string): Promise<ExamResultWithExamResponseDTO[]> {
+        const response = await this._examResultRepository.findExamResultsByStudent(examId, userId)
+
+        const examResults: ExamResultWithExamResponseDTO[] = response.map((item: ExamResultEntityType) => {
+
+            const exam = item.examId as ExamEntityType;
+            return {
+                _id: String(item._id),
+                examId: {
+                    _id: String(exam._id),
+                    name: exam.name,
+                    description: exam.description,
+                    startDate: exam.startDate,
+                    endDate: exam.endDate
+                } ,
+                classId: String(item.classId),
+                subject: item.subject,
+                studentId: String(item.studentId),
+                marksObtained: item.marksObtained,
+                totalMarks: item.totalMarks,
+                grade: item.grade
+            }
+        })
+
+        return examResults
     }
 
 }

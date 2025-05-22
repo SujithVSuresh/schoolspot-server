@@ -44,6 +44,37 @@ class ExamResultRepository
     }
   }
 
+  async findExamResultsByStudent(
+    examId: string,
+    userId: string
+  ): Promise<ExamResultEntityType[]> {
+    try {
+      return await ExamResult.aggregate([
+        {
+          $match: {
+            examId: new mongoose.Types.ObjectId(examId),
+            studentId: new mongoose.Types.ObjectId(userId),
+          },
+        },
+        {
+          $lookup: {
+            from: "Exams",
+            localField: "examId",
+            foreignField: "_id",
+            as: "examId",
+          },
+        },
+        {
+          $unwind: {
+            path: "$examId",
+          },
+        }
+      ]);
+    } catch (error) {
+      console.error("Error fetching exam result", error);
+      throw new Error("Error fetching exam result");
+    }
+  }
 }
 
 export default new ExamResultRepository();

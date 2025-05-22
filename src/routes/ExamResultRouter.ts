@@ -13,6 +13,7 @@ const examResultRouter = Router()
 examResultRouter.post('/', protectRoute(["admin"]), examResultController.createExamResult.bind(examResultController));
 examResultRouter.put('/:id', protectRoute(["admin"]), examResultController.updateExamResult.bind(examResultController));
 examResultRouter.delete('/:id', protectRoute(["admin"]), examResultController.deleteExamResult.bind(examResultController));
+examResultRouter.get('/:examId/:userId?', protectRoute(["student", "admin", "teacher"]), examResultController.findExamResultsByStudent.bind(examResultController));
 
 
 
