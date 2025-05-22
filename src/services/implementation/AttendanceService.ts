@@ -14,11 +14,13 @@ import HttpStatus from "../../constants/StatusConstants";
 import { AttendaceResponseDTO } from "../../dto/AttendanceDTO";
 import { generateMonthRange } from "../../utils/DateFormatter";
 import { ILeaveLetterRepository } from "../../repositories/interface/ILeaveLetterRepository";
+import { INotificationService } from "../interface/INotificationService";
 
 export class AttendanceService implements IAttendanceService {
   constructor(
     private _attendanceRepository: IAttendanceRepository,
-    private _leaveLetterRepository: ILeaveLetterRepository
+    private _leaveLetterRepository: ILeaveLetterRepository,
+    private _notificationService: INotificationService
   ) {}
 
   async addAttendance(
@@ -56,21 +58,46 @@ export class AttendanceService implements IAttendanceService {
       attendanceData
     );
 
-    const attendanceCount = response.reduce(
-      (acc, curr) => {
-        if (curr.status == "Present") {
-          acc.presentCount += 1;
-        } else if (curr.status == "Absent") {
-          acc.absentCount += 1;
-        }
+    const absentStudents = response
+      .filter((item) => item.status == "Absent")
+      .map((item) => String(item.student));
 
-        return acc;
-      },
-      { presentCount: 0, absentCount: 0 }
-    );
+    if (absentStudents.length > 0) {
+      await this._notificationService.sendNotification({
+        userId: absentStudents,
+        notificationType: "attendance",
+        message: "Absent",
+      });
+    }
+
+    const presentStudents = response
+      .filter((item) => item.status == "Present")
+      .map((item) => String(item.student));
+      
+    if (presentStudents.length > 0) {
+      await this._notificationService.sendNotification({
+        userId: presentStudents,
+        notificationType: "attendance",
+        message: "Present",
+      });
+    }
+
+    // const attendanceCount = response.reduce(
+    //   (acc, curr) => {
+    //     if (curr.status == "Present") {
+    //       acc.presentCount += 1;
+    //     } else if (curr.status == "Absent") {
+    //       acc.absentCount += 1;
+    //     }
+
+    //     return acc;
+    //   },
+    //   { presentCount: 0, absentCount: 0 }
+    // );
 
     return {
-      ...attendanceCount,
+      presentCount: presentStudents.length,
+      absentCount: absentStudents.length,
       classId: String(response[0].class),
     };
   }

@@ -4,6 +4,7 @@ import NotificationRepository from "../repositories/implementaion/NotificationRe
 import { NotificationService } from "../services/implementation/NotificationService"
 import { protectRoute } from "../middlewares/AuthHandler"
 
+
 const notificationService = new NotificationService(NotificationRepository)
 
 const notificationController = new NotificationController(notificationService)

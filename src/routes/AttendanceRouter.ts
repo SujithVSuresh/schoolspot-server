@@ -4,8 +4,14 @@ import { AttendanceService } from "../services/implementation/AttendanceService"
 import AttendanceRepository from "../repositories/implementaion/AttendanceRepository";
 import { AttendanceController } from "../controllers/implementation/AttendanceController";
 import LeaveLetterRepository from "../repositories/implementaion/LeaveLetterRepository";
+import { NotificationService } from "../services/implementation/NotificationService";
+import NotificationRepository from "../repositories/implementaion/NotificationRepository";
 
-const attendaceService = new AttendanceService(AttendanceRepository, LeaveLetterRepository);
+
+const notificationService = new NotificationService(NotificationRepository)
+
+
+const attendaceService = new AttendanceService(AttendanceRepository, LeaveLetterRepository, notificationService);
 
 const attendanceController = new AttendanceController(attendaceService);
 

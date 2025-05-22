@@ -48,7 +48,6 @@ export class InvoiceService implements IInvoiceService {
     );
 
     const invoices: InvoiceEntityType[] = await this._invoiceRepository.createInvoice(studentInvoices);
-      console.log(invoices, "this is the invoicessssss123123132")
 
     await this._notificationService.sendNotification({
       userId: invoices.map((item) => String(item.student)),

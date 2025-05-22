@@ -22,6 +22,11 @@ const AttendanceSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "School"
+    },
+    recordedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
     }
 
 }, {
