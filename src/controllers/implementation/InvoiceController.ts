@@ -28,7 +28,6 @@ export class InvoiceController implements IInvoiceController {
                 remarks: req.body.remarks ? req.body.remarks : "",
             }
 
-            console.log(req.body, "haha body")
             const newInvoice = await this._invoiceService.createInvoice(invoiceData, req.body.studentIds)
 
             res.status(201).json(newInvoice)

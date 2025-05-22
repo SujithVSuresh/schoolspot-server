@@ -12,7 +12,7 @@ const NotificationSchema = new Schema(
     ],
     notificationType: {
       type: String,
-      enum: ["message", "study_material", "assignment"],
+      enum: ["message", "study_material", "assignment", "invoice", "exam", "exam_result"],
       required: true,
     },
     message: {

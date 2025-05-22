@@ -122,7 +122,9 @@ export class ChatService implements IChatService {
         }
 
         await this._notificationService.sendNotification({
-            userId: updateLastMessage.participants.map((id) => String(id)),
+            userId: updateLastMessage.participants
+                .filter(id => String(id) !== String(user._id))
+                .map(id => String(id)),
             notificationType: "message",
             message: message.content
         })
