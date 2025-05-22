@@ -12,6 +12,8 @@ const notificationController = new NotificationController(notificationService)
 const notificationRouter = Router()
 
 notificationRouter.get('/', protectRoute(["student", "teacher"]), notificationController.fetchNotifications.bind(notificationController));
+notificationRouter.patch('/clear', protectRoute(["student", "teacher", "admin"]), notificationController.clearNotification.bind(notificationController));
+notificationRouter.patch('/:id/clear', protectRoute(["student", "teacher", "admin"]), notificationController.clearNotification.bind(notificationController));
 
 
 export default notificationRouter

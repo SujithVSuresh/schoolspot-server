@@ -1,72 +1,121 @@
 import { INotificationRepository } from "../../repositories/interface/INotificationRepository";
 import { NotificationEntityType } from "../../types/NotificationType";
 import { INotificationService } from "../interface/INotificationService";
-import { CreateNotificationDTO, NotificationResponseDTO } from "../../dto/NotificationDTO";
+import {
+  CreateNotificationDTO,
+  NotificationResponseDTO,
+} from "../../dto/NotificationDTO";
 import { NotificationTypesType } from "../../types/NotificationType";
-
+import { CustomError } from "../../utils/CustomError";
+import Messages from "../../constants/MessageConstants";
+import HttpStatus from "../../constants/StatusConstants";
 
 export class NotificationService implements INotificationService {
-  constructor(
-    private _notificationRepository: INotificationRepository
-  ) { }
+  constructor(private _notificationRepository: INotificationRepository) {}
 
-  async sendNotification(data: CreateNotificationDTO): Promise<NotificationResponseDTO> {
-
+  async sendNotification(
+    data: CreateNotificationDTO
+  ): Promise<NotificationResponseDTO> {
     const response = await this._notificationRepository.createNotification({
       userId: data.userId,
       notificationType: data.notificationType,
-      message: this.handleNotificationMessage(data.notificationType, data.message)
-    })
+      message: this.handleNotificationMessage(
+        data.notificationType,
+        data.message
+      ),
+    });
     return {
       _id: String(response._id),
       notificationType: response.notificationType,
       message: response.message,
-      createdAt: response.createdAt as Date
-    }
-
+      createdAt: response.createdAt as Date,
+    };
   }
 
-  private handleNotificationMessage(notificationType: NotificationTypesType, message: string) {
+  private handleNotificationMessage(
+    notificationType: NotificationTypesType,
+    message: string
+  ) {
     switch (notificationType) {
-      case 'assignment':
-        return `You have a new assignment: ${message}`
-      case 'study_material':
-        return `You have a new study material: ${message}`
-      case 'message':
-        return `You have a new assignment: ${message}`
-      case 'invoice':
-        return `You have a new invoice: ${message}`
-      case 'attendance':
+      case "assignment":
+        return `You have a new assignment: ${message}`;
+      case "study_material":
+        return `You have a new study material: ${message}`;
+      case "message":
+        return `You have a new assignment: ${message}`;
+      case "invoice":
+        return `You have a new invoice: ${message}`;
+      case "attendance":
         if (message == "Present") {
           return `Your attendance for today (${String(new Date()).slice(
             0,
             10
-          )}) has been successfully marked as Present. Keep up the consistent`
+          )}) has been successfully marked as Present. Keep up the consistent`;
         } else {
-          return `Our records show that you were marked Absent today (${String(new Date()).slice(
+          return `Our records show that you were marked Absent today (${String(
+            new Date()
+          ).slice(
             0,
             10
-          )}). If this is an error or you have a valid reason, please contact your class teacher or the school office.`
+          )}). If this is an error or you have a valid reason, please contact your class teacher or the school office.`;
         }
       default:
-        throw new Error('Unsupported notification type');
+        throw new Error("Unsupported notification type");
     }
   }
 
-
   async fetchNotifications(userId: string): Promise<NotificationResponseDTO[]> {
-    const response = await this._notificationRepository.findNotifications(userId)
+    const response = await this._notificationRepository.findNotifications(
+      userId
+    );
 
-    const notifications: NotificationResponseDTO[] = response.map((notification: NotificationEntityType) => {
-      return {
-        _id: String(notification._id),
-        notificationType: notification.notificationType,
-        message: notification.message,
-        createdAt: notification.createdAt as Date
+    const notifications: NotificationResponseDTO[] = response.map(
+      (notification: NotificationEntityType) => {
+        return {
+          _id: String(notification._id),
+          notificationType: notification.notificationType,
+          message: notification.message,
+          createdAt: notification.createdAt as Date,
+        };
       }
-    })
+    );
 
-    return notifications
+    return notifications;
   }
 
+  async clearNotification(
+    userId: string,
+    id?: string
+  ): Promise<{ userId: string } | { _id: string }> {
+    if (userId && id) {
+      const response = await this._notificationRepository.clearOneNotification(
+        id,
+        userId
+      );
+      if (!response) {
+        throw new CustomError(
+          Messages.NOTIFICATION_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return {
+        _id: String(response._id),
+      };
+    }
+
+    const response = await this._notificationRepository.clearManyNotification(
+      userId as string
+    );
+    if (response.matchedCount == 0) {
+      throw new CustomError(
+        Messages.NOTIFICATION_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return {
+      userId: userId,
+    };
+  }
 }

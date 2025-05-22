@@ -45,6 +45,7 @@ const Messages = {
     CANNOT_DELETE_CONVERSATION: "You do not have access to delete tis conversation",
     ACADEMIC_YEAR_EXIST: "Academic year for this school already exist",
     ACTIVE_ACADEMIC_YEAR_NOT_FOUND: "No active academic year found for this school",
+    NOTIFICATION_NOT_FOUND: "Notification not found"
   };
 
   export default Messages

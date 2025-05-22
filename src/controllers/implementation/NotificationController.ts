@@ -22,4 +22,20 @@ export class NotificationController implements INotificationController {
             next(err)
         }
     }
+
+    async clearNotification(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {userId} = req.user as PayloadType
+
+            const {id} = req.params
+
+            const response = await this._notificationService.clearNotification(userId, id)
+
+            res.status(HttpStatus.OK).json(response)
+        }catch(err){
+            next(err)
+        }
+    }
+
+    
 }

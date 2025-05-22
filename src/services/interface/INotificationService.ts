@@ -3,4 +3,5 @@ import { CreateNotificationDTO, NotificationResponseDTO } from "../../dto/Notifi
 export interface INotificationService {
     sendNotification(data: CreateNotificationDTO): Promise<NotificationResponseDTO> 
     fetchNotifications(userId: string): Promise<NotificationResponseDTO[]>
+    clearNotification(userId: string, id?: string): Promise<{ userId: string } | { _id: string }>
 }
