@@ -18,11 +18,14 @@ import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
+import { INotificationRepository } from "../../repositories/interface/INotificationRepository";
+import { INotificationService } from "../interface/INotificationService";
 
 export class InvoiceService implements IInvoiceService {
   constructor(
     private _invoiceRepository: IInvoiceRepository,
-    private _paymentRepository: IPaymentRepository
+    private _paymentRepository: IPaymentRepository,
+    private _notificationService: INotificationService
   ) {}
 
   async createInvoice(data: CreateInvoiceDTO, studentIds: string[]): Promise<{ classId: string }> {
@@ -44,8 +47,14 @@ export class InvoiceService implements IInvoiceService {
       }
     );
 
-    const invoices: InvoiceEntityType[] =
-      await this._invoiceRepository.createInvoice(studentInvoices);
+    const invoices: InvoiceEntityType[] = await this._invoiceRepository.createInvoice(studentInvoices);
+      console.log(invoices, "this is the invoicessssss123123132")
+
+    await this._notificationService.sendNotification({
+      userId: invoices.map((item) => String(item.student)),
+      notificationType: "invoice",
+      message: invoices[0].title
+    })
 
     return {
       classId: String(invoices[0].class),

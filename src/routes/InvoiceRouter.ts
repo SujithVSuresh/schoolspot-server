@@ -6,8 +6,12 @@ import { Router } from "express"
 import { protectRoute } from "../middlewares/AuthHandler"
 import express from 'express'
 import PaymentRepository from "../repositories/implementaion/PaymentRepository"
+import { NotificationService } from "../services/implementation/NotificationService"
+import NotificationRepository from "../repositories/implementaion/NotificationRepository"
 
-const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository)
+const notificationService = new NotificationService(NotificationRepository)
+
+const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository, notificationService)
 
 const invoiceController = new InvoiceController(invoiceService)
 

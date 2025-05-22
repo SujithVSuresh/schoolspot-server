@@ -2,7 +2,7 @@ import { INotificationRepository } from "../../repositories/interface/INotificat
 import { NotificationEntityType } from "../../types/NotificationType";
 import { INotificationService } from "../interface/INotificationService";
 import { CreateNotificationDTO, NotificationResponseDTO } from "../../dto/NotificationDTO";
-
+import { NotificationTypesType } from "../../types/NotificationType";
 
 
 export class NotificationService implements INotificationService {
@@ -11,62 +11,36 @@ export class NotificationService implements INotificationService {
     ){}
 
     async sendNotification(data: CreateNotificationDTO): Promise<NotificationResponseDTO> {
-        switch (data.notificationType) {        
+            
+      const response = await this._notificationRepository.createNotification({
+        userId: data.userId,
+        notificationType: data.notificationType,
+        message: this.handleNotificationMessage(data.notificationType, data.message)
+    })
+      return {
+          _id: String(response._id),
+          notificationType: response.notificationType,
+          message: response.message,
+          createdAt: response.createdAt as Date
+      }
+    
+    }
+
+    private handleNotificationMessage(notificationType: NotificationTypesType, message: string) {
+          switch (notificationType) {        
             case 'assignment':
-              const response = await this.handleAssignmentNotification(data);
-              return {
-                _id: String(response._id),
-                notificationType: response.notificationType,
-                message: response.message,
-                createdAt: response.createdAt as Date
-              }
+              return `You have a new assignment: ${message}`
             case 'study_material':
-              const studyMaterialResponse = await this.handleStudyMaterialNotification(data);
-              return {
-                  _id: String(studyMaterialResponse._id),
-                  notificationType: studyMaterialResponse.notificationType,
-                  message: studyMaterialResponse.message,
-                  createdAt: studyMaterialResponse.createdAt as Date
-              }
+              return `You have a new study material: ${message}`
             case 'message':
-              const messageResponse = await this.handleMessageNotification(data);
-               return {
-                   _id: String(messageResponse._id),
-                   notificationType: messageResponse.notificationType,
-                   message: messageResponse.message,
-                   createdAt: messageResponse.createdAt as Date
-            }
-        
+              return `You have a new assignment: ${message}`
+            case 'invoice':
+              return `You have a new invoice: ${message}`
             default:
               throw new Error('Unsupported notification type');
           }
     }
     
-      
-    private async handleAssignmentNotification(data: CreateNotificationDTO) {
-      return this._notificationRepository.createNotification({
-        userId: data.userId,
-        notificationType: data.notificationType as "message" | "study_material" | "assignment",
-        message: `You have a new assignment: ${data.message}`
-    })
-    }
-
-    private async handleStudyMaterialNotification(data: CreateNotificationDTO) {
-        return this._notificationRepository.createNotification({
-          userId: data.userId,
-          notificationType: data.notificationType as "message" | "study_material" | "assignment",
-          message: `You have a new study material: ${data.message}`
-      })
-      }
-
-      private async handleMessageNotification(data: CreateNotificationDTO) {
-        return this._notificationRepository.createNotification({
-          userId: data.userId,
-          notificationType: data.notificationType as "message" | "study_material" | "assignment",
-          message: `You have a new message: ${data.message}`
-      })
-      }
-
 
     async fetchNotifications(userId: string): Promise<NotificationResponseDTO[]> {
         const response = await this._notificationRepository.findNotifications(userId)
