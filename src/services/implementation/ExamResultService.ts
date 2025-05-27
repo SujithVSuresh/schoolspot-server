@@ -64,6 +64,7 @@ export class ExamResultService implements IExamResultService {
 
 
     async findExamResultsBySubject(examId: string, subject: string): Promise<ExamResultWithStudentResponseDTO[]> {
+        console.log(examId, subject, "vavava123")
         const response = await this._examResultRepository.findExamResultsBySubjects(examId, subject)
 
          const examResults: ExamResultWithStudentResponseDTO[] = response.map((item: ExamResultEntityType) => {

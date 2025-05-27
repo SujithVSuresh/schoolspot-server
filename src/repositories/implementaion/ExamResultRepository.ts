@@ -17,7 +17,8 @@ class ExamResultRepository
   ): Promise<any> {
     try {
       // return await ExamResult.insertMany(data);
-          const bulkOps = data.map((item) => ({
+      console.log(data, "gagagagaga")
+      const bulkOps = data.map((item) => ({
       updateOne: {
         filter: {
           examId: item.examId,
@@ -59,7 +60,8 @@ class ExamResultRepository
     userId: string
   ): Promise<ExamResultEntityType[]> {
     try {
-      return await ExamResult.aggregate([
+      console.log(examId, userId, "eeee")
+      const examResults = await ExamResult.aggregate([
         {
           $match: {
             examId: new mongoose.Types.ObjectId(examId),
@@ -80,6 +82,10 @@ class ExamResultRepository
           },
         }
       ]);
+
+      console.log(examResults, "gagagagaga123")
+
+      return examResults
     } catch (error) {
       console.error("Error fetching exam result", error);
       throw new Error("Error fetching exam result");
@@ -88,7 +94,8 @@ class ExamResultRepository
 
   async findExamResultsBySubjects(examId: string, subject: string): Promise<ExamResultEntityType[]> {
      try {
-      return await ExamResult.aggregate([
+      console.log(examId, subject, "dadaa")
+       const result = await ExamResult.aggregate([
         {
           $match: {
             examId: new mongoose.Types.ObjectId(examId),
@@ -109,6 +116,10 @@ class ExamResultRepository
           },
         }
       ]);
+
+      console.log(result, "lalala")
+
+      return result
     } catch (error) {
       console.error("Error fetching exam results", error);
       throw new Error("Error fetching exam results");

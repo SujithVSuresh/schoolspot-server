@@ -18,6 +18,7 @@ export class ExamResultController implements IExamResultController {
   ): Promise<void> {
     try {
       const data = req.body;
+      console.log(data, "exam results data....")
       const examResultData: CreateExamResultDTO[] = data.map((item: CreateExamResultDTO) => {
         return {
         classId: new mongoose.Types.ObjectId(item?.classId),
@@ -29,7 +30,6 @@ export class ExamResultController implements IExamResultController {
         grade: item?.grade ?? "",
         }
       })
-
 
       const response = await this._examResultService.upsertExamResult(
         examResultData
@@ -93,6 +93,7 @@ export class ExamResultController implements IExamResultController {
   async findExamResultsBySubject(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { examId, subject } = req.params;
+      console.log(examId, subject)
 
         const response = await this._examResultService.findExamResultsBySubject(examId, subject)
   
