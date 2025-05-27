@@ -97,13 +97,16 @@ class ChatController implements IChatController {
             const data = req.body
 
             const message: CreateMessageDTO = {
-                content: data.content,
                 conversationId: data.conversationId,
                 senderId: userId,
                 messageType: data.messageType
             }
 
-            const response = await this._chatService.createMessage(message)
+            if(data.content){
+                message.content = data.content
+            }
+
+            const response = await this._chatService.createMessage(message, req.file as Express.Multer.File)
 
             res.status(HttpStatus.OK).json(response)
         }catch(err){

@@ -11,18 +11,18 @@ export class TimeTableController implements ITimeTableController {
        private _timetableService: ITimeTableService
     ){}
 
-    async createTimetable(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async upsertTimetable(req: Request, res: Response, next: NextFunction): Promise<void> {
         try{
             const data = req.body
 
-            console.log(data ,"ddaa", data.classId)
+            const { classId } = req.params
 
             const timetableData: CreateTimetableDTO = {
-                classId: data.classId,
+                classId: classId,
                 timetable: data.timetable
             }
     
-            const response = await this._timetableService.createTimetable(timetableData)
+            const response = await this._timetableService.upsertTimetable(timetableData)
     
             res.status(HttpStatus.OK).json(response)
         }catch(err){
@@ -31,25 +31,6 @@ export class TimeTableController implements ITimeTableController {
 
     }
 
-    async updateTimetable(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try{
-            const data = req.body
-
-            const {id} = req.params
-
-            const timetableData: UpdateTimetableDTO = {
-                classId: data.classId,
-                timetable: data.timetable
-            } 
-
-            const response = await this._timetableService.updateTimetable(id, timetableData)
-
-            res.status(HttpStatus.NOT_FOUND).json(response)
-
-        }catch(err){
-            next(err)
-        }
-    }
 
     async deleteTimetable(req: Request, res: Response, next: NextFunction): Promise<void> {
         try{

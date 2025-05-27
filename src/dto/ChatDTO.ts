@@ -49,7 +49,8 @@ export interface ConversationListResponseDTO {
     conversationId: string;
     senderId: string;
     messageType: MessageType;
-    content: string;
+    content?: string;
+    fileUrl?: string;
   }
 
   export interface MessageResponseDTO {
@@ -57,7 +58,8 @@ export interface ConversationListResponseDTO {
     conversationId: string;
     senderId: string;
     messageType: MessageType;
-    content: string;
+    content?: string;
+    fileUrl?: string;
     status: MessageStatusType
     createdAt: Date;
     updatedAt: Date;
@@ -72,7 +74,8 @@ export interface ConversationListResponseDTO {
         role: 'superadmin' | 'admin' | 'teacher' | 'student';
     };
     messageType: MessageType;
-    content: string;
+    content?: string;
+    fileUrl?: string;
     status: MessageStatusType;
     createdAt: Date;
     updatedAt: Date;

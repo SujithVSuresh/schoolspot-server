@@ -7,6 +7,8 @@ import MessageRepository from "../repositories/implementaion/MessageRepository"
 import UserRepository from "../repositories/implementaion/UserRepository"
 import { NotificationService } from "../services/implementation/NotificationService"
 import NotificationRepository from "../repositories/implementaion/NotificationRepository"
+import {upload} from '../middlewares/UploadMiddleware'
+
 
 const notificationService = new NotificationService(NotificationRepository)
 const chatService = new ChatService(ConversationRepository, MessageRepository, UserRepository, notificationService)
@@ -21,7 +23,7 @@ chatRouter.get("/conversations", protectRoute(["teacher", "student"]), chatContr
 chatRouter.post('/conversation',  protectRoute(["teacher"]), chatController.createConversation.bind(chatController))
 chatRouter.post('/conversation/:conversationId/delete',  protectRoute(["teacher"]), chatController.deleteConversation.bind(chatController))
 
-chatRouter.post('/message',  protectRoute(["teacher", "student"]), chatController.createMessage.bind(chatController))
+chatRouter.post('/message',  protectRoute(["teacher", "student"]), upload.single("attachment"), chatController.createMessage.bind(chatController))
 chatRouter.patch('/message/:messageId/delete',  protectRoute(["teacher", "student"]), chatController.deleteMessage.bind(chatController))
 chatRouter.put('/conversation/:conversationId',  protectRoute(["teacher"]), chatController.updateConversation.bind(chatController))
 chatRouter.get('/messages/:conversationId',  protectRoute(["teacher", "student"]), chatController.fetchMessagesByConversation.bind(chatController))

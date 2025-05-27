@@ -266,4 +266,22 @@ export class ClassController implements IClassController {
       next(err);
     }
   }
+
+  async findAnnouncementsByCount(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { classId, count } = req.params;
+
+      const announcementCount = Number(count);
+      
+      if (isNaN(announcementCount) || announcementCount <= 0) {
+        throw new Error("Invalid count parameter");
+      }
+
+      const response = await this._classService.findAnnouncementsByCount(classId, announcementCount);
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

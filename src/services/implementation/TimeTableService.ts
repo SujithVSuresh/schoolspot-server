@@ -12,29 +12,16 @@ export class TimeTableService implements ITimeTableService {
         private _timetableRepository: ITimeTableRepository
     ){}
 
-    async createTimetable(data: CreateTimetableDTO): Promise<TimetableResponseDTO> {
-        const response = await this._timetableRepository.createTimeTable(data)
+    async upsertTimetable(data: CreateTimetableDTO): Promise<TimetableResponseDTO> {
+        const response = await this._timetableRepository.upsertTimetable(data.classId, data.timetable)
         
         return {
-            _id: String(response._id),
-            classId: String(response.classId),
-            // timetable: response.timetable
+            _id: String(response?._id),
+            classId: String(response?.classId),
         }
     }
 
-    async updateTimetable(id: string, data: UpdateTimetableDTO): Promise<TimetableResponseDTO> {
-        const response = await this.updateTimetable(id, data)
 
-        if(!response){
-            throw new CustomError(Messages.TIMETABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
-        }
-
-        return {
-            _id: response._id,
-            classId: response.classId,
-            timetable: response.timetable
-        }
-    }
 
     async deleteTimetable(id: string): Promise<{ _id: string; }> {
         const response = await this.deleteTimetable(id)

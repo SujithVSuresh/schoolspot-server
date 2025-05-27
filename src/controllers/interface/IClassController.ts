@@ -17,4 +17,5 @@ export interface IClassController {
     findAnnouncementsByAuthor(req: Request, res: Response, next: NextFunction): Promise<void>
     findAnnouncementDetails(req: Request, res: Response, next: NextFunction): Promise<void>
     findPinnedAnnouncements(req: Request, res: Response, next: NextFunction): Promise<void>
+    findAnnouncementsByCount(req: Request, res: Response, next: NextFunction): Promise<void>
 }

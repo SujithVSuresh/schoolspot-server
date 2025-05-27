@@ -77,6 +77,19 @@ export class AttendanceController implements IAttendanceController {
     }
   }
 
+  async getAttendanceOverview(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId, schoolId } = req.user as PayloadType;
+      const response = await this._attendanceService.getAttendanceOverview(
+        userId,
+        schoolId
+      );
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 
   async createLeaveLetter(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {

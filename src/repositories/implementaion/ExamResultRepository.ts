@@ -12,28 +12,38 @@ class ExamResultRepository
     super(ExamResult);
   }
 
-  async createExamResult(
-    data: ExamResultEntityType
-  ): Promise<ExamResultEntityType> {
+  async upsertExamResult(
+    data: ExamResultEntityType[]
+  ): Promise<any> {
     try {
-      return await this.create(data);
+      // return await ExamResult.insertMany(data);
+          const bulkOps = data.map((item) => ({
+      updateOne: {
+        filter: {
+          examId: item.examId,
+          classId: item.classId,
+          studentId: item.studentId,
+          subject: item.subject,
+        },
+        update: {
+          $set: {
+            marksObtained: item.marksObtained,
+            totalMarks: item.totalMarks,
+            grade: item.grade,
+          },
+        },
+        upsert: true, 
+      },
+    }));
+
+    const result = await ExamResult.bulkWrite(bulkOps);
+    return result;
     } catch (error) {
       console.error("Error creating exam result", error);
       throw new Error("Error creating exam result");
     }
   }
 
-  async updateExamResult(
-    id: string,
-    data: Partial<ExamResultEntityType>
-  ): Promise<ExamResultEntityType | null> {
-    try {
-      return await this.update(id, data);
-    } catch (error) {
-      console.error("Error updating exam result", error);
-      throw new Error("Error updating exam result");
-    }
-  }
 
   async deleteExamResult(id: string): Promise<boolean> {
     try {
@@ -73,6 +83,35 @@ class ExamResultRepository
     } catch (error) {
       console.error("Error fetching exam result", error);
       throw new Error("Error fetching exam result");
+    }
+  }
+
+  async findExamResultsBySubjects(examId: string, subject: string): Promise<ExamResultEntityType[]> {
+     try {
+      return await ExamResult.aggregate([
+        {
+          $match: {
+            examId: new mongoose.Types.ObjectId(examId),
+            subject: subject
+          },
+        },
+        {
+          $lookup: {
+            from: "Students",
+            localField: "studentId",
+            foreignField: "userId",
+            as: "studentId",
+          },
+        },
+        {
+          $unwind: {
+            path: "$studentId",
+          },
+        }
+      ]);
+    } catch (error) {
+      console.error("Error fetching exam results", error);
+      throw new Error("Error fetching exam results");
     }
   }
 }

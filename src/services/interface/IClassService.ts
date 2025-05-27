@@ -20,6 +20,7 @@ export interface IClassService{
     findAnnouncementsByAuthor(userId:string): Promise<AnnouncementResponseDTO[]>
     updatePinnedStatus(announcementId: string, userId: string, status: "pin" | "unpin"): Promise<AnnouncementDetailsResponseDTO>
     findAnnouncements(schoolId?: string | null, classId?: string, userId?: string): Promise<AnnouncementResponseDTO[]>
+    findAnnouncementsByCount(classId: string, count: number): Promise<AnnouncementResponseDTO[]>
 }
 
 export default IClassService

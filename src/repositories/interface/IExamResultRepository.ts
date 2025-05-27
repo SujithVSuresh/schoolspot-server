@@ -3,8 +3,8 @@ import { ExamResultEntityType } from "../../types/ExamType";
 
 
 export interface IExamResultRepository {
-    createExamResult(data: ExamResultEntityType): Promise<ExamResultEntityType>
-    updateExamResult(id: string, data: Partial<ExamResultEntityType>): Promise<ExamResultEntityType | null>
+    upsertExamResult(data: ExamResultEntityType[]): Promise<any>
     deleteExamResult(id: string): Promise<boolean>
     findExamResultsByStudent(examId: string, userId: string): Promise<ExamResultEntityType[]>
+    findExamResultsBySubjects(examId: string, subject: string): Promise<ExamResultEntityType[]>
 }

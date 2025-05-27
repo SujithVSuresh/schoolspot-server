@@ -1,6 +1,6 @@
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
-import { CreateExamResultDTO, ExamResultResponseDTO, ExamResultWithExamResponseDTO, UpdateExamResultDTO } from "../../dto/ExamResultDTO";
+import { CreateExamResultDTO, ExamResultResponseDTO, ExamResultWithExamResponseDTO, ExamResultWithStudentResponseDTO, UpdateExamResultDTO } from "../../dto/ExamResultDTO";
 import { IExamResultRepository } from "../../repositories/interface/IExamResultRepository";
 import { ExamEntityType, ExamResultEntityType } from "../../types/ExamType";
 import { CustomError } from "../../utils/CustomError";
@@ -13,38 +13,13 @@ export class ExamResultService implements IExamResultService {
        private _examResultRepository: IExamResultRepository
     ){}
 
-    async createExamResult(data: CreateExamResultDTO): Promise<ExamResultResponseDTO> {
-        const response = await this._examResultRepository.createExamResult(data)
-
+    async upsertExamResult(data: CreateExamResultDTO[]): Promise<{inserted: number, updated: number}> {
+        const response = await this._examResultRepository.upsertExamResult(data)
         return {
-            _id: String(response._id),
-            classId: String(response.classId),
-            examId: String(response.examId),
-            studentId: String(response.studentId),
-            subject: String(response.subject),
-            marksObtained: response.marksObtained,
-            totalMarks: response.totalMarks,
-            grade: response?.grade ?? ""
-        }
-    }
+            inserted: response.upsertedCount,
+            updated: response.modifiedCount
+        };
 
-    async updateExamResult(id: string, data: UpdateExamResultDTO): Promise<ExamResultResponseDTO> {
-        const response = await this._examResultRepository.updateExamResult(id, data)
-
-        if(!response){
-            throw new CustomError(Messages.EXAMRESULT_NOT_FOUND, HttpStatus.NOT_FOUND)
-        }
-
-        return {
-            _id: String(response._id),
-            classId: String(response.classId),
-            examId: String(response.examId),
-            studentId: String(response.studentId),
-            subject: response.subject,
-            marksObtained: response.marksObtained,
-            totalMarks: response.totalMarks,
-            grade: response?.grade ?? ""
-        }
     }
 
     async deleteExamResult(id: string): Promise<{ _id: string; }> {
@@ -65,6 +40,7 @@ export class ExamResultService implements IExamResultService {
         const examResults: ExamResultWithExamResponseDTO[] = response.map((item: ExamResultEntityType) => {
 
             const exam = item.examId as ExamEntityType;
+
             return {
                 _id: String(item._id),
                 examId: {
@@ -77,6 +53,37 @@ export class ExamResultService implements IExamResultService {
                 classId: String(item.classId),
                 subject: item.subject,
                 studentId: String(item.studentId),
+                marksObtained: item.marksObtained,
+                totalMarks: item.totalMarks,
+                grade: item.grade
+            }
+        })
+
+        return examResults
+    }
+
+
+    async findExamResultsBySubject(examId: string, subject: string): Promise<ExamResultWithStudentResponseDTO[]> {
+        const response = await this._examResultRepository.findExamResultsBySubjects(examId, subject)
+
+         const examResults: ExamResultWithStudentResponseDTO[] = response.map((item: ExamResultEntityType) => {
+
+            const student = item.studentId as {
+                _id: string;
+                userId: string;
+                fullName: string
+            };
+
+            return {
+                _id: String(item._id),
+                examId: String(item.examId),
+                classId: String(item.classId),
+                subject: item.subject,
+                studentId: {
+                    _id: student._id,
+                    userId: student.userId,
+                    fullName: student.fullName
+                },
                 marksObtained: item.marksObtained,
                 totalMarks: item.totalMarks,
                 grade: item.grade

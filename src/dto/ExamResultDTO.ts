@@ -36,4 +36,21 @@ export interface CreateExamResultDTO {
     marksObtained: number;
     totalMarks: number;
     grade?: string;
+    percentage?: number;
+  }
+
+  export interface ExamResultWithStudentResponseDTO {
+    _id: string;
+    examId: string;
+    classId: string;
+    subject: string;
+    studentId: {
+      _id: string;
+      userId: string;
+      fullName: string
+    };
+    marksObtained: number;
+    totalMarks: number;
+    grade?: string;
+    percentage?: number;
   }

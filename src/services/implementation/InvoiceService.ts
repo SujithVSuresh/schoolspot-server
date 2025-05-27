@@ -30,6 +30,13 @@ export class InvoiceService implements IInvoiceService {
 
   async createInvoice(data: CreateInvoiceDTO, studentIds: string[]): Promise<{ classId: string }> {
 
+    if(data.dueDate && new Date(data.dueDate) < new Date()){
+      throw new CustomError(
+        Messages.DUE_DATE_INVALID,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    
     const studentInvoices: InvoiceEntityType[] = studentIds.map(
       (id) => {
         return {

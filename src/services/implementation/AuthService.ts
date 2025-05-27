@@ -435,7 +435,7 @@ export class AuthService implements IAuthService {
       userId: String(payload.userId),
       role: payload.role,
       schoolId: String(payload.schoolId),
-      subscribed: true,
+      subscribed: subscription
     });
 
     return {

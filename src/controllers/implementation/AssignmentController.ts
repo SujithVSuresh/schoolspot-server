@@ -286,6 +286,20 @@ async addAssignmentSubmission(req: Request, res: Response, next: NextFunction): 
     }
 }
 
+async fetchPendingAssignments(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try{
+        const { userId } = req.user as PayloadType;
+        const response = await this._assignmentService.getPendingSubmissions(userId)
+
+        res.status(200).json({
+            message: "Assignment submissions fetched successfully",
+            data: response,
+        });
+    }catch(err){
+        next(err)
+    }
+}
+
 async addMarksToAssignmentSubmission(req: Request, res: Response, next: NextFunction): Promise<void> {
     try{
         const { submissionId } = req.params;

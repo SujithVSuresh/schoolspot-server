@@ -5,7 +5,8 @@ export interface IAttendanceService{
     getAttendanceByClass(classId: string, date: string): Promise<any>
     updateAttendanceStatus(attendanceId: string, status: "Present" | "Absent"): Promise<AttendaceResponseDTO> 
     getAttendanceByMonth(studentId: string, date: string): Promise<AttendaceResponseDTO[]> 
-
+    getAttendanceOverview(studentId: string, classId: string): Promise<any>
+    
     createLeaveLetter(dto: CreateLeaveLetterDTO): Promise<LeaveLetterResponseDTO>
     editLeaveLetter(id: string, dto: EditLeaveLetterDTO): Promise<LeaveLetterResponseDTO>
     deleteleaveLetter(id: string): Promise<{_id: string}>

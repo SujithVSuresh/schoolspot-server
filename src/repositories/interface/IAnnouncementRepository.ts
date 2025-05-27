@@ -10,4 +10,5 @@ export interface IAnnouncementRepository {
     pinAnnouncement(announcementId: string, userId: string): Promise<AnnouncementEntityType | null> 
     unpinAnnouncement(announcementId: string, userId: string): Promise<AnnouncementEntityType | null> 
     deleteAnnouncement(announcementId: string): Promise<boolean> 
+    findAnnouncementsByCount(classId: string, count: number): Promise<AnnouncementEntityType[]>
 }

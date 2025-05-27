@@ -12,6 +12,7 @@ export interface IAssignmentController {
     getAssignmentSubmissionById(req: Request, res: Response, next: NextFunction): Promise<void>
     addAssignmentSubmission(req: Request, res: Response, next: NextFunction): Promise<void>
     addMarksToAssignmentSubmission(req: Request, res: Response, next: NextFunction): Promise<void>
+    fetchPendingAssignments(req: Request, res: Response, next: NextFunction): Promise<void>
     
     createStudyMaterial(req: Request, res: Response, next: NextFunction): Promise<void>
     deleteStudyMaterial(req: Request, res: Response, next: NextFunction): Promise<void>

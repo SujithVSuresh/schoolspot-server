@@ -192,7 +192,6 @@ export interface AdminProfileUserEntityType {
   } 
 }
 
-// ----------------
 
 export interface AssignmentEntityType {
   _id?: mongoose.Types.ObjectId | string;
@@ -213,7 +212,7 @@ export interface AssignmentEntityType {
 
 export interface AssignmentSubmissionEntityType {
   _id?: mongoose.Types.ObjectId | string;
-  assignmentId: mongoose.Types.ObjectId | string;
+  assignmentId: mongoose.Types.ObjectId | string | AssignmentEntityType;
   studentId: mongoose.Types.ObjectId | string;
   schoolId: mongoose.Types.ObjectId | string;
   description?: string;

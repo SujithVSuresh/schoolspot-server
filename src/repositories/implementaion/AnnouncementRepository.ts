@@ -137,6 +137,23 @@ class AnnouncementRepository
     return response
   }
 
+  async findAnnouncementsByCount(classId: string, count: number): Promise<AnnouncementEntityType[]> {
+    try {
+      const response = await Announcement.find({
+        sendTo: new mongoose.Types.ObjectId(classId)
+      })
+        .sort({ createdAt: -1 })
+        .limit(count);
+
+      return response;
+    } catch (error) {
+      console.error("Error fetching announcements by count", error);
+      throw new Error("Error fetching announcements by count");
+    }
+  }
+
+
+
 
 }
 

@@ -11,10 +11,9 @@ const timetableController = new TimeTableController(timetableService)
 const timetableRouter = Router()
 
 
-timetableRouter.post("/", protectRoute(["admin"]), timetableController.createTimetable.bind(timetableController));
-timetableRouter.put("/", protectRoute(["admin"]), timetableController.updateTimetable.bind(timetableController));
-timetableRouter.delete("/", protectRoute(["admin"]), timetableController.deleteTimetable.bind(timetableController));
-timetableRouter.get("/:classId", protectRoute(["admin"]), timetableController.findTimetableByClass.bind(timetableController));
+timetableRouter.post("/:classId", protectRoute(["admin"]), timetableController.upsertTimetable.bind(timetableController));
+timetableRouter.delete("/:id", protectRoute(["admin"]), timetableController.deleteTimetable.bind(timetableController));
+timetableRouter.get("/:classId", protectRoute(["admin", "student", "teacher"]), timetableController.findTimetableByClass.bind(timetableController));
 
 
 export default timetableRouter

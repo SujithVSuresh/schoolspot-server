@@ -3,7 +3,7 @@ import { TimeTableEntityType } from "../../types/TimeTableType";
 import { ITimeTableRepository } from "../interface/ITimeTableRepository";
 import { BaseRepository } from "./BaseRepository";
 import mongoose from "mongoose";
-
+import {DaySchedule} from "../../types/TimeTableType";
 
 
 class TimeTableRepository extends BaseRepository<TimeTableEntityType> implements ITimeTableRepository {
@@ -23,6 +23,20 @@ class TimeTableRepository extends BaseRepository<TimeTableEntityType> implements
     async updateTimeTable(id: string, data: Partial<TimeTableEntityType>): Promise<TimeTableEntityType | null> {
         try{
             return await this.update(id, data)
+        }catch(error){
+            console.error("Error updating timetable", error);
+            throw new Error("Error updating timetable")
+        }
+    }
+
+    async upsertTimetable(classId: string, timetableData: DaySchedule[]): Promise<TimeTableEntityType | null> {
+        try{
+             const result = await TimeTable.findOneAndUpdate(
+                { classId }, 
+                { $set: { timetable: timetableData } }, 
+                { upsert: true, new: true } 
+     );
+     return result;
         }catch(error){
             console.error("Error updating timetable", error);
             throw new Error("Error updating timetable")

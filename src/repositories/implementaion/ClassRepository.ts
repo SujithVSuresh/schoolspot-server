@@ -168,6 +168,19 @@ class ClassRepository
     }
   }
 
+  async findClassCountBySchoolId(schoolId: string): Promise<number> {
+    try{
+      const count = await this.countDocuments({
+        school: new mongoose.Types.ObjectId(schoolId)
+      });
+      return count;
+    }catch (error) {
+      console.error("Error finding class count", error);
+      throw new Error("Error finding class count");
+    }
+      
+  }
+
 }
 
 

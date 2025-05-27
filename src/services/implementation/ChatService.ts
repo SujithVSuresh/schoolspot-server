@@ -9,7 +9,8 @@ import { CustomError } from "../../utils/CustomError";
 import { IChatService } from "../interface/IChatService";
 import { INotificationService } from "../interface/INotificationService";
 import { MessageStatusType } from "../../types/ChatType";
-
+import cloudinary from "../../config/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 
 export class ChatService implements IChatService {
@@ -103,9 +104,58 @@ export class ChatService implements IChatService {
     }
 
 
-    async createMessage(data: CreateMessageDTO): Promise<MessageWithSenderResponseDTO> {
+    async createMessage(data: CreateMessageDTO, file: Express.Multer.File): Promise<MessageWithSenderResponseDTO> {
+
+
+        if(!data.content && !file){
+            throw new CustomError(Messages.INVALID_MESSAGE_DATA, HttpStatus.BAD_REQUEST)
+        }
+
+           let fileUrl
+        
+            if (file) {
+              console.log("Uploading file to Cloudinary...");
+        
+              const originalName = file.originalname;
+              const fileNameWithoutExt = originalName.split(".").slice(0, -1).join(".");
+        
+              const uploadResult: UploadApiResponse = await new Promise(
+                (resolve, reject) => {
+                  const stream = cloudinary.uploader.upload_stream(
+                    {
+                      folder: "chat",
+                      resource_type: "raw",
+                      public_id: `${fileNameWithoutExt}_${Date.now()}.pdf`
+                    },
+                    (error, result) => {
+                      if (error) {
+                        console.error("Cloudinary error:", error);
+                        reject(error);
+                      } else if (result) {
+                        console.log("Upload succeeded, result:", result);
+                        resolve(result);
+                      } else {
+                        reject(new Error("Cloudinary upload failed"));
+                      }
+                    }
+                  );
+                  stream.end(file.buffer);
+                }
+              );
+        
+              fileUrl = uploadResult.secure_url;
+            }
+        
+            if (fileUrl) {
+              data.fileUrl = fileUrl;
+            }
+
+            console.log(fileUrl, "file url")
+            console.log(data, "message data")
 
         const message = await this._messageRepository.createMessage(data)
+
+        console.log(message, "message created")
 
         const updateLastMessage = await this._conversationRepository.updateConversation(String(message.conversationId), {
             lastMessage: message
@@ -121,13 +171,13 @@ export class ChatService implements IChatService {
             throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
 
-        await this._notificationService.sendNotification({
-            userId: updateLastMessage.participants
-                .filter(id => String(id) !== String(user._id))
-                .map(id => String(id)),
-            notificationType: "message",
-            message: message.content
-        })
+        // await this._notificationService.sendNotification({
+        //     userId: updateLastMessage.participants
+        //         .filter(id => String(id) !== String(user._id))
+        //         .map(id => String(id)),
+        //     notificationType: "message",
+        //     message: message.content
+        // })
 
         return {
             _id: String(message._id),
@@ -140,6 +190,7 @@ export class ChatService implements IChatService {
             status: message.status as MessageStatusType,
             messageType: message.messageType,
             content: message.content,
+            fileUrl: message.fileUrl,
             createdAt: message.createdAt as Date,
             updatedAt: message.updatedAt as Date
         }
@@ -160,6 +211,7 @@ export class ChatService implements IChatService {
                 status: message.status as MessageStatusType,
                 messageType: message.messageType,
                 content: message.content,
+                fileUrl: message.fileUrl,
                 createdAt: message.createdAt as Date,
                 updatedAt: message.updatedAt as Date
             }

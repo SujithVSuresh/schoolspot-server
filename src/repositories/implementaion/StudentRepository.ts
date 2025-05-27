@@ -226,6 +226,17 @@ class StudentRepository
       throw new Error("Error creating user");
     }
   }
+
+  async studentCountBySchool(schoolId: string): Promise<number> {
+    try {
+      return await this.countDocuments({
+        schoolId: new mongoose.Types.ObjectId(schoolId),
+      });
+    } catch (error) {
+      console.error("Error fetching student count", error);
+      throw new Error("Error fetching student count");
+    }
+  }
 }
 
 export default new StudentRepository();

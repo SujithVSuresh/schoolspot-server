@@ -5,27 +5,33 @@ import { CreateExamResultDTO, UpdateExamResultDTO } from "../../dto/ExamResultDT
 import HttpStatus from "../../constants/StatusConstants";
 import Messages from "../../constants/MessageConstants";
 import { CustomRequest, PayloadType } from "../../types/types";
+import mongoose from "mongoose";
+
 
 export class ExamResultController implements IExamResultController {
   constructor(private _examResultService: IExamResultService) {}
 
-  async createExamResult(
+  async upsertExamResult(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const data = req.body;
-      const examResultData: CreateExamResultDTO = {
-        classId: data?.classId,
-        examId: data?.examId,
-        studentId: data?.studentId,
-        subject: data?.subject,
-        totalMarks: data?.totalMarks,
-        marksObtained: data?.marksObtained,
-        grade: data?.grade ?? "",
-      };
-      const response = await this._examResultService.createExamResult(
+      const examResultData: CreateExamResultDTO[] = data.map((item: CreateExamResultDTO) => {
+        return {
+        classId: new mongoose.Types.ObjectId(item?.classId),
+        examId: new mongoose.Types.ObjectId(item?.examId),
+        studentId: new mongoose.Types.ObjectId(item?.studentId),
+        subject: item?.subject,
+        totalMarks: item?.totalMarks,
+        marksObtained: item?.marksObtained,
+        grade: item?.grade ?? "",
+        }
+      })
+
+
+      const response = await this._examResultService.upsertExamResult(
         examResultData
       );
 
@@ -36,25 +42,25 @@ export class ExamResultController implements IExamResultController {
   }
 
 
-  async updateExamResult(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-        const {id} = req.params
-        const data = req.body;
-        const examResultData: UpdateExamResultDTO = {
-          totalMarks: data?.totalMarks,
-          marksObtained: data?.marksObtained,
-          grade: data?.grade ?? "",
-        };
-        const response = await this._examResultService.updateExamResult(
-            id,
-          examResultData
-        );
+  // async updateExamResult(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //   try {
+  //       const {id} = req.params
+  //       const data = req.body;
+  //       const examResultData: UpdateExamResultDTO = {
+  //         totalMarks: data?.totalMarks,
+  //         marksObtained: data?.marksObtained,
+  //         grade: data?.grade ?? "",
+  //       };
+  //       const response = await this._examResultService.updateExamResult(
+  //           id,
+  //         examResultData
+  //       );
   
-        res.status(HttpStatus.OK).json(response);
-      } catch (err) {
-        next(err);
-      } 
-  }
+  //       res.status(HttpStatus.OK).json(response);
+  //     } catch (err) {
+  //       next(err);
+  //     } 
+  // }
 
   async deleteExamResult(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -76,6 +82,19 @@ export class ExamResultController implements IExamResultController {
       const userId = role === "admin" ? userIdFromParams : userIdFromToken;
 
         const response = await this._examResultService.findExamResultsByStudent(examId, userId)
+  
+        res.status(HttpStatus.OK).json(response);
+      } catch (err) {
+        next(err);
+      } 
+  }
+
+
+  async findExamResultsBySubject(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { examId, subject } = req.params;
+
+        const response = await this._examResultService.findExamResultsBySubject(examId, subject)
   
         res.status(HttpStatus.OK).json(response);
       } catch (err) {

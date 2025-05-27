@@ -23,7 +23,8 @@ export interface ConversationEntityType {
     conversationId: mongoose.Types.ObjectId | string | ConversationEntityType;
     senderId: mongoose.Types.ObjectId | UserEntityType | string;
     messageType: MessageType;
-    content: string;
+    content?: string;
+    fileUrl?: string;
     status?: MessageStatusType
     readBy?: mongoose.Types.ObjectId[] | string[];
     createdAt?: Date;
@@ -35,7 +36,8 @@ export interface ConversationEntityType {
     conversationId: mongoose.Types.ObjectId | string;
     senderId: UserEntityType
     messageType: MessageType;
-    content: string;
+    content?: string;
+    fileUrl?: string;
     status?: MessageStatusType
     readBy?: mongoose.Types.ObjectId[] | string[];
     createdAt?: Date;

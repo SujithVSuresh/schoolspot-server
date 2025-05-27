@@ -10,4 +10,5 @@ export interface ITeacherRepository {
     getTeacherBySchool(schoolId: string): Promise<TeacherProfileType[]>
     findTeacherProfile(userId: string): Promise<TeacherProfileUserEntityType | null>
     updateTeacherProfile(profileId: string, data: Partial<TeacherProfileType>): Promise<TeacherProfileType>
+    getTeacherCountBySchool(schoolId: string): Promise<number>
 }

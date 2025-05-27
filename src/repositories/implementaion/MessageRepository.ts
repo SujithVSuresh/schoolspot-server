@@ -14,11 +14,13 @@ class MessageRepository
 
   async createMessage(data: MessageEntityType): Promise<MessageEntityType> {
     try {
+      console.log(data, "hha dataaaaa")
       return await this.create({
         conversationId: new mongoose.Types.ObjectId(data.conversationId as string),
         senderId: new mongoose.Types.ObjectId(data.senderId as string),
         messageType: data.messageType,
         content: data.content,
+        fileUrl: data.fileUrl
       });
     } catch (error) {
       console.error("Error creating message", error);

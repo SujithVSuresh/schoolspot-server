@@ -143,6 +143,16 @@ class TeacherRepository extends BaseRepository<TeacherProfileType> implements IT
         }
       }
 
+      async getTeacherCountBySchool(schoolId: string): Promise<number> {
+        try {
+            const count = await this.countDocuments({ schoolId: new mongoose.Types.ObjectId(schoolId) });
+            return count;
+        } catch (error) {
+            console.error("Error fetching teacher count", error);
+            throw new Error("Error fetching teacher count");
+        }
+      }
+
 }
     
 

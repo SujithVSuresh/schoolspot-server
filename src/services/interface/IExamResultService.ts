@@ -1,9 +1,9 @@
-import { ExamResultResponseDTO, CreateExamResultDTO, UpdateExamResultDTO, ExamResultWithExamResponseDTO } from "../../dto/ExamResultDTO"
+import { CreateExamResultDTO, ExamResultWithStudentResponseDTO, ExamResultWithExamResponseDTO } from "../../dto/ExamResultDTO"
 
 
 export interface IExamResultService {
-    createExamResult(data: CreateExamResultDTO): Promise<ExamResultResponseDTO>
-    updateExamResult(id: string, data: UpdateExamResultDTO): Promise<ExamResultResponseDTO>
+    upsertExamResult(data: CreateExamResultDTO[]): Promise<{inserted: number, updated: number}>
     deleteExamResult(id: string): Promise<{_id: string}>
     findExamResultsByStudent(examId: string, userId: string): Promise<ExamResultWithExamResponseDTO[]>
+    findExamResultsBySubject(examId: string, subject: string): Promise<ExamResultWithStudentResponseDTO[]>
 }

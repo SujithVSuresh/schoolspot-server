@@ -18,7 +18,6 @@ class AssignmentSubmissionRepository
   async getAssignmentSubmissions(
     assignmentId: string
   ): Promise<AssignmentSubmissionStudentEntityType[]> {
-    console.log(assignmentId, "assignmentId vaaaa")
     const assignmentSubmissions = await AssignmentSubmission.aggregate([
       {
         $match: {
@@ -40,7 +39,6 @@ class AssignmentSubmissionRepository
   }
 
   async getAssignmentSubmission(assignmentId: string, userId: string): Promise<AssignmentSubmissionStudentEntityType | null> {
-    console.log(assignmentId, userId, "this is the submision iddd.....")
 
     const assignmentSubmission = await AssignmentSubmission.aggregate([
       {
@@ -59,8 +57,6 @@ class AssignmentSubmissionRepository
       },
       { $unwind: "$student" }
     ]);
-
-    console.log(assignmentSubmission, "jaaaaaaiiiilllllll")
 
     return assignmentSubmission.length > 0 ? assignmentSubmission[0] : null;
   }
@@ -92,6 +88,31 @@ class AssignmentSubmissionRepository
     const assignmentSubmission = await this.update(submissionId, data)
     return assignmentSubmission;
   }
+
+  async fetchPendingSubmissions(userId: string): Promise<AssignmentSubmissionEntityType[]> {
+    console.log("Fetching pending submissions for user:", userId);
+    const pendingSubmissions = await AssignmentSubmission.aggregate([
+      {
+        $match: {
+          studentId: new mongoose.Types.ObjectId(userId),
+          status: "Pending"
+        }
+      },
+      {
+        $lookup: {
+          from: "Assignments",
+          localField: "assignmentId",
+          foreignField: "_id",
+          as: "assignmentId"
+        },
+      },
+      { $unwind: "$assignmentId" }
+    ])
+
+    console.log("gagagagaga", pendingSubmissions);
+
+    return pendingSubmissions
+}
 }
 
 export default new AssignmentSubmissionRepository();

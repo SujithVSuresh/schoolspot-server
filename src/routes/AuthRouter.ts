@@ -11,8 +11,11 @@ import PaymentRepository from "../repositories/implementaion/PaymentRepository";
 import { SchoolService } from "../services/implementation/SchoolService";
 import { AcademicYearService } from "../services/implementation/AcademicYearService";
 import AcademicYearRepository from "../repositories/implementaion/AcademicYearRepository";
+import TeacherRepository from "../repositories/implementaion/TeacherRepository";
+import StudentRepository from "../repositories/implementaion/StudentRepository";
+import ClassRepository from "../repositories/implementaion/ClassRepository";
 
-const schoolService = new SchoolService(SchoolRepository);
+const schoolService = new SchoolService(SchoolRepository, TeacherRepository, StudentRepository, ClassRepository);
 
 const subscriptionService = new SubscriptionService(
   PlanRepository,
@@ -56,11 +59,6 @@ authRouter.post(
   protectRoute(["admin"]),
   authController.createUser.bind(authController)
 );
-// authRouter.get(
-//   "/get-students",
-//   protectRoute(["admin"]),
-//   authController.getAllStudents.bind(authController)
-// );
 authRouter.post(
   "/refreshToken",
   authController.refreshToken.bind(authController)

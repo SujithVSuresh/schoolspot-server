@@ -10,5 +10,5 @@ export interface IClassRepository {
     findAllClasses(schoolId: string): Promise<ClassEntityType[]> 
     updateClassStrength(classId: string, value: 1 | -1): Promise<boolean>
     findClassById(id: string): Promise<ClassEntityType | null>
-    // findClassByTeacherId(teacherId: string): Promise<ClassEntityType[]> 
+    findClassCountBySchoolId(schoolId: string): Promise<number>
 }

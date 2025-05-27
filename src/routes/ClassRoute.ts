@@ -33,6 +33,7 @@ classRouter.get('/announcements/:classId', protectRoute(["admin", "teacher", "st
 classRouter.delete('/announcement/:announcementId', protectRoute(["admin", "teacher"]), classController.deleteAnnouncement.bind(classController))
 classRouter.patch('/announcement/:announcementId/pin', protectRoute(["student"]), classController.updatePinnedStatus.bind(classController))
 
+classRouter.get('/announcements/:classId/:count', protectRoute(["student"]), classController.findAnnouncementsByCount.bind(classController))
 
 export default classRouter;
 

@@ -109,8 +109,6 @@ export class SubscriptionService implements ISubscriptionService {
       status: "active",
     });
 
-
-
     const isActive = checkSubscription(String(subscription?.endDate));
 
     if (isActive) {
@@ -128,7 +126,7 @@ export class SubscriptionService implements ISubscriptionService {
         String(pendingSubscription._id),
         { status: "active" }
       );
-           await this._subscriptionRepository.updateSubscription(
+      await this._subscriptionRepository.updateSubscription(
         String(subscription?._id),
         { status: "expired" }
       );
@@ -164,7 +162,7 @@ export class SubscriptionService implements ISubscriptionService {
   ): Promise<Stripe.Checkout.Session> {
     const subscription = await this._subscriptionRepository.findSubscription({
       schoolId,
-      status: "queued"
+      status: "queued",
     });
     if (subscription) {
       throw new CustomError(
@@ -175,23 +173,23 @@ export class SubscriptionService implements ISubscriptionService {
 
     const plan = await this._planRepository.findPlanById(planId);
 
-    if(!plan){
-        throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!plan) {
+      throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    console.log("createSubscriptionSession123123123", planId, amount);
 
-    const createSubscription = await this._subscriptionRepository.createSubscription({
+    const createSubscription =
+      await this._subscriptionRepository.createSubscription({
         userId: userId,
         schoolId: schoolId,
         planId,
         planPrice: amount,
         startDate: new Date(),
-        endDate: new Date(Date.now() + plan?.durationInDays * 24 * 60 * 60 * 1000),
-        status: "pending"
-    })
-
-     console.log("createSubscriptionSession123123123777777777777", createSubscription);
+        endDate: new Date(
+          Date.now() + plan?.durationInDays * 24 * 60 * 60 * 1000
+        ),
+        status: "pending",
+      });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -207,14 +205,13 @@ export class SubscriptionService implements ISubscriptionService {
       ],
       payment_intent_data: {
         metadata: {
-          subscriptionId: String(createSubscription._id)
+          subscriptionId: String(createSubscription._id),
         },
       },
       mode: "payment",
       success_url: "http://localhost:5173/profile/subscription",
       cancel_url: "http://localhost:5173/profile/subscription",
     });
-
 
     return session;
   }
@@ -234,8 +231,10 @@ export class SubscriptionService implements ISubscriptionService {
 
         const subscriptionId = lineItems.data[0]?.description;
 
-        const subscription = await this._subscriptionRepository.findSubscriptionById(subscriptionId as string)
-
+        const subscription =
+          await this._subscriptionRepository.findSubscriptionById(
+            subscriptionId as string
+          );
 
         if (!subscription) {
           throw new CustomError(
@@ -255,18 +254,18 @@ export class SubscriptionService implements ISubscriptionService {
           status: "Success",
         });
 
-        const checkSubscription = await this._subscriptionRepository.findSubscription({
+        const checkSubscription =
+          await this._subscriptionRepository.findSubscription({
             schoolId: String(subscription.schoolId),
             status: "active",
-        })
-
+          });
 
         await this._subscriptionRepository.updateSubscription(
-            String(subscription._id),
-            {
-                status: checkSubscription?.status == "active" ? "queued" : "active"
-            }
-        )
+          String(subscription._id),
+          {
+            status: checkSubscription?.status == "active" ? "queued" : "active",
+          }
+        );
 
         paymentId = payment._id;
         break;
@@ -281,9 +280,10 @@ export class SubscriptionService implements ISubscriptionService {
 
         const subscriptionId = paymentIntent.metadata.subscriptionId;
 
-        const subscription = await this._subscriptionRepository.findSubscriptionById(
-          subscriptionId as string
-        );
+        const subscription =
+          await this._subscriptionRepository.findSubscriptionById(
+            subscriptionId as string
+          );
 
         if (!subscription) {
           throw new CustomError(
@@ -304,7 +304,9 @@ export class SubscriptionService implements ISubscriptionService {
         });
         paymentId = payment._id;
 
-        await this._subscriptionRepository.deleteSubscription(subscription._id as string);
+        await this._subscriptionRepository.deleteSubscription(
+          subscription._id as string
+        );
         break;
       }
 

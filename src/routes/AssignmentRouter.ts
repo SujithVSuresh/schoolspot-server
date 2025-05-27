@@ -17,6 +17,7 @@ const assignmentController = new AssignmentController(assignmentService);
 
 const assignmentRouter = Router();
 
+assignmentRouter.get('/submission/pending', protectRoute(["student"]), assignmentController.fetchPendingAssignments.bind(assignmentController));
 assignmentRouter.put('/update/:assignmentId', protectRoute(["teacher"]), assignmentController.updateAssignment.bind(assignmentController));
 assignmentRouter.post('/add', protectRoute(["teacher"]), assignmentController.createAssignment.bind(assignmentController));
 assignmentRouter.delete('/:assignmentId', protectRoute(["teacher"]), assignmentController.deleteAssignment.bind(assignmentController));
@@ -27,6 +28,7 @@ assignmentRouter.get('/submission/:assignmentId', protectRoute(["teacher", "stud
 assignmentRouter.post('/submission/:submissionId', protectRoute(["student"]), assignmentController.addAssignmentSubmission.bind(assignmentController));
 assignmentRouter.get('/submission/id/:submissionId', protectRoute(["teacher"]), assignmentController.getAssignmentSubmissionById.bind(assignmentController));
 assignmentRouter.post('/submission/grade/:submissionId', protectRoute(["teacher"]), assignmentController.addMarksToAssignmentSubmission.bind(assignmentController));
+
 
 assignmentRouter.post('/create/studymaterial', protectRoute(["teacher"]), fileUpload.single("fileMaterial"), assignmentController.createStudyMaterial.bind(assignmentController));
 assignmentRouter.put('/studymaterial/:studyMaterialId', protectRoute(["teacher"]), fileUpload.single("fileMaterial"), assignmentController.updateStudyMaterial.bind(assignmentController));

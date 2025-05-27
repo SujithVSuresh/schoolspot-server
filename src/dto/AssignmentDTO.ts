@@ -52,9 +52,21 @@ export interface AssignmentSubmissionsListResponseDTO {
   submittedAt: Date | null
 }
 
+export interface AssignmentSubmissionsWithAssignmentResponseDTO {
+  _id: string;
+  assignmentId: {
+      _id?: string;
+      title: string;
+      description: string;
+      dueDate: Date;
+      createdAt?: Date;
+};
+  status: "Pending" | "Submitted" | "Graded";
+}
+
 export interface AssignmentSubmissionResponseDTO {
   _id: string;
-  assignmentId: string;
+  assignmentId: string | AssignmentResponseDTO;
   description?: string;
   link?: string;
   fileUrl?: string;

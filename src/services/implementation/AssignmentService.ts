@@ -8,7 +8,8 @@ import {
   StudyMaterialResponseWithViewersDTO,
   AssignmentSubmissionResponseDTO,
   UpdateStudyMaterialDTO,
-  UpdateAssignmentDTO
+  UpdateAssignmentDTO,
+  AssignmentSubmissionsWithAssignmentResponseDTO
 } from "../../dto/AssignmentDTO";
 import { IAssignmentRepository } from "../../repositories/interface/IAssignmentRepository";
 import IAssignmentService from "../interface/IAssignmentService";
@@ -22,6 +23,7 @@ import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import { INotificationService } from "../interface/INotificationService";
 import mongoose from "mongoose";
+import { AssignmentEntityType } from "../../types/types";
 
 
 export class AssignmentService implements IAssignmentService {
@@ -36,6 +38,12 @@ export class AssignmentService implements IAssignmentService {
   async createAssignment(
     data: CreateAssignmentDTO
   ): Promise<AssignmentResponseDTO> {
+    if(data.dueDate && new Date(data.dueDate) < new Date()){
+      throw new CustomError(
+        Messages.DUE_DATE_INVALID,
+        HttpStatus.BAD_REQUEST
+      );
+    }
     const response = await this._assignmentRepository.createAssignment(data);
 
     const students = await this._studentRepository.getStudents(
@@ -254,6 +262,7 @@ export class AssignmentService implements IAssignmentService {
     submissionId: string,
     data: any
   ): Promise<AssignmentSubmissionResponseDTO | null> {
+
     const response =
       await this._assignmentSubmissionRepository.addAssignmentSubmission(
         submissionId,
@@ -281,6 +290,29 @@ export class AssignmentService implements IAssignmentService {
     };
 
     return assignmentSubmission;
+  }
+
+
+  async getPendingSubmissions(userId: string): Promise<AssignmentSubmissionsWithAssignmentResponseDTO[]> {
+    const response = await this._assignmentSubmissionRepository.fetchPendingSubmissions(userId)
+
+    const pendingSubmissions: AssignmentSubmissionsWithAssignmentResponseDTO[] =
+      response.map((submission) => {
+        const assignmentId = submission.assignmentId as AssignmentEntityType
+        return ({
+        _id: submission._id?.toString() ?? "",
+        assignmentId: {
+          _id: assignmentId._id?.toString() ?? "",
+          title: assignmentId.title,
+          description: assignmentId.description,
+          dueDate: assignmentId.dueDate,
+          createdAt: assignmentId.createdAt,
+        },
+        status: submission.status,
+      })
+      });
+
+    return pendingSubmissions;
   }
 
   async createStudyMaterial(

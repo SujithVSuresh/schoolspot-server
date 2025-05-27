@@ -114,6 +114,8 @@ class AttendanceRepository
       }
     ])
 
+    console.log(attendanceCount, "Attendance Count")
+
     return attendanceCount[0] ? attendanceCount[0] : null
     
   }
@@ -129,6 +131,8 @@ class AttendanceRepository
       throw new Error("Error finding attendance");
     }
   }
+
+
 
   
 }

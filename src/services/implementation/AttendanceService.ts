@@ -179,28 +179,48 @@ export class AttendanceService implements IAttendanceService {
     }));
   }
 
-  async createLeaveLetter(
-    dto: CreateLeaveLetterDTO
-  ): Promise<LeaveLetterResponseDTO> {
-    const leaveLetter = await this._leaveLetterRepository.createLeaveLetter(
-      dto
-    );
-    if (!leaveLetter) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+ async createLeaveLetter(
+  dto: CreateLeaveLetterDTO
+): Promise<LeaveLetterResponseDTO> {
 
-    return {
-      _id: String(leaveLetter._id),
-      reason: leaveLetter.reason,
-      fromDate: leaveLetter.fromDate,
-      toDate: leaveLetter.toDate,
-      createdAt: leaveLetter.createdAt,
-      status: leaveLetter.status,
-    };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day for comparison
+  const fromDate = new Date(dto.fromDate);
+  const toDate = new Date(dto.toDate);
+
+  if (fromDate > toDate) {
+    throw new CustomError(
+      Messages.INVALID_DATE_RANGE,
+      HttpStatus.BAD_REQUEST
+    );
   }
+
+  if (fromDate < today) {
+    throw new CustomError(
+      Messages.PAST_DATE_NOT_ALLOWED,
+      HttpStatus.BAD_REQUEST
+    );
+  }
+
+  const leaveLetter = await this._leaveLetterRepository.createLeaveLetter(dto);
+
+  if (!leaveLetter) {
+    throw new CustomError(
+      Messages.SERVER_ERROR,
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
+  }
+
+  return {
+    _id: String(leaveLetter._id),
+    reason: leaveLetter.reason,
+    fromDate: leaveLetter.fromDate,
+    toDate: leaveLetter.toDate,
+    createdAt: leaveLetter.createdAt,
+    status: leaveLetter.status,
+  };
+}
+
 
   async editLeaveLetter(
     id: string,
@@ -271,5 +291,33 @@ export class AttendanceService implements IAttendanceService {
     });
 
     return attendance;
+  }
+
+  async getAttendanceOverview(studentId: string, classId: string): Promise<{
+    present: number;
+    absent: number;
+    presentPercentage: number;
+  }> {
+    const attendanceData = await this._attendanceRepository.findAttendanceCount({
+      student: new mongoose.Types.ObjectId(studentId)
+    })
+    
+      const present = attendanceData?.present || 0
+      const absent = attendanceData?.absent || 0
+      const total = present + absent
+
+      if (total === 0) {
+        throw new CustomError(
+          Messages.ATTENDANCE_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        )
+      }
+
+
+    return {
+      present: attendanceData?.present || 0,
+      absent: attendanceData?.absent || 0,
+      presentPercentage: Math.ceil((present / total) * 100)
+    }
   }
 }

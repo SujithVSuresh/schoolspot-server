@@ -201,60 +201,6 @@ export class ClassService implements IClassService {
     return data;
   }
 
-  // async getClassIdsForUsers(
-  //   userId: string,
-  //   role: "superadmin" | "admin" | "teacher" | "student",
-  //   schoolId: string
-  // ): Promise<{ name: string; section: string; id: string }[]> {
-  //   let classIds: { name: string; section: string; id: string }[] = [];
-
-  //   switch (role) {
-  //     case "admin":
-  //       const adminClasses = await this._classRepository.findAllClasses(
-  //         schoolId
-  //       );
-  //       classIds = adminClasses.map((classData) => {
-  //         return {
-  //           id: String(classData._id),
-  //           name: classData.name,
-  //           section: classData.section,
-  //         };
-  //       });
-  //       break;
-  //     case "teacher":
-  //       const teacherClasses = await this._classRepository.findClassByTeacherId(
-  //         userId
-  //       );
-  //       classIds = teacherClasses.map((classData) => {
-  //         return {
-  //           id: String(classData._id),
-  //           name: classData.name,
-  //           section: classData.section,
-  //         };
-  //       });
-  //       break;
-  //     case "student":
-  //       const studentClass = await this._studentRepository.getStudentById(
-  //         userId
-  //       );
-  //       classIds = [
-  //         {
-  //           id: String(studentClass?._id),
-  //           name: studentClass?.class as string,
-  //           section: studentClass?.section as string,
-  //         },
-  //       ];
-  //       break;
-  //     default:
-  //       console.log("No user role matches");
-  //   }
-
-  //   return classIds;
-  // }
-
-
-  // ------------------------------------------------------------------
-
 
   async addAnnouncement(
     data: AnnouncementDTO
@@ -459,6 +405,30 @@ export class ClassService implements IClassService {
 
       return announcements
 
+  }
+
+
+  async findAnnouncementsByCount(classId: string, count: number): Promise<AnnouncementResponseDTO[]> {
+    const response = await this._announcementRepository.findAnnouncementsByCount(classId, count)
+
+    if(!response){
+      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    const announcements: AnnouncementResponseDTO[] = response.map(
+      (announcement) => {
+        return {
+          _id: String(announcement._id),
+          title: announcement.title,
+          content: announcement.content,
+          author: String(announcement.author),
+          createdAt: announcement.createdAt,
+          pinned: announcement.pinned,
+        };
+      }
+    )
+
+    return announcements
   }
 
   

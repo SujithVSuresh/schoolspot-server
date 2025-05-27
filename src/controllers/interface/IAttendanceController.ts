@@ -6,6 +6,7 @@ export interface IAttendanceController {
     findAttendanceByClass(req: Request, res: Response, next: NextFunction): Promise<void>
     updateAttendanceStatus(req: Request, res: Response, next: NextFunction): Promise<void>
     getAttendanceByMonth(req: Request, res: Response, next: NextFunction): Promise<void>
+    getAttendanceOverview(req: Request, res: Response, next: NextFunction): Promise<void>
 
     createLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void>
     editLeaveLetter(req: Request, res: Response, next: NextFunction): Promise<void>

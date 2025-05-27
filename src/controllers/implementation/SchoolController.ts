@@ -54,4 +54,17 @@ export class SchoolController implements ISchoolController {
       }
   }
 
+
+  async getSchoolOverview(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const schoolId = req.user?.schoolId;
+
+      const overview = await this._schoolService.getSchoolOverview(schoolId as string);
+
+      res.status(HttpStatus.OK).json(overview);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 }

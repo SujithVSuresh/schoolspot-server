@@ -201,7 +201,6 @@ export class AuthController implements IAuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      console.log(req.cookies, "cokkkkkkkkkkk");
       const { role } = req.body;
       if (!req.cookies) {
         res.status(HttpStatus.FORBIDDEN).json({ error: Messages.NO_TOKEN });

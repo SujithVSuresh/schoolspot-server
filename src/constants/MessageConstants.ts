@@ -45,7 +45,11 @@ const Messages = {
     CANNOT_DELETE_CONVERSATION: "You do not have access to delete tis conversation",
     ACADEMIC_YEAR_EXIST: "Academic year for this school already exist",
     ACTIVE_ACADEMIC_YEAR_NOT_FOUND: "No active academic year found for this school",
-    NOTIFICATION_NOT_FOUND: "Notification not found"
+    NOTIFICATION_NOT_FOUND: "Notification not found",
+    INVALID_MESSAGE_DATA: "Invalid message data provided",
+    INVALID_DATE_RANGE: "Invalid date range provided. 'fromDate' must be before 'toDate'.",
+    PAST_DATE_NOT_ALLOWED: "Past dates are not allowed for leave letters.",
+    DUE_DATE_INVALID: "Due date must be after the current date."
   };
 
   export default Messages

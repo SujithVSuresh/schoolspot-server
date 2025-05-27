@@ -10,5 +10,6 @@ export interface IStudentRepository {
     getStudent(query: any): Promise<StudentProfileEntityType | null>
     getStudents(query: any, schoolId: string): Promise<any>
     updateStudentProfile(profileId: string, data: Partial<StudentProfileEntityType>): Promise<StudentProfileEntityType>
+    studentCountBySchool(schoolId: string): Promise<number>
 }
 

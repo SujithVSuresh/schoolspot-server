@@ -11,28 +11,31 @@ const MessageSchema = new Schema(
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
     messageType: {
       type: String,
-      enum: ["text", "file"],
+      enum: ["text", "file", "file-text"],
       default: "text",
-      required: true
+      required: true,
     },
     content: {
-      type: String,
-      required: true
+      type: String
     },
+    fileUrl: {
+      type: String
+    },
+
     status: {
       type: String,
       enum: ["active", "deleted"],
       default: "active",
-    }, 
+    },
     readBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: false
+        required: false,
       },
     ],
   },
@@ -41,4 +44,8 @@ const MessageSchema = new Schema(
   }
 );
 
-export default mongoose.model<MessageEntityType>("Message", MessageSchema, "Messages");
+export default mongoose.model<MessageEntityType>(
+  "Message",
+  MessageSchema,
+  "Messages"
+);
