@@ -29,6 +29,8 @@ export const protectRoute = (
           process.env.ACCESS_TOKEN_SECRET as string
         ) as PayloadType;
 
+        console.log(decoded, authHeader, "gagaga")
+
 
         if (!allowedRole.includes(decoded.role)) {
           res.status(403).json({

@@ -1,6 +1,5 @@
 import { TeacherProfileType } from "../../types/types";
 import { ClassEntityType, SubjectEntityType} from "../../types/types";
-import mongoose from "mongoose";
 
 export interface IClassRepository {
     createClass(data: ClassEntityType): Promise<ClassEntityType>;

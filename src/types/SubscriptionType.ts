@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 export interface PlanEntityType {
   _id?: mongoose.Types.ObjectId | string;
-  name: "Free" | "3 Month" | "6 Month";
+  name: string;
   price: number;
-  durationInDays: 30 | 90 | 180;
+  durationInDays: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

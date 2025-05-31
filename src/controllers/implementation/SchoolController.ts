@@ -67,4 +67,27 @@ export class SchoolController implements ISchoolController {
     }
   }
 
+
+  async findSchools(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+      const schools = await this._schoolService.findSchools()
+
+      res.status(HttpStatus.OK).json(schools);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async fetchSchoolProfileDetails(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {schoolId} = req.params
+      const schoolProfile = await this._schoolService.fetchSchoolProfileDetails(schoolId)
+
+      res.status(HttpStatus.OK).json(schoolProfile);
+    } catch (err) {
+      next(err);
+    }
+  }
+
 }

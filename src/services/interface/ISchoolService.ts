@@ -5,4 +5,6 @@ export interface ISchoolService{
     createSchool(data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO>
     editSchoolProfile(id: string, data: CreateSchoolProfileDTO): Promise<SchoolProfileResponseDTO>
     getSchoolOverview(schoolId: string): Promise<{studentCount: number; teacherCount: number; classCount: number;}>
+    findSchools(): Promise<SchoolProfileResponseDTO[]>
+    fetchSchoolProfileDetails(schoolId: string): Promise<any>
 }

@@ -45,7 +45,9 @@ class TimeTableRepository extends BaseRepository<TimeTableEntityType> implements
 
     async deleteTimeTable(id: string): Promise<boolean> {
         try{
-            return await this.delete(id)
+            const response = await this.delete(id)
+
+            return response
         }catch(error){
             console.error("Error deleting timetable", error);
             throw new Error("Error deleting timetable")

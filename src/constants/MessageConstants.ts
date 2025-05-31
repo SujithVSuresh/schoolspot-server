@@ -49,7 +49,8 @@ const Messages = {
     INVALID_MESSAGE_DATA: "Invalid message data provided",
     INVALID_DATE_RANGE: "Invalid date range provided. 'fromDate' must be before 'toDate'.",
     PAST_DATE_NOT_ALLOWED: "Past dates are not allowed for leave letters.",
-    DUE_DATE_INVALID: "Due date must be after the current date."
+    DUE_DATE_INVALID: "Due date must be after the current date.",
+    CHAPTER_NOT_FOUND: "Chapter not found"
   };
 
   export default Messages

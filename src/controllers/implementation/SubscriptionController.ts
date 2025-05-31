@@ -88,6 +88,17 @@ export class SubscriptionController implements ISubscriptionController {
     }
   }
 
+  async findPlanById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try{
+      const {planId} = req.params
+      const response = await this._subscriptionService.findPlanById(planId)
+
+      res.status(HttpStatus.OK).json(response)
+    }catch(err){
+      next(err)
+    }
+  }
+
   async findSubscriptionsBySchoolId(
     req: CustomRequest,
     res: Response,

@@ -1,9 +1,9 @@
 import { SubscriptionStatusType } from "../types/SubscriptionType";
 
 export interface CreatePlanDTO {
-  name: "Free" | "3 Month" | "6 Month";
+  name: string;
   price: number;
-  durationInDays: 30 | 90 | 180;
+  durationInDays: number;
 }
 
 export type UpdatePlanDTO = Partial<CreatePlanDTO>;
@@ -11,9 +11,9 @@ export type UpdatePlanDTO = Partial<CreatePlanDTO>;
 
 export interface PlanResponseDTO {
   _id?: string;
-  name: "Free" | "3 Month" | "6 Month";
+  name: string;
   price: number;
-  durationInDays: 30 | 90 | 180;
+  durationInDays: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

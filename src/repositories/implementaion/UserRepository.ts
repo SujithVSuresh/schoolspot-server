@@ -54,6 +54,8 @@ class UserRepository extends BaseRepository<UserEntityType> implements IUserRepo
           throw new Error("Error updating student profile");
         }
     }
+
+
 }
 
 export default new UserRepository()

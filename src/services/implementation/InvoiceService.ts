@@ -129,9 +129,9 @@ export class InvoiceService implements IInvoiceService {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "inr",
             product_data: { name: invoiceId },
-            unit_amount: amount,
+            unit_amount: Math.round(amount * 100),
           },
           quantity: 1,
         },

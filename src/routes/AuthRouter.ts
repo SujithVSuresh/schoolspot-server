@@ -14,8 +14,9 @@ import AcademicYearRepository from "../repositories/implementaion/AcademicYearRe
 import TeacherRepository from "../repositories/implementaion/TeacherRepository";
 import StudentRepository from "../repositories/implementaion/StudentRepository";
 import ClassRepository from "../repositories/implementaion/ClassRepository";
+import AdminRepository from "../repositories/implementaion/AdminRepository";
 
-const schoolService = new SchoolService(SchoolRepository, TeacherRepository, StudentRepository, ClassRepository);
+const schoolService = new SchoolService(SchoolRepository, TeacherRepository, StudentRepository, ClassRepository, AdminRepository, SubscriptionRepository);
 
 const subscriptionService = new SubscriptionService(
   PlanRepository,

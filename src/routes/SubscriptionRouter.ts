@@ -19,6 +19,8 @@ subscriptionRouter.post('/plan', protectRoute(["superadmin"]), subscriptionContr
 subscriptionRouter.put('/plan/:planId', protectRoute(["superadmin"]), subscriptionController.updatePlan.bind(subscriptionController));
 subscriptionRouter.delete('/plan/:planId', protectRoute(["superadmin"]), subscriptionController.deletePlan.bind(subscriptionController));
 subscriptionRouter.get('/plans', protectRoute(["superadmin", "admin"]), subscriptionController.findPlans.bind(subscriptionController));
+subscriptionRouter.get('/plans/:planId', protectRoute(["superadmin"]), subscriptionController.findPlanById.bind(subscriptionController));
+
 subscriptionRouter.post('/subscription-session', protectRoute(["admin"]), subscriptionController.createSubscriptionSession.bind(subscriptionController));
 
 

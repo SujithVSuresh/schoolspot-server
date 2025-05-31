@@ -6,10 +6,12 @@ export interface ISubscriptionService {
     findPlans(): Promise<PlanResponseDTO[]>
     deletePlan(id: string): Promise<{_id: string}>
     updatePlan(id: string, data: UpdatePlanDTO): Promise<PlanResponseDTO | null>
+    findPlanById(id: string): Promise<PlanResponseDTO>
+
     createSubscription(data: CreateSubscriptionDTO): Promise<SubscriptionResponseDTO>
     handleSubscription(schoolId: string): Promise<boolean>
     findSubscriptionsBySchoolId(schoolId: string): Promise<SubscriptionListResponseDTO[]>
-    createSubscriptionSession(    planId: string,
+    createSubscriptionSession(planId: string,
     amount: number,
     schoolId: string,
     userId: string): Promise<Stripe.Checkout.Session>

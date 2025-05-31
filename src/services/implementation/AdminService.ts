@@ -11,6 +11,7 @@ import { IAdminRepository } from "../../repositories/interface/IAdminRepository"
 import { CustomError } from "../../utils/CustomError";
 import { IAdminService } from "../interface/IAdminService";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
+import mongoose from "mongoose";
 
 export class AdminService implements IAdminService {
   constructor(
@@ -19,7 +20,9 @@ export class AdminService implements IAdminService {
   ) {}
 
   async getAdminProfile(id: string): Promise<AdminProfileResponseDTO> {
-    const adminProfile = await this._adminRepository.getAdminByUserId(id);
+    const adminProfile = await this._adminRepository.getAdminProfile({
+      userId: new mongoose.Types.ObjectId(id)
+    });
 
     if (!adminProfile) {
       throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -42,8 +45,8 @@ export class AdminService implements IAdminService {
   async createAdminProfile(
     data: CreateAdminProfileDTO
   ): Promise<AdminResponseDTO> {
-    const profileExist = await this._adminRepository.getAdminByUserId(
-      data.userId
+    const profileExist = await this._adminRepository.getAdminProfile(
+      {userId: new mongoose.Types.ObjectId(data.userId)}
     );
 
     if (profileExist) {

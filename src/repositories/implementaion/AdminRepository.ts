@@ -28,11 +28,11 @@ class AdminRepository extends BaseRepository<AdminProfileEntityType> implements 
         }
     }
 
-    async getAdminByUserId(id: string): Promise<AdminProfileUserEntityType | null> {
+    async getAdminProfile(query: any): Promise<AdminProfileUserEntityType | null> {
         try{
            const adminProfile = await Admin.aggregate([
             {
-                $match: { userId: new mongoose.Types.ObjectId(id) }
+                $match: query
             },
             {
                 $lookup: {

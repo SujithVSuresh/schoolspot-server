@@ -24,7 +24,7 @@ export class TimeTableService implements ITimeTableService {
 
 
     async deleteTimetable(id: string): Promise<{ _id: string; }> {
-        const response = await this.deleteTimetable(id)
+        const response = await this._timetableRepository.deleteTimeTable(id)
 
         if(!response){
             throw new CustomError(Messages.TIMETABLE_NOT_FOUND, HttpStatus.NOT_FOUND)

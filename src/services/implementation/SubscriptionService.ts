@@ -82,6 +82,25 @@ export class SubscriptionService implements ISubscriptionService {
     };
   }
 
+
+  async findPlanById(id: string): Promise<PlanResponseDTO> {
+    const response = await this._planRepository.findPlanById(id)
+
+    if(!response){
+      throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND)
+    }
+
+    return {
+      _id: String(response._id),
+      name: response.name,
+      price: response.price,
+      durationInDays: response.durationInDays,
+      createdAt: response.createdAt
+    }
+  }
+
+  
+
   async createSubscription(
     data: CreateSubscriptionDTO
   ): Promise<SubscriptionResponseDTO> {
@@ -196,9 +215,9 @@ export class SubscriptionService implements ISubscriptionService {
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "inr",
             product_data: { name: String(createSubscription._id) },
-            unit_amount: amount,
+            unit_amount: Math.round(amount * 100),
           },
           quantity: 1,
         },
