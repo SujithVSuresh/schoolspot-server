@@ -1,28 +1,11 @@
 import mongoose from "mongoose";
-import { StudentProfileEntityType } from "../types/StudentType";
+import { StudentEntityType } from "../types/StudentType";
 
 const StudentSchema = new mongoose.Schema(
   {
     fullName: {
          type: String, 
          required: true 
-    },
-    class: {
-         type: String, 
-         required: true 
-        },
-    roll: {
-        type: Number,
-        required: true
-    },
-    section: { 
-        type: String, 
-        required: true 
-    },
-    classId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Class"
     },
     profilePhoto: { 
         type: String, 
@@ -49,9 +32,17 @@ const StudentSchema = new mongoose.Schema(
         type: String, 
         required: true 
     },
-    contactNumber: { 
+    parentContactNumber: { 
         type: String, 
         required: true
+    },
+    parentEmailAddress: { 
+        type: String, 
+        required: true
+    },
+    admissionNo: {
+        type: String,
+        requried: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -60,11 +51,13 @@ const StudentSchema = new mongoose.Schema(
     },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'School'
     }
   },
   { timestamps: true }
 );
 
-const StudentProfile = mongoose.model<StudentProfileEntityType>("Student", StudentSchema, "Students");
+const Student = mongoose.model<StudentEntityType>("Student", StudentSchema, "Students");
 
-export default StudentProfile;
+export default Student;

@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { SchoolProfileEntityType } from "../types/SchoolProfileType";
 
-const SchoolProfileSchema = new mongoose.Schema({
+const SchoolProfileSchema = new mongoose.Schema(
+  {
     schoolName: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     regNumber: { type: String, required: true },
@@ -12,12 +13,18 @@ const SchoolProfileSchema = new mongoose.Schema({
     totalTeachers: { type: Number, default: 0 },
     board: { type: String, required: true },
     address: {
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        country: { type: String, required: true },
-        postalCode: { type: String, required: true },
+      city: { type: String, required: true },
+      state: { type: String, required: true },
+      country: { type: String, required: true },
+      postalCode: { type: String, required: true },
     },
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
-const SchoolProfile = mongoose.model<SchoolProfileEntityType>("School", SchoolProfileSchema, "Schools");
-export default SchoolProfile
+const SchoolProfile = mongoose.model<SchoolProfileEntityType>(
+  "School",
+  SchoolProfileSchema,
+  "Schools"
+);
+export default SchoolProfile;

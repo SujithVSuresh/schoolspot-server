@@ -1,7 +1,7 @@
 import { BaseRepository } from "./BaseRepository";
 import { StudentProfileUserEntityType } from "../../types/StudentType";
 import { IStudentRepository } from "../interface/IStudentRepository";
-import Student from "../../models/Student";
+import Student from "../../models/StudentAcademicProfile";
 import { GetParamsType } from "../../types/types";
 import mongoose from "mongoose";
 import { StudentSearchQueryDTO } from "../../dto/StudentDTO";
@@ -132,7 +132,6 @@ class StudentRepository
           },
         },
       ]);
-      console.log(student, "this stuuuuuu 123")
 
       return {
         ...student[0],
