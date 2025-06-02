@@ -39,6 +39,7 @@ import subscriptionWebhookRouter from "./routes/subscriptionWebhookRouter";
 import academicYearRouter from "./routes/AcademicYear";
 import planRouter from "./routes/PlanRouter";
 import chapterRouter from "./routes/ChapterRouter";
+import studentAcademicProfileRouter from "./routes/StudentAcademicProfileRouter";
 
 // Socket.io manager
 import { SocketManager } from "./socket/socket";
@@ -117,6 +118,7 @@ class App {
     this.app.use("/academicYear", academicYearRouter);
     this.app.use("/plan", planRouter);
     this.app.use("/chapter", chapterRouter);
+    this.app.use("/academicProfile", studentAcademicProfileRouter);
 
     // Centralized error handling middleware
     this.app.use(errorHandler);

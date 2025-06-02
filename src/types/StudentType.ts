@@ -1,45 +1,17 @@
 import mongoose from "mongoose";
+import { ClassEntityType, UserEntityType } from "./types";
+import { AcademicYearEntityType } from "./AcademicYearType";
 
-
-export interface StudentAcademicProfileType {
+export interface StudentAcademicProfileEntityType {
   _id?: mongoose.Types.ObjectId | string;
-  studentId: mongoose.Types.ObjectId | string;
-  academicYear: string;  
-  class: string;
+  studentId: mongoose.Types.ObjectId | string | StudentEntityType;
+  userId: mongoose.Types.ObjectId | string | UserEntityType;
+  academicYear: mongoose.Types.ObjectId | string;  
   roll: number;
-  section: string;
-  classId: mongoose.Types.ObjectId | string;  
+  classId: mongoose.Types.ObjectId | string | ClassEntityType;  
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-
-// export interface StudentProfileEntityType {
-//   _id?: mongoose.Types.ObjectId | string;
-//   fullName: string;
-//   class: string;
-//   roll: number
-//   section: string;
-//   profilePhoto: string;
-//   gender: "male" | "female";
-//   dob: Date;
-//   address: string;
-//   fatherName: string;
-//   motherName: string;
-//   contactNumber: string;
-//   userId?: mongoose.Types.ObjectId | string;
-//   classId?: mongoose.Types.ObjectId | string;
-//   schoolId?: mongoose.Types.ObjectId | string;
-// }
-
-
-// export interface StudentProfileUserEntityType extends StudentProfileEntityType {
-//   user: {
-//     _id: mongoose.Types.ObjectId | string;
-//     email: string;
-//     status: "active" | "inactive" | "deleted" | "blocked";
-//   };
-// }
 
 
 export interface StudentEntityType {
@@ -54,7 +26,7 @@ export interface StudentEntityType {
   parentContactNumber: string;
   parentEmailAddress: string;
   admissionNo: string;
-  userId: mongoose.Types.ObjectId | string;
+  userId: mongoose.Types.ObjectId | string | UserEntityType;
   schoolId: mongoose.Types.ObjectId | string;
   createdAt?: Date;
   updatedAt?: Date;

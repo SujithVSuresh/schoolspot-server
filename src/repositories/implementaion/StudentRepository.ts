@@ -1,13 +1,11 @@
 import { BaseRepository } from "./BaseRepository";
-import { StudentProfileUserEntityType } from "../../types/StudentType";
+import { StudentEntityType } from "../../types/StudentType";
 import { IStudentRepository } from "../interface/IStudentRepository";
-import Student from "../../models/StudentAcademicProfile";
-import { GetParamsType } from "../../types/types";
+import Student from "../../models/Student";
 import mongoose from "mongoose";
 import { StudentSearchQueryDTO } from "../../dto/StudentDTO";
-import { StudentProfileEntityType } from "../../types/StudentType";
 class StudentRepository
-  extends BaseRepository<StudentProfileEntityType>
+  extends BaseRepository<StudentEntityType>
   implements IStudentRepository
 {
   constructor() {
@@ -15,14 +13,13 @@ class StudentRepository
   }
 
   async createStudentProfile(
-    data: StudentProfileEntityType
-  ): Promise<StudentProfileEntityType> {
+    data: StudentEntityType
+  ): Promise<StudentEntityType> {
     try {
       return await this.create({
-        classId: new mongoose.Types.ObjectId(data.classId),
-        userId: new mongoose.Types.ObjectId(data.userId),
-        schoolId: new mongoose.Types.ObjectId(data.schoolId),
         ...data,
+        userId: new mongoose.Types.ObjectId(data.userId as string),
+        schoolId: new mongoose.Types.ObjectId(data.schoolId),
       });
     } catch (error) {
       console.error("Error creating user", error);
@@ -31,7 +28,16 @@ class StudentRepository
   }
 
 
+    async getStudent(query: any): Promise<StudentEntityType | null> {
+    try {
+      const student = await this.findByQuery({ ...query });
 
+      return student[0];
+    } catch (error) {
+      console.error("Error fetching student data", error);
+      throw new Error("Error creating user");
+    }
+  }
 
   async getStudentsBySchool(
     {
@@ -41,10 +47,9 @@ class StudentRepository
       sortBy,
       sortOrder,
       statusFilter,
-      classFilter,
     }: StudentSearchQueryDTO,
     schoolId: string
-  ): Promise<StudentProfileUserEntityType[]> {
+  ): Promise<StudentEntityType[]> {
     try {
       const skip = ((page as number) - 1) * (limit as number);
 
@@ -55,11 +60,7 @@ class StudentRepository
       }
 
       if (statusFilter) {
-        matchQuery["user.status"] = statusFilter;
-      }
-
-      if (classFilter && classFilter.length != 0) {
-        matchQuery.class = { $in: [...classFilter] };
+        matchQuery["userId.status"] = statusFilter;
       }
 
       const students = await Student.aggregate([
@@ -73,27 +74,29 @@ class StudentRepository
             from: "Users",
             localField: "userId",
             foreignField: "_id",
-            as: "user",
+            as: "userId",
           },
         },
-        { $unwind: "$user" },
+        { $unwind: "$userId" },
         {
           $match: matchQuery,
         },
-        {
-          $addFields: {
-            classField: { $toInt: "$class" },
-          },
-        },
-        {
-          $sort: {
-            classField: -1,
-          },
-        },
+        // {
+        //   $addFields: {
+        //     classField: { $toInt: "$class" },
+        //   },
+        // },
+        // {
+        //   $sort: {
+        //     classField: -1,
+        //   },
+        // },
         { $sort: { [sortBy]: sortOrder === "asc" ? 1 : -1 } },
         { $skip: skip },
         { $limit: limit as number },
       ]);
+
+      console.log("gagaga", students)
 
       return students;
     } catch (error) {
@@ -113,9 +116,7 @@ class StudentRepository
     }
   }
 
-  async getStudentById(
-    userId: string
-  ): Promise<StudentProfileUserEntityType | null> {
+  async getStudentById(userId: string): Promise<StudentEntityType | null> {
     try {
       const student = await Student.aggregate([
         {
@@ -201,25 +202,16 @@ class StudentRepository
     return students;
   }
 
-  async getStudent(query: any): Promise<StudentProfileEntityType | null> {
-    try {
-      const student = await this.findByQuery({ ...query });
 
-      return student[0];
-    } catch (error) {
-      console.error("Error fetching student data", error);
-      throw new Error("Error creating user");
-    }
-  }
 
   async updateStudentProfile(
     profileId: string,
-    data: StudentProfileEntityType
-  ): Promise<StudentProfileEntityType> {
+    data: StudentEntityType
+  ): Promise<StudentEntityType> {
     try {
       const updateStudent = await this.update(profileId, data);
 
-      return updateStudent as StudentProfileEntityType;
+      return updateStudent as StudentEntityType;
     } catch (err) {
       console.error("Error fetching student data", err);
       throw new Error("Error creating user");

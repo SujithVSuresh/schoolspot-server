@@ -1,26 +1,37 @@
 import mongoose from "mongoose";
-import { StudentAcademicProfileType } from "../types/StudentType";
+import { StudentAcademicProfileEntityType } from "../types/StudentType";
 
 const StudentAcademicProfileSchema = new mongoose.Schema(
   {
     studentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentBaseProfile",
-      required: true
+      ref: "Student",
+      required: true,
     },
-    academicYear: { type: String, required: true },
-    class: { type: String, required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    academicYear: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AcademicYear",
+      required: true,
+    },
     roll: { type: Number, required: true },
-    section: { type: String, required: true },
     classId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Class"
-    }
+      ref: "Class",
+    },
   },
   { timestamps: true }
 );
 
-const StudentAcademicProfile = mongoose.model<StudentAcademicProfileType>("StudentAcademicProfile", StudentAcademicProfileSchema, "StudentAcademicProfiles");
+const StudentAcademicProfile = mongoose.model<StudentAcademicProfileEntityType>(
+  "StudentAcademicProfile",
+  StudentAcademicProfileSchema,
+  "StudentAcademicProfiles"
+);
 
 export default StudentAcademicProfile;

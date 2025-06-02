@@ -10,7 +10,7 @@ import { IStudentRepository } from "../../repositories/interface/IStudentReposit
 import {
   InvoiceEntityType,
 } from "../../types/types";
-import { StudentProfileUserEntityType } from "../../types/StudentType";
+import { StudentEntityType } from "../../types/StudentType";
 import mongoose from "mongoose";
 import Stripe from "stripe";
 import stripe from "../../config/stripe";

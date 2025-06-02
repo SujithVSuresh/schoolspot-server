@@ -27,25 +27,23 @@ export class StudentController implements IStudentController {
 
       const studentData: CreateStudentDTO = {
         fullName: data.fullName,
-        roll: data.roll,
         profilePhoto: data.roll,
         gender: data.gender,
         dob: data.dob,
         address: data.address,
         fatherName: data.fatherName,
         motherName: data.motherName,
-        contactNumber: data.contactNumber,
+        parentContactNumber: data.parentContactNumber,
+        parentEmailAddress: data.parentEmailAddress,
+        admissionNo: data.admissionNo,
+        schoolId,
         email: data.email,
         password: data.password,
       };
 
-      console.log(studentData, "kokoko");
-
       const student = await this._studentService.addStudent(
         studentData,
         file as Express.Multer.File,
-        schoolId,
-        data.classId
       );
 
       res.status(HttpStatus.CREATED).json(student);
@@ -54,42 +52,42 @@ export class StudentController implements IStudentController {
     }
   }
 
-  async updateStudent(
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const data = req.body;
+  // async updateStudent(
+  //   req: CustomRequest,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> {
+  //   try {
+  //     const data = req.body;
 
-      const { studentId } = req.params;
+  //     const { studentId } = req.params;
 
-      const file = req.file ? req.file : null;
+  //     const file = req.file ? req.file : null;
 
-      const studentData: UpdateStudentDTO = {
-        fullName: data.fullName,
-        roll: data.roll,
-        profilePhoto: "",
-        gender: data.gender,
-        dob: data.dob,
-        address: data.address,
-        fatherName: data.fatherName,
-        motherName: data.motherName,
-        contactNumber: data.contactNumber,
-        email: data.email,
-      };
+  //     const studentData: UpdateStudentDTO = {
+  //       fullName: data.fullName,
+  //       roll: data.roll,
+  //       profilePhoto: "",
+  //       gender: data.gender,
+  //       dob: data.dob,
+  //       address: data.address,
+  //       fatherName: data.fatherName,
+  //       motherName: data.motherName,
+  //       contactNumber: data.contactNumber,
+  //       email: data.email,
+  //     };
 
-      const student = await this._studentService.updateStudent(
-        studentData,
-        studentId,
-        file as Express.Multer.File
-      );
+  //     const student = await this._studentService.updateStudent(
+  //       studentData,
+  //       studentId,
+  //       file as Express.Multer.File
+  //     );
 
-      res.status(HttpStatus.CREATED).json(student);
-    } catch (err) {
-      next(err);
-    }
-  }
+  //     res.status(HttpStatus.CREATED).json(student);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
   async getStudents(
     req: CustomRequest,
@@ -105,7 +103,6 @@ export class StudentController implements IStudentController {
         search = "",
         sortBy = "createdAt",
         sortOrder = "desc",
-        classFilter = [],
         statusFilter = "",
       } = req.query;
 
@@ -115,10 +112,6 @@ export class StudentController implements IStudentController {
         search: String(search),
         sortBy: sortBy ? String(sortBy) : "createdAt",
         sortOrder: sortOrder === "asc" ? "asc" : "desc",
-        classFilter:
-          classFilter.length != 0
-            ? decodeURIComponent(classFilter as string).split(",")
-            : [],
         statusFilter:
           statusFilter == "active"
             ? "active"
@@ -141,60 +134,60 @@ export class StudentController implements IStudentController {
     }
   }
 
-  async getStudentProfile(
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const userId =
-        req.user?.role == "student" ? req.user.userId : req.params.userId;
+  // async getStudentProfile(
+  //   req: CustomRequest,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> {
+  //   try {
+  //     const userId =
+  //       req.user?.role == "student" ? req.user.userId : req.params.userId;
 
-      const students = await this._studentService.getStudentById(userId);
+  //     const students = await this._studentService.getStudentById(userId);
 
-      res.status(HttpStatus.OK).json(students);
-    } catch (err) {
-      next(err);
-    }
-  }
+  //     res.status(HttpStatus.OK).json(students);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
-  async getStudentByQuery(
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const query = req.query;
-      const { schoolId } = req.user as PayloadType;
+  // async getStudentByQuery(
+  //   req: CustomRequest,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> {
+  //   try {
+  //     const query = req.query;
+  //     const { schoolId } = req.user as PayloadType;
 
-      const students = await this._studentService.getStudentsByQuery(
-        query,
-        schoolId
-      );
+  //     const students = await this._studentService.getStudentsByQuery(
+  //       query,
+  //       schoolId
+  //     );
 
-      res.status(HttpStatus.OK).json(students);
-    } catch (err) {
-      next(err);
-    }
-  }
+  //     res.status(HttpStatus.OK).json(students);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
-  async getStudentsByClassId(
-    req: CustomRequest,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const classId = req.params.classId;
-      const { schoolId } = req.user as PayloadType;
+  // async getStudentsByClassId(
+  //   req: CustomRequest,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> {
+  //   try {
+  //     const classId = req.params.classId;
+  //     const { schoolId } = req.user as PayloadType;
 
-      const students = await this._studentService.getStudentsByClassId(
-        classId as string,
-        schoolId
-      );
+  //     const students = await this._studentService.getStudentsByClassId(
+  //       classId as string,
+  //       schoolId
+  //     );
 
-      res.status(HttpStatus.OK).json(students);
-    } catch (err) {
-      next(err);
-    }
-  }
+  //     res.status(HttpStatus.OK).json(students);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 }
