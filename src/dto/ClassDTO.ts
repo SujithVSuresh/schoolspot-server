@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { SubjectEntityType } from "../types/types";
 import { SubjectResponseDTO } from "./SubjectDTO";
+import { SubjectEntityType } from "../types/SubjectType";
 
 
 export interface CreateClassDTO {
@@ -8,6 +8,7 @@ export interface CreateClassDTO {
       section: string;
       teacher: string;
       school: string;
+      academicYear: string;
 }
 
 export interface UpdateClassDTO {

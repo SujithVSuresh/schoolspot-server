@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import { ClassEntityType } from "../types/types";
 import { LeaveLetterEntityType } from "../types/types";
+
+
 
 const LeaveLetterSchema = new Schema(
   {

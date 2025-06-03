@@ -16,12 +16,15 @@ export class StudentAcademicProfileController implements IStudentAcademicProfile
         try{
             const data = req.body
 
+            const {schoolId} = req.user as PayloadType
+
             const academicProfileData: CreateStudentAcademicProfileDTO = {
                 roll: data.roll,
-                academicYear: "2024-25",
-                classId: data.classId
+                academicYear: req.academicYear as string,
+                classId: data.classId,
             }
-            const academicProfile = await this._studentAcademicProfileService.createAcademicProfile(academicProfileData, data.admissionNo)
+
+            const academicProfile = await this._studentAcademicProfileService.createAcademicProfile(academicProfileData, data.admissionNo, schoolId)
 
             res.status(HttpStatus.OK).json(academicProfile)
         }catch(err){
@@ -33,9 +36,21 @@ export class StudentAcademicProfileController implements IStudentAcademicProfile
         try{
             const {userId} = req.params
 
-            const academicStudentProfile = await this._studentAcademicProfileService.fetchStudentProfileByUserId(userId)
+            const academicStudentProfile = await this._studentAcademicProfileService.fetchStudentProfileByUserId(userId, req.academicYear as string)
 
             res.status(HttpStatus.OK).json(academicStudentProfile)
+        }catch(err){
+            next(err)
+        }
+    }
+
+    async fetchAcademicProfileByClassId(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const {classId} = req.params
+
+            const academicProfiles = await this._studentAcademicProfileService.fetchAcademicProfilesByClassId(classId, req.academicYear as string)
+
+            res.status(HttpStatus.OK).json(academicProfiles)
         }catch(err){
             next(err)
         }

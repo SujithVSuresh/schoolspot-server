@@ -50,7 +50,8 @@ const Messages = {
     INVALID_DATE_RANGE: "Invalid date range provided. 'fromDate' must be before 'toDate'.",
     PAST_DATE_NOT_ALLOWED: "Past dates are not allowed for leave letters.",
     DUE_DATE_INVALID: "Due date must be after the current date.",
-    CHAPTER_NOT_FOUND: "Chapter not found"
+    CHAPTER_NOT_FOUND: "Chapter not found",
+    STUDENT_ALREADY_EXIST: "Student is already part of a class"
   };
 
   export default Messages

@@ -134,22 +134,22 @@ export class StudentController implements IStudentController {
     }
   }
 
-  // async getStudentProfile(
-  //   req: CustomRequest,
-  //   res: Response,
-  //   next: NextFunction
-  // ): Promise<void> {
-  //   try {
-  //     const userId =
-  //       req.user?.role == "student" ? req.user.userId : req.params.userId;
+  async getStudentProfile(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId =
+        req.user?.role == "student" ? req.user.userId : req.params.userId;
 
-  //     const students = await this._studentService.getStudentById(userId);
+      const students = await this._studentService.getStudentById(userId);
 
-  //     res.status(HttpStatus.OK).json(students);
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
+      res.status(HttpStatus.OK).json(students);
+    } catch (err) {
+      next(err);
+    }
+  }
 
   // async getStudentByQuery(
   //   req: CustomRequest,

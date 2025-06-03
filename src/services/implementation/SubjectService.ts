@@ -17,7 +17,8 @@ export class SubjectService implements ISubjectService {
   async createSubject(data: CreateSubjectDTO): Promise<SubjectResponseDTO> {
       const subjectExist = await this._subjectRepository.findSubject({
         name: { $regex: `^${data.name}$`, $options: 'i' },
-        class: data.class
+        class: data.class,
+        academicYear: new mongoose.Types.ObjectId(data.academicYear)
   })
 
       if(subjectExist){
@@ -44,8 +45,8 @@ export class SubjectService implements ISubjectService {
      }
   }
 
-  async findSubjectsByClass(classId: string): Promise<SubjectResponseDTO[]> {
-    const subjects = await this._subjectRepository.findSubjectsByClassId(classId)
+  async findSubjectsByClass(classId: string, academicYear: string): Promise<SubjectResponseDTO[]> {
+    const subjects = await this._subjectRepository.findSubjectsByClassId(classId, academicYear)
 
     const subjectsData: SubjectResponseDTO[] = subjects.map((subject) => {
       return {

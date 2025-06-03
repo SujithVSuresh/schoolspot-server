@@ -2,21 +2,43 @@ import mongoose from "mongoose";
 
 
 export interface CreateAttendanceDTO {
-    student: mongoose.Schema.Types.ObjectId | string;
-    class: mongoose.Schema.Types.ObjectId | string;
+    student: string;
+    class: string;
     status: "Present" | "Absent";
-    recordedBy: mongoose.Schema.Types.ObjectId | string;
-    schoolId: mongoose.Schema.Types.ObjectId | string;
+    recordedBy: string;
+    schoolId: string;
+    academicYear: string
 }
 
 export interface AttendaceResponseDTO {
-  _id?: mongoose.Types.ObjectId;
+  _id?: string;
   student?: {
-    _id: mongoose.Types.ObjectId;
+    _id: string;
     name: string;
     roll: number;
   }
   status: "Present" | "Absent";
+  createdAt?: Date;
+  updatedAt?: Date;  
+}
+
+
+export interface AttendanceWithUserResponseDTO {
+  _id?: string;
+  student: string;
+  studentProfile: {
+    _id: string;
+    fullName: string;
+    profilePhoto: string;
+  };
+  academicProfile: {
+    _id: string;
+    roll: number
+  };
+  class: string;
+  status?: "Present" | "Absent";
+  recordedBy: string;
+  schoolId: string;
   createdAt?: Date;
   updatedAt?: Date;  
 }

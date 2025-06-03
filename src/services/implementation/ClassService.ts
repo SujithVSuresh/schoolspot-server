@@ -8,12 +8,8 @@ import {
 } from "../../dto/ClassDTO";
 import { ClassResponseDTO } from "../../dto/ClassDTO";
 import IClassService from "../interface/IClassService";
-import {
-  AnnouncementEntityType,
-  ClassEntityType,
-  SubjectEntityType,
-} from "../../types/types";
-import mongoose, { ObjectId } from "mongoose";
+import { ClassEntityType } from "../../types/ClassType";
+import mongoose from "mongoose";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
@@ -38,6 +34,7 @@ export class ClassService implements IClassService {
       section: dto.section.toUpperCase(),
       teacher: dto.teacher,
       school: dto.school,
+      academicYear: dto.academicYear
     };
 
     const classExist = await this._classRepository.findClass({
@@ -61,38 +58,38 @@ export class ClassService implements IClassService {
     };
   }
 
-  async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
-    const classEntity = {
-      name: dto.name,
-      section: dto.section.toUpperCase(),
-      teacher: dto.teacher,
-      school: dto.schoolId
-    };
+  // async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
+  //   const classEntity = {
+  //     name: dto.name,
+  //     section: dto.section.toUpperCase(),
+  //     teacher: dto.teacher,
+  //     school: dto.schoolId
+  //   };
 
-    const classExist = await this._classRepository.findClass({
-      name: classEntity.name,
-      section: classEntity.section,
-      school: classEntity.school,
-    });
+  //   const classExist = await this._classRepository.findClass({
+  //     name: classEntity.name,
+  //     section: classEntity.section,
+  //     school: classEntity.school,
+  //   });
 
-    if (classExist) {
-      throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
-    }
+  //   if (classExist) {
+  //     throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
+  //   }
 
-    const response = await this._classRepository.updateClass(classId, classEntity);
+  //   const response = await this._classRepository.updateClass(classId, classEntity);
 
-    if(!response){
-      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
-    }
+  //   if(!response){
+  //     throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+  //   }
 
-    return {
-      _id: response._id,
-      name: response.name,
-      section: response.section,
-      strength: response.strength,
-      createdAt: response.createdAt,
-    };
-  }
+  //   return {
+  //     _id: response._id,
+  //     name: response.name,
+  //     section: response.section,
+  //     strength: response.strength,
+  //     createdAt: response.createdAt,
+  //   };
+  // }
 
   async deleteClass(classId: string): Promise<{ _id: string; }> {
     const response = await this._classRepository.deleteClass(classId)
@@ -106,8 +103,8 @@ export class ClassService implements IClassService {
     }
   }
 
-  async findAllClasses(schoolId: string): Promise<ClassResponseDTO[]> {
-    const response = await this._classRepository.findAllClasses(schoolId);
+  async findAllClasses(schoolId: string, academicYear: string): Promise<ClassResponseDTO[]> {
+    const response = await this._classRepository.findAllClasses(schoolId, academicYear);
 
     return response;
   }

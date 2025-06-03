@@ -5,6 +5,7 @@ export interface CreateSubjectDTO {
     teacher: string;
     class: string;
     school: string;
+    academicYear: string
 }
 
 export interface UpdateSubjectDTO {

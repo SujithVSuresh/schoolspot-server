@@ -1,8 +1,8 @@
 import { BaseRepository } from "./BaseRepository";
 import Class from "../../models/Class";
-import { ClassEntityType, SubjectEntityType } from "../../types/types";
 import { IClassRepository } from "../interface/IClassRepository";
 import mongoose from "mongoose";
+import { ClassEntityType } from "../../types/ClassType";
 
 class ClassRepository
   extends BaseRepository<ClassEntityType>
@@ -18,7 +18,8 @@ class ClassRepository
         name: data.name,
         section: data.section,
         teacher: new mongoose.Types.ObjectId(data.teacher),
-        school: new mongoose.Types.ObjectId(data.school)
+        school: new mongoose.Types.ObjectId(data.school),
+        academicYear: new mongoose.Types.ObjectId(data.academicYear)
       });
     } catch (error) {
       console.error("Error creating class", error);
@@ -26,17 +27,17 @@ class ClassRepository
     }
   }
 
-  async updateClass(classId: string, data: ClassEntityType): Promise<ClassEntityType | null> {
-    try{
-      return await this.update(classId, {
-        ...data,
-        teacher: new mongoose.Types.ObjectId(data.teacher)
-      })
-    }catch(error){
-      console.error("Error updating class", error);
-      throw new Error("Error updating class");
-    }
-  }
+  // async updateClass(classId: string, data: ClassEntityType): Promise<ClassEntityType | null> {
+  //   try{
+  //     return await this.update(classId, {
+  //       ...data,
+  //       teacher: new mongoose.Types.ObjectId(data.teacher)
+  //     })
+  //   }catch(error){
+  //     console.error("Error updating class", error);
+  //     throw new Error("Error updating class");
+  //   }
+  // }
 
   async updateClassStrength(classId: string, value: 1 | -1): Promise<boolean> {
     try {
@@ -81,12 +82,13 @@ class ClassRepository
     }
   }
 
-  async findAllClasses(schoolId: string): Promise<ClassEntityType[]> {
+  async findAllClasses(schoolId: string, academicYear: string): Promise<ClassEntityType[]> {
     try {
       const classes = await Class.aggregate([
         {
           $match: {
-            school: new mongoose.Types.ObjectId(schoolId)
+            school: new mongoose.Types.ObjectId(schoolId),
+            academicYear: new mongoose.Types.ObjectId(academicYear)
           }
         },
         {

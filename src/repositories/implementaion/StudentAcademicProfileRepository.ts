@@ -18,6 +18,7 @@ class StudentAcademicProfileRepository
     try {
       return await this.create({
         ...data,
+        academicYear: new mongoose.Types.ObjectId(data.academicYear),
         studentId: new mongoose.Types.ObjectId(data.studentId as string),
         classId: new mongoose.Types.ObjectId(data.classId as string),
       });
@@ -39,13 +40,31 @@ class StudentAcademicProfileRepository
         },
         {
           $lookup: {
-            from: "Users",
-            localField: "userId",
+            from: "Classes",
+            localField: "classId",
             foreignField: "_id",
-            as: "userId",
+            as: "classId",
           },
         },
-        { $unwind: "$userId" },
+        { $unwind: "$classId" },
+      ]);
+
+      return academicProfile[0];
+    } catch (error) {
+      console.error("Error finding academic profile", error);
+      throw new Error("Error finding academic profile");
+    }
+  }
+
+  async findAcademicProfilesByClassId(classId: string, academicYear: string): Promise<StudentAcademicProfileEntityType[]> {
+    try{
+      const academicProfile = await StudentAcademicProfile.aggregate([
+        {
+          $match: {
+            classId: new mongoose.Types.ObjectId(classId),
+            academicYear: new mongoose.Types.ObjectId(academicYear)
+          }
+        },
         {
           $lookup: {
             from: "Students",
@@ -55,18 +74,10 @@ class StudentAcademicProfileRepository
           },
         },
         { $unwind: "$studentId" },
-        {
-          $lookup: {
-            from: "Class",
-            localField: "classId",
-            foreignField: "_id",
-            as: "classId",
-          },
-        },
-        { $unwind: "$classId" }
       ]);
 
-      return academicProfile[0]
+      return academicProfile
+
     } catch (error) {
       console.error("Error finding academic profile", error);
       throw new Error("Error finding academic profile");

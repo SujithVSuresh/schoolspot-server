@@ -1,10 +1,10 @@
-import { AttendaceEntityType } from "../../types/types";
-import { AttendaceResponseDTO } from "../../dto/AttendanceDTO";
+import { AttendanceEntityType, AttendanceWithUserEntityType } from "../../types/AttendanceType";
+
 
 export interface IAttendanceRepository {
-    createAttendace(data: AttendaceEntityType[]): Promise<AttendaceEntityType[]>;
-    findAttendanceByQuery(query: any): Promise<AttendaceEntityType | null>;
-    findAttendances(query: any): Promise<AttendaceResponseDTO[]> 
+    createAttendace(data: AttendanceEntityType[]): Promise<AttendanceEntityType[]>;
+    findAttendanceByQuery(query: any): Promise<AttendanceEntityType | null>;
+    findAttendances(query: any): Promise<AttendanceWithUserEntityType[]> 
     findAttendanceCount(query: any): Promise<{present: number, absent: number, date: Date} | null> 
-    updateAttendanceStatus(attendaceId: string, data: AttendaceEntityType): Promise<AttendaceEntityType | null> 
+    updateAttendanceStatus(attendaceId: string, data: AttendanceEntityType): Promise<AttendanceEntityType | null> 
     }

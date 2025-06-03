@@ -20,7 +20,7 @@ export class AttendanceController implements IAttendanceController {
       const response = await this._attendanceService.addAttendance(
         data,
         schoolId,
-        userId
+        userId,
       );
 
       res.status(HttpStatus.CREATED).json(response);
@@ -30,7 +30,7 @@ export class AttendanceController implements IAttendanceController {
   }
 
   async findAttendanceByClass(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -38,7 +38,8 @@ export class AttendanceController implements IAttendanceController {
       const { classId, date } = req.query;
       const response = await this._attendanceService.getAttendanceByClass(
         classId as string,
-        date as string
+        date as string,
+        req.academicYear as string
       );
       res.status(HttpStatus.OK).json(response);
     } catch (err) {
@@ -46,22 +47,22 @@ export class AttendanceController implements IAttendanceController {
     }
   }
 
-  async updateAttendanceStatus(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { attendanceId, status } = req.body;
-      const response = await this._attendanceService.updateAttendanceStatus(
-        attendanceId,
-        status
-      );
-      res.status(HttpStatus.OK).json(response);
-    } catch (err) {
-      next(err);
-    }
-  }
+  // async updateAttendanceStatus(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> {
+  //   try {
+  //     const { attendanceId, status } = req.body;
+  //     const response = await this._attendanceService.updateAttendanceStatus(
+  //       attendanceId,
+  //       status
+  //     );
+  //     res.status(HttpStatus.OK).json(response);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
   async getAttendanceByMonth(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {

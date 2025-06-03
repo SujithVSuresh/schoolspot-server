@@ -1,36 +1,41 @@
 import mongoose, { Schema } from "mongoose";
-import { AttendaceEntityType } from "../types/types";
+import { AttendanceEntityType } from "../types/AttendanceType";
 
-
-const AttendanceSchema = new Schema({
+const AttendanceSchema = new Schema(
+  {
     student: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
     class: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Class"
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Class",
     },
     status: {
-        type: String,
-        enum: ['Present', 'Absent'],
-        default: 'Present'
+      type: String,
+      enum: ["Present", "Absent"],
+      default: "Present",
     },
     schoolId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "School"
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "School",
     },
     recordedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     }
+  },
+  {
+    timestamps: true,
+  }
+);
 
-}, {
-    timestamps: true
-})
-
-export default mongoose.model<AttendaceEntityType>('Attendance', AttendanceSchema, 'Attendances')
+export default mongoose.model<AttendanceEntityType>(
+  "Attendance",
+  AttendanceSchema,
+  "Attendances"
+);

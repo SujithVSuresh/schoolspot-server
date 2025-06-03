@@ -14,6 +14,7 @@ const studentAcademicProfileRouter = Router()
 
 studentAcademicProfileRouter.post("/", protectRoute(["admin"]), studentAcademicProfileController.createAcademicProfile.bind(studentAcademicProfileController));
 studentAcademicProfileRouter.get("/:userId", protectRoute(["admin"]), studentAcademicProfileController.fetchStudentProfile.bind(studentAcademicProfileController));
+studentAcademicProfileRouter.get("/class/:classId", protectRoute(["admin"]), studentAcademicProfileController.fetchAcademicProfileByClassId.bind(studentAcademicProfileController));
 
 
 export default studentAcademicProfileRouter;

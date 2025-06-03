@@ -36,6 +36,7 @@ export interface PayloadType {
 
 export interface CustomRequest extends Request {
   user?: PayloadType;
+  academicYear?: string;
 }
 
 
@@ -128,17 +129,6 @@ export interface UserEntityType {
 // ----------
 
 
-export interface ClassEntityType {
-  _id?: mongoose.Types.ObjectId;
-  name: string;
-  section: string;
-  teacher: mongoose.Types.ObjectId | string;
-  school: mongoose.Types.ObjectId | string;
-  strength?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
 
 export interface AnnouncementEntityType {
   _id?: mongoose.Types.ObjectId;
@@ -152,15 +142,6 @@ export interface AnnouncementEntityType {
   updatedAt?: Date;
 }
 
-export interface AttendaceEntityType {
-  _id?: mongoose.Types.ObjectId;
-  student: mongoose.Types.ObjectId;
-  class: mongoose.Types.ObjectId;
-  status: "Present" | "Absent";
-  schoolId: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;  
-}
 
 
 export interface AdminProfileEntityType {
@@ -257,15 +238,7 @@ export interface StudyMaterialEntityType {
   createdAt?: Date
 }
 
-export interface SubjectEntityType {
-  _id?: mongoose.Types.ObjectId | string;
-  name: string;
-  teacher: mongoose.Types.ObjectId | string;
-  class: mongoose.Types.ObjectId | string;
-  school: mongoose.Types.ObjectId | string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+
 
 export interface SubjectWithClassEntityType {
   _id?: mongoose.Types.ObjectId | string;

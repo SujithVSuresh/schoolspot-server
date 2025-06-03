@@ -215,7 +215,6 @@ export class StudentService implements IStudentService {
       schoolId
     );
 
-    console.log(studentsData, "dadaa123")
     const totalStudents = await this._studentRepository.findStudentsCountBySchool(schoolId);
 
     return {
@@ -243,31 +242,37 @@ export class StudentService implements IStudentService {
     };
   }
 
-  // async getStudentById(userId: string): Promise<StudentResponseDTO> {
-  //   const student = await this._studentRepository.getStudentById(userId);
+  async getStudentById(userId: string): Promise<StudentResponseDTO> {
+    const student = await this._studentRepository.getStudentById(userId);
 
-  //   if (!student) {
-  //     throw new CustomError(Messages.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
-  //   }
+    console.log(student, "gaaaaaa")
 
-  //   return {
-  //     _id: String(student._id),
-  //     fullName: student.fullName,
-  //     address: student.address,
-  //     contactNumber: student.parentContactNumber,
-  //     dob: student.dob,
-  //     fatherName: student.fatherName,
-  //     motherName: student.motherName,
-  //     gender: student.gender,
-  //     profilePhoto: student.profilePhoto,
-  //     schoolId: String(student.schoolId),
-  //     user: {
-  //       _id: String(student.user._id),
-  //       email: student.user.email,
-  //       status: student.user.status,
-  //     },
-  //   };
-  // }
+    if (!student) {
+      throw new CustomError(Messages.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    const user = student.userId as UserEntityType
+
+    return {
+      _id: String(student._id),
+      fullName: student.fullName,
+      address: student.address,
+      dob: student.dob,
+      fatherName: student.fatherName,
+      motherName: student.motherName,
+      gender: student.gender,
+      profilePhoto: student.profilePhoto,
+      schoolId: String(student.schoolId),
+      admissionNo: student.admissionNo,
+      parentContactNumber: student.parentContactNumber,
+      parentEmailAddress: student.parentEmailAddress,
+      userId: {
+        _id: String(user._id),
+        email: user.email,
+        status: user.status
+      },
+    };
+  }
 
   // async getStudentsByClassId(
   //   classId: string,

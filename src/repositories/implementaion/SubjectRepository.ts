@@ -1,7 +1,8 @@
-import { SubjectEntityType, SubjectWithClassEntityType } from "../../types/types";
+import { SubjectWithClassEntityType } from "../../types/types";
 import { ISubjectRepository } from "../interface/ISubjectRepository";
 import { BaseRepository } from "./BaseRepository";
 import Subject from "../../models/Subject"; 
+import { SubjectEntityType } from "../../types/SubjectType";
 import mongoose from "mongoose";
 
 class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISubjectRepository {
@@ -12,7 +13,6 @@ class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISu
     async createSubject(data: SubjectEntityType): Promise<SubjectEntityType> {
         try{
             const response =  await this.create(data)
-            console.log(response, "response from subject repo")
             return response
 
         }catch(error){
@@ -78,12 +78,13 @@ class SubjectRepository extends BaseRepository<SubjectEntityType> implements ISu
         }
     }
 
-    async findSubjectsByClassId(classId: string): Promise<SubjectEntityType[]> {
+    async findSubjectsByClassId(classId: string, academicYear: string): Promise<SubjectEntityType[]> {
         try{
             const subjects = await Subject.aggregate([
                 {
                     $match: {
-                        class: new mongoose.Types.ObjectId(classId)
+                        class: new mongoose.Types.ObjectId(classId),
+                        academicYear: new mongoose.Types.ObjectId(academicYear)
                     }
                 },
                 {

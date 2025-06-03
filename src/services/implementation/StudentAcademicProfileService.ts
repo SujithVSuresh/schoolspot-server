@@ -2,7 +2,8 @@ import HttpStatus from "../../constants/StatusConstants";
 import {
   CreateStudentAcademicProfileDTO,
   StudentAcademicProfileResponseDTO,
-  StudentProfileResponseDTO,
+  StudentAcademicProfileWithClassResponseDTO,
+  StudentAcademicProfileWithProfileResponseDTO,
 } from "../../dto/StudentDTO";
 import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
@@ -11,8 +12,8 @@ import { IStudentAcademicProfileService } from "../interface/IStudentAcademicPro
 import Messages from "../../constants/MessageConstants";
 import mongoose from "mongoose";
 import { StudentEntityType } from "../../types/StudentType";
-import { UserEntityType } from "../../types/UserType";
-import { ClassEntityType } from "../../types/types";
+import { ClassEntityType } from "../../types/ClassType";
+
 
 export class StudentAcadmicProfileService
   implements IStudentAcademicProfileService
@@ -24,14 +25,39 @@ export class StudentAcadmicProfileService
 
   async createAcademicProfile(
     data: CreateStudentAcademicProfileDTO,
-    admissionNo: string
+    admissionNo: string,
+    schoolId: string
   ): Promise<StudentAcademicProfileResponseDTO> {
-    const studentProfile = await this._studentRepository.getStudent(
-      admissionNo
+    const studentProfile = await this._studentRepository.getStudent({
+      admissionNo,
+      schoolId: new mongoose.Types.ObjectId(schoolId)
+    }
     );
 
     if (!studentProfile) {
       throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    const studentExist = await this._studentAcademicProfileRepository.findAcademicProfile({
+      studentId: studentProfile._id,
+      academicYear: new mongoose.Types.ObjectId(data.academicYear)
+    });
+
+    console.log(studentExist, "student exist...")
+
+    if (studentExist) {
+      throw new CustomError(Messages.STUDENT_ALREADY_EXIST, HttpStatus.CONFLICT);
+    }
+
+    const rollExist = await this._studentAcademicProfileRepository.findAcademicProfile({
+      roll: data.roll,
+      classId: new mongoose.Types.ObjectId(data.classId),
+      academicYear: new mongoose.Types.ObjectId(data.academicYear)
+    });
+
+
+    if (rollExist) {
+      throw new CustomError(Messages.ROLL_EXIST, HttpStatus.CONFLICT);
     }
 
     const academicProfile =
@@ -54,42 +80,24 @@ export class StudentAcadmicProfileService
   }
 
   async fetchStudentProfileByUserId(
-    userId: string
-  ): Promise<StudentProfileResponseDTO> {
-    const studentAcademicProfile =
-      await this._studentAcademicProfileRepository.findAcademicProfile({
+    userId: string,
+    academicYear: string
+  ): Promise<StudentAcademicProfileWithClassResponseDTO> {
+    const studentAcademicProfile = await this._studentAcademicProfileRepository.findAcademicProfile({
         userId: new mongoose.Types.ObjectId(userId),
+        academicYear: new mongoose.Types.ObjectId(academicYear)
       });
 
     if (!studentAcademicProfile) {
       throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    const student = studentAcademicProfile.studentId as StudentEntityType;
-    const user = studentAcademicProfile.userId as UserEntityType;
     const studentClass = studentAcademicProfile.classId as ClassEntityType;
 
     return {
       _id: String(studentAcademicProfile._id),
-      studentId: {
-        _id: String(student._id),
-        fullName: student.fullName,
-        profilePhoto: student.profilePhoto,
-        admissionNo: student.admissionNo,
-        fatherName: student.fatherName,
-        motherName: student.motherName,
-        parentContactNumber: student.parentContactNumber,
-        parentEmailAddress: student.parentEmailAddress,
-        gender: student.gender,
-        dob: student.dob,
-        address: student.address,
-        schoolId: String(student.schoolId),
-      },
-      userId: {
-        _id: String(user._id),
-        email: user.email,
-        status: user.status,
-      },
+      studentId: String(studentAcademicProfile.userId),
+      userId: String(studentAcademicProfile.userId),
       academicYear: String(studentAcademicProfile.academicYear),
       roll: studentAcademicProfile.roll,
       classId: {
@@ -98,5 +106,28 @@ export class StudentAcadmicProfileService
         section: studentClass.section,
       },
     };
+  }
+
+
+  async fetchAcademicProfilesByClassId(classId: string, academicYear: string): Promise<StudentAcademicProfileWithProfileResponseDTO[]> {
+    const response = await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(classId, academicYear)
+
+    const academicProfiles: StudentAcademicProfileWithProfileResponseDTO[] = response.map((item) => {
+      const student = item.studentId as StudentEntityType
+      return {
+        _id: String(item._id),
+        academicYear: String(item.academicYear),
+        classId: String(item.classId),
+        roll: item.roll,
+        userId: String(item.userId),
+        studentId: {
+          _id: String(student._id),
+          fullName: student.fullName,
+          profilePhoto: student.profilePhoto
+        }
+      }
+    })
+
+    return academicProfiles
   }
 }

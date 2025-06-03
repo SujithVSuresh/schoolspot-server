@@ -20,6 +20,7 @@ export class ClassController implements IClassController {
         section: req.body.section,
         teacher: req.body.teacher,
         school: String(req.user?.schoolId),
+        academicYear: req.academicYear as string
       };
 
       const newClass = await this._classService.createClass(createClassDTO);
@@ -31,25 +32,25 @@ export class ClassController implements IClassController {
   }
 
 
-  async updateClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const {classId} = req.params
-      const {schoolId} = req.user as PayloadType
+  // async updateClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+  //   try {
+  //     const {classId} = req.params
+  //     const {schoolId} = req.user as PayloadType
 
-      const updateClass: UpdateClassDTO = {
-        name: req.body.name,
-        section: req.body.section,
-        teacher: req.body.teacher,
-        schoolId: schoolId
-      };
+  //     const updateClass: UpdateClassDTO = {
+  //       name: req.body.name,
+  //       section: req.body.section,
+  //       teacher: req.body.teacher,
+  //       schoolId: schoolId
+  //     };
 
-      const newClass = await this._classService.updateClass(classId, updateClass);
+  //     const newClass = await this._classService.updateClass(classId, updateClass);
 
-      res.status(HttpStatus.CREATED).json(newClass);
-    } catch (err) {
-      next(err);
-    }
-  }
+  //     res.status(HttpStatus.CREATED).json(newClass);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
 
   async deleteClass(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -73,7 +74,7 @@ export class ClassController implements IClassController {
     try {
       const { schoolId } = req.user as PayloadType;
 
-      const classes = await this._classService.findAllClasses(schoolId);
+      const classes = await this._classService.findAllClasses(schoolId, req.academicYear as string);
 
       res.status(HttpStatus.CREATED).json({
         data: classes,

@@ -46,6 +46,9 @@ export const protectRoute = (
         }
 
         req.user = decoded;
+
+        // set academicyear based on the academic year data fetched from the redis.
+        req.academicYear = "68371d3323a21ebf1850e6d7"
         next();
       } catch (jwtError: any) {
         if (jwtError.name === "TokenExpiredError") {

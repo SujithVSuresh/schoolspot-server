@@ -1,30 +1,40 @@
-import mongoose, {Schema} from "mongoose";
-import { SubjectEntityType } from "../types/types";
+import mongoose, { Schema } from "mongoose";
+import { SubjectEntityType } from "../types/SubjectType";
 
-const SubjectSchema = new Schema({
+const SubjectSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     teacher: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
     class: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'Class'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Class",
     },
     school: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'School'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "School",
     },
+    academicYear: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AcademicYear",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-}, {
-    timestamps: true
-})
-
-
-export default mongoose.model<SubjectEntityType>('Subject', SubjectSchema, 'Subjects')
+export default mongoose.model<SubjectEntityType>(
+  "Subject",
+  SubjectSchema,
+  "Subjects"
+);

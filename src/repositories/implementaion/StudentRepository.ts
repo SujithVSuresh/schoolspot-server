@@ -4,6 +4,8 @@ import { IStudentRepository } from "../interface/IStudentRepository";
 import Student from "../../models/Student";
 import mongoose from "mongoose";
 import { StudentSearchQueryDTO } from "../../dto/StudentDTO";
+
+
 class StudentRepository
   extends BaseRepository<StudentEntityType>
   implements IStudentRepository
@@ -129,15 +131,15 @@ class StudentRepository
             from: "Users",
             localField: "userId",
             foreignField: "_id",
-            as: "user",
+            as: "userId",
           },
         },
       ]);
 
       return {
         ...student[0],
-        user: {
-          ...student[0].user[0],
+        userId: {
+          ...student[0].userId[0],
         },
       };
     } catch (error) {

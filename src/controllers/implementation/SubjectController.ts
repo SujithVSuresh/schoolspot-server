@@ -19,6 +19,7 @@ export class SubjectController implements ISubjectController {
         teacher,
         class: classId,
         school: schoolId,
+        academicYear: req.academicYear as string
       }
 
       const subject = await this._subjectService.createSubject(subjectData);
@@ -30,11 +31,11 @@ export class SubjectController implements ISubjectController {
       
   }
 
-  async findSubjectsByClass(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async findSubjectsByClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
      try{
         const classId = req.params.classId
 
-        const subjects = await this._subjectService.findSubjectsByClass(classId)
+        const subjects = await this._subjectService.findSubjectsByClass(classId, req.academicYear as string)
 
         res.status(HttpStatus.OK).json(subjects);
      }catch(err){

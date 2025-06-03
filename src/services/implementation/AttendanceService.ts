@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import {
+  AttendanceWithUserResponseDTO,
   CreateAttendanceDTO,
   CreateLeaveLetterDTO,
   EditLeaveLetterDTO,
   LeaveLetterResponseDTO,
 } from "../../dto/AttendanceDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
-import { AttendaceEntityType } from "../../types/types";
+import { AttendanceEntityType } from "../../types/AttendanceType";
 import IAttendanceService from "../interface/IAttendanceService";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
@@ -26,11 +27,10 @@ export class AttendanceService implements IAttendanceService {
   async addAttendance(
     dto: CreateAttendanceDTO[],
     schoolId: string,
-    recordedBy: string
+    recordedBy: string,
   ): Promise<{ classId: string; presentCount: number; absentCount: number }> {
     const today = new Date().toISOString().split("T")[0];
-    const attendanceExist =
-      await this._attendanceRepository.findAttendanceByQuery({
+    const attendanceExist = await this._attendanceRepository.findAttendanceByQuery({
         class: new mongoose.Types.ObjectId(dto[0].class as string),
         createdAt: {
           $gte: new Date(today + "T00:00:00.000Z"),
@@ -44,7 +44,7 @@ export class AttendanceService implements IAttendanceService {
         HttpStatus.CONFLICT
       );
     }
-    const attendanceData: AttendaceEntityType[] = dto.map((data) => {
+    const attendanceData: AttendanceEntityType[] = dto.map((data) => {
       return {
         ...data,
         student: new mongoose.Types.ObjectId(data.student as string),
@@ -82,19 +82,6 @@ export class AttendanceService implements IAttendanceService {
       });
     }
 
-    // const attendanceCount = response.reduce(
-    //   (acc, curr) => {
-    //     if (curr.status == "Present") {
-    //       acc.presentCount += 1;
-    //     } else if (curr.status == "Absent") {
-    //       acc.absentCount += 1;
-    //     }
-
-    //     return acc;
-    //   },
-    //   { presentCount: 0, absentCount: 0 }
-    // );
-
     return {
       presentCount: presentStudents.length,
       absentCount: absentStudents.length,
@@ -102,54 +89,77 @@ export class AttendanceService implements IAttendanceService {
     };
   }
 
-  async getAttendanceByClass(classId: string, date: string): Promise<any> {
-    return await this._attendanceRepository.findAttendances({
+  async getAttendanceByClass(classId: string, date: string): Promise<AttendanceWithUserResponseDTO[]> {
+    const response = await this._attendanceRepository.findAttendances({
       class: new mongoose.Types.ObjectId(classId),
       createdAt: {
         $gte: new Date(date + "T00:00:00.000Z"),
         $lt: new Date(date + "T23:59:59.999Z"),
       },
     });
-  }
 
-  async updateAttendanceStatus(
-    attendanceId: string,
-    status: "Present" | "Absent"
-  ): Promise<AttendaceResponseDTO> {
-    const attendanceExist =
-      await this._attendanceRepository.findAttendanceByQuery({
-        _id: new mongoose.Types.ObjectId(attendanceId),
-      });
-
-    if (!attendanceExist) {
-      throw new CustomError(
-        Messages.ATTENDANCE_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
-    }
-
-    const response = await this._attendanceRepository.updateAttendanceStatus(
-      attendanceId,
-      {
-        class: attendanceExist.class,
-        schoolId: attendanceExist.schoolId,
-        status: status,
-        student: attendanceExist.student,
+    const attendances: AttendanceWithUserResponseDTO[] = response.map((item) => {
+      return {
+        _id: String(item._id),
+        student: String(item.student),
+        status: item.status,
+        studentProfile: {
+          _id: String(item.studentProfile._id),
+          fullName: item.studentProfile.fullName,
+          profilePhoto: item.studentProfile.profilePhoto
+        },
+        academicProfile: {
+          _id: String(item.academicProfile._id),
+          roll: item.academicProfile.roll
+        },
+        class: String(item.class),
+        recordedBy: String(item.recordedBy),
+        schoolId: String(item.schoolId),
+        createdAt: item.createdAt
       }
-    );
+    })
 
-    if (!response) {
-      throw new CustomError(
-        Messages.SERVER_ERROR,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-
-    return {
-      _id: response._id,
-      status: response.status,
-    };
+    return attendances
   }
+
+  // async updateAttendanceStatus(
+  //   attendanceId: string,
+  //   status: "Present" | "Absent"
+  // ): Promise<AttendaceResponseDTO> {
+  //   const attendanceExist =
+  //     await this._attendanceRepository.findAttendanceByQuery({
+  //       _id: new mongoose.Types.ObjectId(attendanceId),
+  //     });
+
+  //   if (!attendanceExist) {
+  //     throw new CustomError(
+  //       Messages.ATTENDANCE_NOT_FOUND,
+  //       HttpStatus.NOT_FOUND
+  //     );
+  //   }
+
+  //   const response = await this._attendanceRepository.updateAttendanceStatus(
+  //     attendanceId,
+  //     {
+  //       class: attendanceExist.class,
+  //       schoolId: attendanceExist.schoolId,
+  //       status: status,
+  //       student: attendanceExist.student,
+  //     }
+  //   );
+
+  //   if (!response) {
+  //     throw new CustomError(
+  //       Messages.SERVER_ERROR,
+  //       HttpStatus.INTERNAL_SERVER_ERROR
+  //     );
+  //   }
+
+  //   return {
+  //     _id: response._id,
+  //     status: response.status,
+  //   };
+  // }
 
   async getAttendanceByMonth(
     userId: string,
@@ -173,8 +183,8 @@ export class AttendanceService implements IAttendanceService {
     }
 
     return attendanceData.map((data) => ({
-      _id: data._id,
-      status: data.status,
+      _id: String(data._id),
+      status: data?.status as  "Present" | "Absent",
       createdAt: data.createdAt,
     }));
   }

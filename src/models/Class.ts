@@ -1,32 +1,39 @@
-import mongoose, {Schema} from "mongoose";
-import { ClassEntityType } from "../types/types";
+import mongoose, { Schema } from "mongoose";
+import { ClassEntityType } from "../types/ClassType";
 
-const ClassSchema = new Schema({
+const ClassSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     section: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     teacher: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
     school: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'School'
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "School",
     },
     strength: {
-        type: Number,
-        default: 0
-    }
-}, {
-    timestamps: true
-})
+      type: Number,
+      default: 0,
+    },
+    academicYear: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AcademicYear",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-
-export default mongoose.model<ClassEntityType>('Class', ClassSchema, 'Classes')
+export default mongoose.model<ClassEntityType>("Class", ClassSchema, "Classes");

@@ -32,19 +32,17 @@ export interface UpdateStudentDTO {
 export interface StudentResponseDTO {
   _id: string;
   fullName: string;
-  class: string;
-  section: string;
-  roll: number;
-  gender: "male" | "female";
   profilePhoto: string;
+  gender: "male" | "female";
   dob: Date;
   address: string;
   fatherName: string;
   motherName: string;
-  contactNumber: string;
+  parentContactNumber: string;
+  parentEmailAddress: string;
+  admissionNo: string;
   schoolId: string;
-  classId: string;
-  user: {
+  userId: {
     _id: string;
     email: string;
     status: "active" | "inactive" | "deleted" | "blocked";
@@ -102,27 +100,10 @@ export interface StudentAcademicProfileResponseDTO {
   classId: string;
 }
 
-export interface StudentProfileResponseDTO {
+export interface StudentAcademicProfileWithClassResponseDTO {
   _id: string;
-  studentId: {
-    _id: string;
-    fullName: string;
-    profilePhoto: string;
-    admissionNo: string;
-    fatherName: string;
-    motherName: string;
-    parentContactNumber: string;
-    parentEmailAddress: string;
-    gender: "male" | "female";
-    dob: Date;
-    address: string;
-    schoolId: string;
-  };
-  userId: {
-    _id: string;
-    email: string;
-    status: "active" | "inactive" | "deleted" | "blocked";
-  };
+  studentId: string
+  userId: string
   academicYear: string;
   roll: number;
   classId: {
@@ -130,4 +111,18 @@ export interface StudentProfileResponseDTO {
     name: string;
     section: string;
   };
+}
+
+
+export interface StudentAcademicProfileWithProfileResponseDTO {
+  _id: string;
+  studentId: {
+    _id: string
+    fullName: string;
+    profilePhoto: string;
+  }
+  userId: string
+  academicYear: string;
+  roll: number;
+  classId: string
 }

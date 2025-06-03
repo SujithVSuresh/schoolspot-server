@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
-import { ClassEntityType, UserEntityType } from "./types";
-import { AcademicYearEntityType } from "./AcademicYearType";
+import { UserEntityType } from "./types";
+import { ClassEntityType } from "./ClassType";
+
 
 export interface StudentAcademicProfileEntityType {
   _id?: mongoose.Types.ObjectId | string;
@@ -8,7 +9,7 @@ export interface StudentAcademicProfileEntityType {
   userId: mongoose.Types.ObjectId | string | UserEntityType;
   academicYear: mongoose.Types.ObjectId | string;  
   roll: number;
-  classId: mongoose.Types.ObjectId | string | ClassEntityType;  
+  classId: mongoose.Types.ObjectId | string | ClassEntityType; 
   createdAt?: Date;
   updatedAt?: Date;
 }

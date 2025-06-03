@@ -20,7 +20,7 @@ const attendaceRouter = Router();
 
 attendaceRouter.post('/', protectRoute(["admin", "teacher"]), attendanceController.addAttendance.bind(attendanceController));
 attendaceRouter.get('/', protectRoute(["admin", "teacher"]), attendanceController.findAttendanceByClass.bind(attendanceController));
-attendaceRouter.put('/status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
+// attendaceRouter.put('/status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
 attendaceRouter.get('/monthly', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceByMonth.bind(attendanceController))
 attendaceRouter.get('/overview', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceOverview.bind(attendanceController))
 

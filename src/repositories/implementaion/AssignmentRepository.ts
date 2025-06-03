@@ -1,6 +1,6 @@
 import Assignment from "../../models/Assignment";
 import AssignmentSubmission from "../../models/AssignmentSubmission";
-import { AssignmentEntityType, AssignmentSubmissionEntityType, AttendaceEntityType } from "../../types/types";
+import { AssignmentEntityType, AssignmentSubmissionEntityType } from "../../types/types";
 import { IAssignmentRepository } from "../interface/IAssignmentRepository";
 import { BaseRepository } from "./BaseRepository";
 
