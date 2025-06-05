@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import UserNotification from "../../models/UserNotification";
 import { UserNotificationEntityType } from "../../types/NotificationType";
 import { IUserNotificationRepository } from "../interface/IUserNotificationRepository";
@@ -29,6 +30,36 @@ class UserNotificationRespository extends BaseRepository<UserNotificationEntityT
         }catch(error){
             console.error("Error updatiing user notifications", error);
             throw new Error("Error updating user notifications")
+        }
+    }
+
+    async findUserNotifications(userId: string, academicYear: string): Promise<UserNotificationEntityType[]>{
+        try{
+            const notifications = UserNotification.aggregate([
+                {
+                    $match: {
+                        userId: new mongoose.Types.ObjectId(userId),
+                        academicYear: new mongoose.Types.ObjectId(academicYear)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'Notifications',
+                        localField: 'notificationId',
+                        foreignField: '_id',
+                        as: 'notificationId'
+                    }
+                },
+                {
+                    $unwind: "$notificationId"
+                }
+            ])
+
+            return notifications
+
+        }catch(error){
+            console.error("Error finding user notifications", error);
+            throw new Error("Error finding user notifications")
         }
     }
 }

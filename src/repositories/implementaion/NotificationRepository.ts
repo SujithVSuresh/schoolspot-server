@@ -38,34 +38,34 @@ class NotificationRepository
     }
   }
 
-  async clearOneNotification(
-    notificationId: string,
-    userId: string
-  ): Promise<NotificationEntityType | null> {
-    try {
-      return await Notification.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(notificationId) },
-        { $pull: { userId: userId } },
-        {new: true}
-      );
-    } catch (error) {
-      console.error("Error clearing notification", error);
-      throw new Error("Error clearing notification");
-    }
-  }
+  // async clearOneNotification(
+  //   notificationId: string,
+  //   userId: string
+  // ): Promise<NotificationEntityType | null> {
+  //   try {
+  //     return await Notification.findOneAndUpdate(
+  //       { _id: new mongoose.Types.ObjectId(notificationId) },
+  //       { $pull: { userId: userId } },
+  //       {new: true}
+  //     );
+  //   } catch (error) {
+  //     console.error("Error clearing notification", error);
+  //     throw new Error("Error clearing notification");
+  //   }
+  // }
 
-  async clearManyNotification(userId: string): Promise<UpdateResult> {
-    try {
-      const response = await Notification.updateMany(
-        { userId: new mongoose.Types.ObjectId(userId) },
-        { $pull: { userId: userId } }
-      );
-      return response
-    } catch (error) {
-      console.error("Error clearing notifications", error);
-      throw new Error("Error clearing notifications");
-    }
-  }
+  // async clearManyNotification(userId: string): Promise<UpdateResult> {
+  //   try {
+  //     const response = await Notification.updateMany(
+  //       { userId: new mongoose.Types.ObjectId(userId) },
+  //       { $pull: { userId: userId } }
+  //     );
+  //     return response
+  //   } catch (error) {
+  //     console.error("Error clearing notifications", error);
+  //     throw new Error("Error clearing notifications");
+  //   }
+  // }
 }
 
 export default new NotificationRepository();

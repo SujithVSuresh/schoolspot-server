@@ -27,7 +27,7 @@ export interface NotificationEntityType {
 export interface UserNotificationEntityType {
   _id?: mongoose.Types.ObjectId | string;
   userId: mongoose.Types.ObjectId | string;
-  notificationId: mongoose.Types.ObjectId | string;
+  notificationId: mongoose.Types.ObjectId | string | NotificationEntityType;
   isRead: boolean;
   isCleared: boolean;
   readAt?: Date | null;
