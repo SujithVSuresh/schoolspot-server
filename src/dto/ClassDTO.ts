@@ -19,11 +19,11 @@ export interface UpdateClassDTO {
 }
 
 export interface ClassResponseDTO {
-      _id?: mongoose.Types.ObjectId;
+      _id?: string;
       name: string;
       section: string;
       subjects?: SubjectEntityType[] | [];
-      teacher?: mongoose.Types.ObjectId | string;
+      teacher?: string;
       strength?: number;
       createdAt?: Date;
 }

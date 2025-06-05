@@ -18,7 +18,6 @@ class StudentAcademicProfileRepository
     try {
       return await this.create({
         ...data,
-        academicYear: new mongoose.Types.ObjectId(data.academicYear),
         studentId: new mongoose.Types.ObjectId(data.studentId as string),
         classId: new mongoose.Types.ObjectId(data.classId as string),
       });

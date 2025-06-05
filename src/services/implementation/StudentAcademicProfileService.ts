@@ -39,8 +39,7 @@ export class StudentAcadmicProfileService
     }
 
     const studentExist = await this._studentAcademicProfileRepository.findAcademicProfile({
-      studentId: studentProfile._id,
-      academicYear: new mongoose.Types.ObjectId(data.academicYear)
+      studentId: studentProfile._id
     });
 
     console.log(studentExist, "student exist...")
@@ -51,8 +50,7 @@ export class StudentAcadmicProfileService
 
     const rollExist = await this._studentAcademicProfileRepository.findAcademicProfile({
       roll: data.roll,
-      classId: new mongoose.Types.ObjectId(data.classId),
-      academicYear: new mongoose.Types.ObjectId(data.academicYear)
+      classId: new mongoose.Types.ObjectId(data.classId)
     });
 
 
@@ -64,7 +62,6 @@ export class StudentAcadmicProfileService
       await this._studentAcademicProfileRepository.createAcademicProfile({
         userId: studentProfile.userId as string,
         studentId: studentProfile._id as string,
-        academicYear: data.academicYear,
         roll: data.roll,
         classId: data.classId,
       });
@@ -74,7 +71,6 @@ export class StudentAcadmicProfileService
       userId: String(academicProfile.userId),
       studentId: String(academicProfile.studentId),
       roll: academicProfile.roll,
-      academicYear: String(academicProfile.academicYear),
       classId: String(academicProfile.classId),
     };
   }
@@ -98,7 +94,6 @@ export class StudentAcadmicProfileService
       _id: String(studentAcademicProfile._id),
       studentId: String(studentAcademicProfile.userId),
       userId: String(studentAcademicProfile.userId),
-      academicYear: String(studentAcademicProfile.academicYear),
       roll: studentAcademicProfile.roll,
       classId: {
         _id: String(studentClass._id),
@@ -116,7 +111,6 @@ export class StudentAcadmicProfileService
       const student = item.studentId as StudentEntityType
       return {
         _id: String(item._id),
-        academicYear: String(item.academicYear),
         classId: String(item.classId),
         roll: item.roll,
         userId: String(item.userId),

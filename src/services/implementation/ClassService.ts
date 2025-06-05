@@ -50,7 +50,7 @@ export class ClassService implements IClassService {
     const response = await this._classRepository.createClass(classEntity);
 
     return {
-      _id: response._id,
+      _id: String(response._id),
       name: response.name,
       section: response.section,
       strength: response.strength,
@@ -106,7 +106,18 @@ export class ClassService implements IClassService {
   async findAllClasses(schoolId: string, academicYear: string): Promise<ClassResponseDTO[]> {
     const response = await this._classRepository.findAllClasses(schoolId, academicYear);
 
-    return response;
+    const classesData: ClassResponseDTO[] = response.map((item) => {
+
+      return {
+            _id: String(item._id),
+            name: item.name,
+            section: item.section,
+            teacher: String(item.teacher),
+            strength: item.strength,
+      }
+    });
+
+    return classesData
   }
 
   async findClassById(
@@ -151,10 +162,10 @@ export class ClassService implements IClassService {
     });
 
     const data: ClassByIdResponseDTO = {
-      _id: response._id,
+      _id: String(response._id),
       name: response.name,
       section: response.section,
-      teacher: response.teacher,
+      teacher: String(response.teacher),
       strength: response.strength,
       school: String(response.school),
       attendance: {

@@ -13,11 +13,6 @@ const StudentAcademicProfileSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    academicYear: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AcademicYear",
-      required: true,
-    },
     roll: { type: Number, required: true },
     classId: {
       type: mongoose.Schema.Types.ObjectId,

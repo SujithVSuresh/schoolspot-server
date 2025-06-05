@@ -41,12 +41,24 @@ export interface StudentResponseDTO {
   parentContactNumber: string;
   parentEmailAddress: string;
   admissionNo: string;
-  schoolId: string;
+  schoolId: {
+    _id: string;
+    schoolName: string;
+  };
   userId: {
     _id: string;
     email: string;
     status: "active" | "inactive" | "deleted" | "blocked";
   };
+}
+
+export interface StudentWithAcademicProfileResponseDTO extends StudentResponseDTO {
+  academicProfile: {
+    _id?: string;
+    name: string;
+    section: string;
+    roll: number;
+  } | null;
 }
 
 export interface StudentListResponseDTO {
@@ -86,7 +98,6 @@ export interface StudentSearchQueryDTO {
 export interface CreateStudentAcademicProfileDTO {
   studentId?: string;
   userId?: string;
-  academicYear: string;
   roll: number;
   classId: string;
 }
@@ -95,16 +106,14 @@ export interface StudentAcademicProfileResponseDTO {
   _id: string;
   studentId: string;
   userId: string;
-  academicYear: string;
   roll: number;
   classId: string;
 }
 
 export interface StudentAcademicProfileWithClassResponseDTO {
   _id: string;
-  studentId: string
-  userId: string
-  academicYear: string;
+  studentId: string;
+  userId: string;
   roll: number;
   classId: {
     _id: string;
@@ -113,16 +122,14 @@ export interface StudentAcademicProfileWithClassResponseDTO {
   };
 }
 
-
 export interface StudentAcademicProfileWithProfileResponseDTO {
   _id: string;
   studentId: {
-    _id: string
+    _id: string;
     fullName: string;
     profilePhoto: string;
-  }
-  userId: string
-  academicYear: string;
+  };
+  userId: string;
   roll: number;
-  classId: string
+  classId: string;
 }

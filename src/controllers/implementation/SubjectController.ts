@@ -19,7 +19,6 @@ export class SubjectController implements ISubjectController {
         teacher,
         class: classId,
         school: schoolId,
-        academicYear: req.academicYear as string
       }
 
       const subject = await this._subjectService.createSubject(subjectData);
@@ -35,7 +34,9 @@ export class SubjectController implements ISubjectController {
      try{
         const classId = req.params.classId
 
-        const subjects = await this._subjectService.findSubjectsByClass(classId, req.academicYear as string)
+        console.log(classId, "this is the class id")
+
+        const subjects = await this._subjectService.findSubjectsByClass(classId)
 
         res.status(HttpStatus.OK).json(subjects);
      }catch(err){

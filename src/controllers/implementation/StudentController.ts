@@ -143,6 +143,8 @@ export class StudentController implements IStudentController {
       const userId =
         req.user?.role == "student" ? req.user.userId : req.params.userId;
 
+        console.log(userId, "userId")
+
       const students = await this._studentService.getStudentById(userId);
 
       res.status(HttpStatus.OK).json(students);

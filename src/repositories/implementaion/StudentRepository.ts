@@ -21,7 +21,7 @@ class StudentRepository
       return await this.create({
         ...data,
         userId: new mongoose.Types.ObjectId(data.userId as string),
-        schoolId: new mongoose.Types.ObjectId(data.schoolId),
+        schoolId: new mongoose.Types.ObjectId(data.schoolId as string),
       });
     } catch (error) {
       console.error("Error creating user", error);
@@ -134,14 +134,25 @@ class StudentRepository
             as: "userId",
           },
         },
+        {
+          $unwind: "$userId"
+        },
+        {
+          $lookup: {
+            from: "Schools",
+            localField: "schoolId",
+            foreignField: "_id",
+            as: "schoolId",
+          },
+        },
+        {
+          $unwind: "$schoolId"
+        }
       ]);
 
-      return {
-        ...student[0],
-        userId: {
-          ...student[0].userId[0],
-        },
-      };
+      console.log(student, "student profile...")
+
+      return student[0]
     } catch (error) {
       console.error("Error fetching student data", error);
       throw new Error("Error creating user");

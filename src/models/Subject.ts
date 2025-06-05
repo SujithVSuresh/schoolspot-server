@@ -21,12 +21,7 @@ const SubjectSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "School",
-    },
-    academicYear: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AcademicYear",
-      required: true,
-    },
+    }
   },
   {
     timestamps: true,

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 
 export interface ClassEntityType {
-  _id?: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId | string;
   name: string;
   section: string;
   teacher: mongoose.Types.ObjectId | string;

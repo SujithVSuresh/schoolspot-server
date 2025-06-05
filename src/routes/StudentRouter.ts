@@ -6,8 +6,9 @@ import { StudentController } from "../controllers/implementation/StudentControll
 import UserRepository from "../repositories/implementaion/UserRepository";
 import {upload} from '../middlewares/UploadMiddleware'
 import { protectRoute } from "../middlewares/AuthHandler";
+import StudentAcademicProfileRepository from "../repositories/implementaion/StudentAcademicProfileRepository";
 
-const studentService = new StudentService(StudentRepository, UserRepository, ClassRepository);
+const studentService = new StudentService(StudentRepository, UserRepository, ClassRepository, StudentAcademicProfileRepository);
 
 const studentController = new StudentController(studentService);
 
@@ -17,6 +18,8 @@ studentRouter.post("/", protectRoute(["admin"]), upload.single("profilePhoto"), 
 // studentRouter.put("/:studentId", protectRoute(["admin"]), upload.single("profilePhoto"), studentController.updateStudent.bind(studentController));
 studentRouter.get("/students", protectRoute(["admin"]), studentController.getStudents.bind(studentController));
 studentRouter.get("/:userId", protectRoute(["admin", "teacher", "student"]), studentController.getStudentProfile.bind(studentController))
+studentRouter.get("/profile", protectRoute(["student"]), studentController.getStudentProfile.bind(studentController))
+
 // studentRouter.get("/students/:classId", protectRoute(["admin", "teacher"]), studentController.getStudentsByClassId.bind(studentController));
 
 export default studentRouter;

@@ -20,7 +20,6 @@ export class StudentAcademicProfileController implements IStudentAcademicProfile
 
             const academicProfileData: CreateStudentAcademicProfileDTO = {
                 roll: data.roll,
-                academicYear: req.academicYear as string,
                 classId: data.classId,
             }
 

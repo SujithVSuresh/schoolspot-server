@@ -15,15 +15,20 @@ import {
   StudentPagenationResponseDTO,
   StudentResponseDTO,
   StudentSearchQueryDTO,
+  StudentWithAcademicProfileResponseDTO,
   UpdateStudentDTO,
 } from "../../dto/StudentDTO";
 import { UserEntityType } from "../../types/UserType";
+import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
+import { ClassEntityType } from "../../types/ClassType";
+import { SchoolProfileEntityType } from "../../types/SchoolProfileType";
 
 export class StudentService implements IStudentService {
   constructor(
     private _studentRepository: IStudentRepository,
     private _userRepository: IUserRepository,
-    private _classRepository: IClassRepository
+    private _classRepository: IClassRepository,
+    private _studentAcademicProfileRepository: IStudentAcademicProfileRepository
   ) {}
 
   async addStudent(
@@ -215,7 +220,8 @@ export class StudentService implements IStudentService {
       schoolId
     );
 
-    const totalStudents = await this._studentRepository.findStudentsCountBySchool(schoolId);
+    const totalStudents =
+      await this._studentRepository.findStudentsCountBySchool(schoolId);
 
     return {
       totalStudents,
@@ -242,16 +248,23 @@ export class StudentService implements IStudentService {
     };
   }
 
-  async getStudentById(userId: string): Promise<StudentResponseDTO> {
+  async getStudentById(userId: string): Promise<StudentWithAcademicProfileResponseDTO> {
     const student = await this._studentRepository.getStudentById(userId);
-
-    console.log(student, "gaaaaaa")
 
     if (!student) {
       throw new CustomError(Messages.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    const user = student.userId as UserEntityType
+    const studentAcademicProfileData =
+      await this._studentAcademicProfileRepository.findAcademicProfile({
+        studentId: student._id,
+      });
+
+    const user = student.userId as UserEntityType;
+
+    const classData = studentAcademicProfileData.classId; 
+
+    const school = student.schoolId as SchoolProfileEntityType
 
     return {
       _id: String(student._id),
@@ -262,15 +275,27 @@ export class StudentService implements IStudentService {
       motherName: student.motherName,
       gender: student.gender,
       profilePhoto: student.profilePhoto,
-      schoolId: String(student.schoolId),
+      schoolId: {
+        _id: String(school._id),
+        schoolName: school.schoolName
+      },
       admissionNo: student.admissionNo,
       parentContactNumber: student.parentContactNumber,
       parentEmailAddress: student.parentEmailAddress,
       userId: {
         _id: String(user._id),
         email: user.email,
-        status: user.status
+        status: user.status,
       },
+      academicProfile:
+        classData && typeof classData === "object" && "name" in classData
+          ? {
+              _id: String(classData?._id),
+              name: classData.name,
+              section: classData.section,
+              roll: studentAcademicProfileData.roll
+            }
+          : null,
     };
   }
 
