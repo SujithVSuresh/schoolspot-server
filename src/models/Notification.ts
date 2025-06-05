@@ -3,25 +3,29 @@ import { NotificationEntityType } from "../types/NotificationType";
 
 const NotificationSchema = new Schema(
   {
-    userId: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-      },
-    ],
+    title: { type: String, required: true },
+    message: { type: String, required: true },
     notificationType: {
       type: String,
-      enum: ["message", "study_material", "assignment", "invoice", "exam", "exam_result", "attendance"],
+      enum: [
+        "message",
+        "study_material",
+        "assignment",
+        "invoice",
+        "exam",
+        "exam_result",
+        "attendance",
+      ],
       required: true,
     },
-    message: {
+    metadata: {
       type: String,
-      required: true,
+      default: null,
     },
-    isRead: {
-      type: Boolean,
-      default: false,
+    academicYear: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AcademicYear",
+      required: true,
     },
   },
   {

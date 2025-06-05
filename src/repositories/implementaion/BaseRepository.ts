@@ -12,6 +12,10 @@ export class BaseRepository<T> implements IBaseRepository<T> {
         return this.model.create(data)
     }
 
+    async createMany(data: T[]): Promise<T[]> {
+        return this.model.insertMany(data)
+    }
+
     async findById(id: string): Promise<T | null> {
         return this.model.findById(id)
     }
