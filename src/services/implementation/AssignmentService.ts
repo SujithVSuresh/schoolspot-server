@@ -36,7 +36,8 @@ export class AssignmentService implements IAssignmentService {
   ) {}
 
   async createAssignment(
-    data: CreateAssignmentDTO
+    data: CreateAssignmentDTO,
+    academicYear: string
   ): Promise<AssignmentResponseDTO> {
     if(data.dueDate && new Date(data.dueDate) < new Date()){
       throw new CustomError(
@@ -70,10 +71,10 @@ export class AssignmentService implements IAssignmentService {
     })
 
       await this._notificationService.sendNotification({
-        userId: studentIds,
+        academicYear,
         notificationType: "assignment",
         message: response.title
-      })
+      }, studentIds)
 
     return {
       _id: String(response._id),
@@ -317,6 +318,7 @@ export class AssignmentService implements IAssignmentService {
 
   async createStudyMaterial(
     data: CreateStudyMaterialDTO,
+    academicYear: string,
     file?: Express.Multer.File
   ): Promise<StudyMaterialResponseDTO> {
     let fileUrl = null;
@@ -370,10 +372,10 @@ export class AssignmentService implements IAssignmentService {
     const studentIds = students.map((student: any) => student.user._id)
 
     await this._notificationService.sendNotification({
-      userId: studentIds,
+      academicYear,
       notificationType: "study_material",
       message: response.title
-    })
+    }, studentIds)
 
     return {
       title: response.title,

@@ -14,29 +14,27 @@ class NotificationRepository
   }
 
   async createNotification(
-    data: NotificationEntityType
+    data: NotificationEntityType,
+    options: { session?: mongoose.ClientSession }
   ): Promise<NotificationEntityType> {
     try {
-      return await this.create({
-        ...data,
-        userId: data.userId.map((id) => new mongoose.Types.ObjectId(id)),
-      });
+      return await Notification.insertOne(data, options)
     } catch (error) {
       console.error("Error creating notification", error);
       throw new Error("Error creating notification");
     }
   }
 
-  async findNotifications(userId: string): Promise<NotificationEntityType[]> {
-    try {
-      return await Notification.find({
-        userId: new mongoose.Types.ObjectId(userId),
-      }).sort({ createdAt: -1 });
-    } catch (error) {
-      console.error("Error creating notification", error);
-      throw new Error("Error creating notification");
-    }
-  }
+  // async findNotifications(userId: string): Promise<NotificationEntityType[]> {
+  //   try {
+  //     return await Notification.find({
+  //       userId: new mongoose.Types.ObjectId(userId),
+  //     }).sort({ createdAt: -1 });
+  //   } catch (error) {
+  //     console.error("Error creating notification", error);
+  //     throw new Error("Error creating notification");
+  //   }
+  // }
 
   // async clearOneNotification(
   //   notificationId: string,

@@ -1,7 +1,18 @@
-import { CreateNotificationDTO, NotificationResponseDTO } from "../../dto/NotificationDTO"
+import {
+  CreateNotificationDTO,
+  NotificationResponseDTO,
+} from "../../dto/NotificationDTO";
 
 export interface INotificationService {
-    sendNotification(data: CreateNotificationDTO): Promise<NotificationResponseDTO> 
-    fetchNotifications(userId: string): Promise<NotificationResponseDTO[]>
-    clearNotification(userId: string, id?: string): Promise<{ userId: string } | { _id: string }>
+  sendNotification(
+    data: CreateNotificationDTO,
+    users: string[]
+  ): Promise<NotificationResponseDTO>;
+  fetchNotifications(
+    userId: string,
+    academicYear: string
+  ): Promise<NotificationResponseDTO[]>;
+  clearNotification(notificationId: string): Promise<{ _id: string }>;
+  clearAllNotifications(userId: string): Promise<{ userId: string }>;
+  setReadNotifications(userId: string): Promise<{ userId: string }>;
 }

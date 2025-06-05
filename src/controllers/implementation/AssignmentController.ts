@@ -13,6 +13,8 @@ export class AssignmentController implements IAssignmentController {
   async createAssignment(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
       try {
 
+        
+
         const { schoolId, userId } = req.user as PayloadType;
 
         const data: CreateAssignmentDTO = {
@@ -27,7 +29,7 @@ export class AssignmentController implements IAssignmentController {
             subjectId: req.body.subjectId
         }     
         
-        const response = await this._assignmentService.createAssignment(data);
+        const response = await this._assignmentService.createAssignment(data, req.academicYear as string);
 
         res.status(201).json({
             message: "Assignment created successfully",
@@ -136,7 +138,7 @@ async createStudyMaterial(req: CustomRequest, res: Response, next: NextFunction)
             subjectId: req.body.subjectId
         }     
         
-        const response = await this._assignmentService.createStudyMaterial(data, file);
+        const response = await this._assignmentService.createStudyMaterial(data, req.academicYear as string, file);
 
         res.status(201).json({
             message: "Study material created successfully",

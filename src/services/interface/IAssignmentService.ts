@@ -1,7 +1,7 @@
 import { CreateAssignmentDTO, UpdateAssignmentDTO, AssignmentResponseDTO, AssignmentSubmissionsWithAssignmentResponseDTO, UpdateStudyMaterialDTO, AssignmentSubmissionResponseDTO, AssignmentListResponseDTO, CreateStudyMaterialDTO, StudyMaterialResponseDTO, AssignmentSubmissionsListResponseDTO, StudyMaterialResponseWithViewersDTO } from "../../dto/AssignmentDTO"
 
 export interface IAssignmentService{
-    createAssignment(data: CreateAssignmentDTO): Promise<AssignmentResponseDTO>
+    createAssignment(data: CreateAssignmentDTO, academicYear: string): Promise<AssignmentResponseDTO>
     updateAsssignment(data: UpdateAssignmentDTO, id: string): Promise<AssignmentResponseDTO>
     getAssignments(subjectId: string): Promise<AssignmentListResponseDTO[]> 
     getAssignmentById(assignmentId: string): Promise<AssignmentResponseDTO>
@@ -14,7 +14,7 @@ export interface IAssignmentService{
     getPendingSubmissions(userId: string): Promise<AssignmentSubmissionsWithAssignmentResponseDTO[]>
 
 
-    createStudyMaterial(data: CreateStudyMaterialDTO, file?: Express.Multer.File): Promise<StudyMaterialResponseDTO> 
+    createStudyMaterial(data: CreateStudyMaterialDTO, academicYear: string, file?: Express.Multer.File): Promise<StudyMaterialResponseDTO> 
     deleteStudyMaterial(id: string): Promise<string>;
     updateStudyMaterial(data: UpdateStudyMaterialDTO, id: string, file?: Express.Multer.File): Promise<StudyMaterialResponseDTO>
     fetchStudyMaterials(subjectId: string): Promise<StudyMaterialResponseDTO[]>    

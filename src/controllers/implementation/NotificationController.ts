@@ -4,38 +4,63 @@ import { INotificationController } from "../interface/INotificationController";
 import { CustomRequest, PayloadType } from "../../types/types";
 import HttpStatus from "../../constants/StatusConstants";
 
-
-
 export class NotificationController implements INotificationController {
-    constructor(
-        private _notificationService: INotificationService
-    ){}
+  constructor(
+    private _notificationService: INotificationService,
+) {}
 
-    async fetchNotifications(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
-        try{
-            const {userId} = req.user as PayloadType
+  async fetchNotifications(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { userId } = req.user as PayloadType;
 
-            const response = await this._notificationService.fetchNotifications(userId)
+      const response = await this._notificationService.fetchNotifications(
+        userId,
+        req.academicYear as string
+      );
 
-            res.status(HttpStatus.OK).json(response)
-        }catch(err){
-            next(err)
-        }
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
     }
+  }
 
-    async clearNotification(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
-        try{
-            const {userId} = req.user as PayloadType
+  async clearNotification(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { notificationId } = req.params;
 
-            const {id} = req.params
+      const response = await this._notificationService.clearNotification(
+        notificationId
+      );
 
-            const response = await this._notificationService.clearNotification(userId, id)
-
-            res.status(HttpStatus.OK).json(response)
-        }catch(err){
-            next(err)
-        }
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
     }
+  }
 
-    
+    async clearAllNotifications(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.user?.userId
+
+      const response = await this._notificationService.clearAllNotifications(userId as string)
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+
 }
