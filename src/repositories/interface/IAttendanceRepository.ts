@@ -6,5 +6,5 @@ export interface IAttendanceRepository {
     findAttendanceByQuery(query: any): Promise<AttendanceEntityType | null>;
     findAttendances(query: any): Promise<AttendanceWithUserEntityType[]> 
     findAttendanceCount(query: any): Promise<{present: number, absent: number, date: Date} | null> 
-    updateAttendanceStatus(attendaceId: string, data: AttendanceEntityType): Promise<AttendanceEntityType | null> 
+    updateAttendanceStatus(attendaceId: string, data: Partial<AttendanceEntityType>): Promise<AttendanceEntityType | null> 
     }

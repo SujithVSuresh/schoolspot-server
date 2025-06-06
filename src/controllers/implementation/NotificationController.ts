@@ -5,9 +5,7 @@ import { CustomRequest, PayloadType } from "../../types/types";
 import HttpStatus from "../../constants/StatusConstants";
 
 export class NotificationController implements INotificationController {
-  constructor(
-    private _notificationService: INotificationService,
-) {}
+  constructor(private _notificationService: INotificationService) {}
 
   async fetchNotifications(
     req: CustomRequest,
@@ -16,6 +14,7 @@ export class NotificationController implements INotificationController {
   ): Promise<void> {
     try {
       const { userId } = req.user as PayloadType;
+      console.log(userId, req.academicYear, "blii")
 
       const response = await this._notificationService.fetchNotifications(
         userId,
@@ -46,15 +45,17 @@ export class NotificationController implements INotificationController {
     }
   }
 
-    async clearAllNotifications(
+  async clearAllNotifications(
     req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = req.user?.userId
+      const userId = req.user?.userId;
 
-      const response = await this._notificationService.clearAllNotifications(userId as string)
+      const response = await this._notificationService.clearAllNotifications(
+        userId as string
+      );
 
       res.status(HttpStatus.OK).json(response);
     } catch (err) {
@@ -62,5 +63,21 @@ export class NotificationController implements INotificationController {
     }
   }
 
+  async setReadNotifications(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.user?.userId;
 
+      const response = await this._notificationService.setReadNotifications(
+        userId as string
+      );
+
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

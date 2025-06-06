@@ -26,10 +26,9 @@ export class NotificationService implements INotificationService {
     data: CreateNotificationDTO,
     users: string[]
   ): Promise<NotificationResponseDTO> {
-    const session = await mongoose.startSession();
-    session.startTransaction();
 
-    try {
+    console.log(users, "uuusserrrss")
+
       const notificationContent = this.handleNotificationMessage(
         data.notificationType,
         data.message
@@ -42,7 +41,6 @@ export class NotificationService implements INotificationService {
             title: notificationContent.title,
             message: notificationContent.message,
           },
-          { session }
         );
 
       const userNotificationData: UserNotificationEntityType[] = users.map(
@@ -61,7 +59,6 @@ export class NotificationService implements INotificationService {
 
       await this._userNotificationRepository.createUserNotifications(
         userNotificationData,
-        { session }
       );
 
       return {
@@ -71,13 +68,7 @@ export class NotificationService implements INotificationService {
         notificationType: createNotification.notificationType,
         createdAt: createNotification.createdAt as Date,
       };
-    } catch (err) {
-      await session.abortTransaction();
-      console.error("Transaction aborted due to error:", err);
-      throw err;
-    } finally {
-      session.endSession();
-    }
+
   }
 
   private handleNotificationMessage(

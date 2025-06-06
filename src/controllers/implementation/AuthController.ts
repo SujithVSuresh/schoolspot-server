@@ -261,16 +261,18 @@ export class AuthController implements IAuthController {
   // }
 
   async changeAccountStatus(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
       const { status, userId } = req.body;
 
+      const token = req.user?.token
+
       const response = await this._authService.changeAccountStatus(
         userId,
-        status
+        status,
       );
 
       res.status(HttpStatus.OK).json(response);

@@ -45,14 +45,14 @@ export class StudentService implements IStudentService {
     //   throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
     // }
 
-    // const rollExist = await this._studentRepository.getStudent({
-    //   roll: data.roll,
-    //   classId: classId,
-    // });
+    const profileExist = await this._studentRepository.getStudent({
+      schoolId: new mongoose.Types.ObjectId(data.schoolId),
+      admissionNo: data.admissionNo
+    });
 
-    // if (rollExist) {
-    //   throw new CustomError(Messages.ROLL_EXIST, HttpStatus.CONFLICT);
-    // }
+    if (profileExist) {
+      throw new CustomError(Messages.ADMISSION_NO_EXIST, HttpStatus.CONFLICT);
+    }
 
     const password = await hashPassword(data.password as string);
 
@@ -262,7 +262,7 @@ export class StudentService implements IStudentService {
 
     const user = student.userId as UserEntityType;
 
-    const classData = studentAcademicProfileData.classId; 
+    const classData = studentAcademicProfileData?.classId; 
 
     const school = student.schoolId as SchoolProfileEntityType
 

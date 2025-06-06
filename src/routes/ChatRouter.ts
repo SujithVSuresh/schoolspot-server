@@ -8,9 +8,10 @@ import UserRepository from "../repositories/implementaion/UserRepository"
 import { NotificationService } from "../services/implementation/NotificationService"
 import NotificationRepository from "../repositories/implementaion/NotificationRepository"
 import {upload} from '../middlewares/UploadMiddleware'
+import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository"
 
 
-const notificationService = new NotificationService(NotificationRepository)
+const notificationService = new NotificationService(NotificationRepository, UserNotificationRepository)
 const chatService = new ChatService(ConversationRepository, MessageRepository, UserRepository, notificationService)
 
 const chatController = new ChatController(chatService)

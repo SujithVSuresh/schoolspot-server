@@ -23,6 +23,7 @@ import { CreateSchoolProfileDTO } from "../../dto/SchoolDTO";
 import { ISchoolService } from "../interface/ISchoolService";
 import { CreateUserDTO, UserResponseDTO } from "../../dto/UserDTO";
 import { IAcademicYearService } from "../interface/IAcademicYearService";
+import { blacklistToken } from "../../utils/BlacklistToken";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -473,7 +474,7 @@ export class AuthService implements IAuthService {
 
   async changeAccountStatus(
     userId: string,
-    status: "active" | "inactive" | "deleted" | "blocked"
+    status: "active" | "inactive" | "deleted" | "blocked",
   ): Promise<{
     userId: string;
     status: "active" | "inactive" | "deleted" | "blocked";
@@ -487,6 +488,11 @@ export class AuthService implements IAuthService {
       status: status,
     });
 
+    if(updateUserStatus?.status == "blocked"){
+    await redisClient.setEx(`blocked:${userId}`, 1296000, 'true');
+    }else if(updateUserStatus?.status == "active"){
+     await redisClient.del(`blocked:${userId}`); 
+    }
     return {
       userId: String(user._id),
       status: updateUserStatus?.status as

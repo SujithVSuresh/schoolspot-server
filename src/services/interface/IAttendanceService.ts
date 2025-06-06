@@ -3,7 +3,7 @@ import { AttendaceResponseDTO, AttendanceWithUserResponseDTO, CreateAttendanceDT
 export interface IAttendanceService{
     addAttendance(dto: CreateAttendanceDTO[], schoolId: string, recordedBy: string): Promise<{classId: string, presentCount: number, absentCount: number}>
     getAttendanceByClass(classId: string, date: string, academicYear: string): Promise<AttendanceWithUserResponseDTO[]>
-    // updateAttendanceStatus(attendanceId: string, status: "Present" | "Absent"): Promise<AttendaceResponseDTO> 
+    updateAttendanceStatus(attendanceId: string, status: "Present" | "Absent"): Promise<AttendaceResponseDTO> 
     getAttendanceByMonth(studentId: string, date: string): Promise<AttendaceResponseDTO[]> 
     getAttendanceOverview(studentId: string, classId: string): Promise<any>
     

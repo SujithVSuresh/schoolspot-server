@@ -6,9 +6,10 @@ import express from 'express'
 import PaymentRepository from "../repositories/implementaion/PaymentRepository"
 import { NotificationService } from "../services/implementation/NotificationService"
 import NotificationRepository from "../repositories/implementaion/NotificationRepository"
+import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository"
 
 
-const notificationService = new NotificationService(NotificationRepository)
+const notificationService = new NotificationService(NotificationRepository, UserNotificationRepository)
 
 const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository, notificationService)
 

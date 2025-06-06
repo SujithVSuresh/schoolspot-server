@@ -62,25 +62,25 @@ export class AttendanceService implements IAttendanceService {
       .filter((item) => item.status == "Absent")
       .map((item) => String(item.student));
 
-    if (absentStudents.length > 0) {
-      await this._notificationService.sendNotification({
-        userId: absentStudents,
-        notificationType: "attendance",
-        message: "Absent",
-      });
-    }
+    // if (absentStudents.length > 0) {
+    //   await this._notificationService.sendNotification({
+    //     userId: absentStudents,
+    //     notificationType: "attendance",
+    //     message: "Absent",
+    //   });
+    // }
 
     const presentStudents = response
       .filter((item) => item.status == "Present")
       .map((item) => String(item.student));
       
-    if (presentStudents.length > 0) {
-      await this._notificationService.sendNotification({
-        userId: presentStudents,
-        notificationType: "attendance",
-        message: "Present",
-      });
-    }
+    // if (presentStudents.length > 0) {
+    //   await this._notificationService.sendNotification({
+    //     userId: presentStudents,
+    //     notificationType: "attendance",
+    //     message: "Present",
+    //   });
+    // }
 
     return {
       presentCount: presentStudents.length,
@@ -122,44 +122,41 @@ export class AttendanceService implements IAttendanceService {
     return attendances
   }
 
-  // async updateAttendanceStatus(
-  //   attendanceId: string,
-  //   status: "Present" | "Absent"
-  // ): Promise<AttendaceResponseDTO> {
-  //   const attendanceExist =
-  //     await this._attendanceRepository.findAttendanceByQuery({
-  //       _id: new mongoose.Types.ObjectId(attendanceId),
-  //     });
+  async updateAttendanceStatus(
+    attendanceId: string,
+    status: "Present" | "Absent"
+  ): Promise<AttendaceResponseDTO> {
+    const attendanceExist =
+      await this._attendanceRepository.findAttendanceByQuery({
+        _id: new mongoose.Types.ObjectId(attendanceId),
+      });
 
-  //   if (!attendanceExist) {
-  //     throw new CustomError(
-  //       Messages.ATTENDANCE_NOT_FOUND,
-  //       HttpStatus.NOT_FOUND
-  //     );
-  //   }
+    if (!attendanceExist) {
+      throw new CustomError(
+        Messages.ATTENDANCE_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+    }
 
-  //   const response = await this._attendanceRepository.updateAttendanceStatus(
-  //     attendanceId,
-  //     {
-  //       class: attendanceExist.class,
-  //       schoolId: attendanceExist.schoolId,
-  //       status: status,
-  //       student: attendanceExist.student,
-  //     }
-  //   );
+    const response = await this._attendanceRepository.updateAttendanceStatus(
+      attendanceId,
+      {
+        status
+      }
+    );
 
-  //   if (!response) {
-  //     throw new CustomError(
-  //       Messages.SERVER_ERROR,
-  //       HttpStatus.INTERNAL_SERVER_ERROR
-  //     );
-  //   }
+    if (!response) {
+      throw new CustomError(
+        Messages.SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
 
-  //   return {
-  //     _id: response._id,
-  //     status: response.status,
-  //   };
-  // }
+    return {
+      _id: String(response._id),
+      status: response.status as "Present" | "Absent"
+    };
+  }
 
   async getAttendanceByMonth(
     userId: string,

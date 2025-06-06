@@ -7,9 +7,7 @@ import {
 import { IInvoiceService } from "../interface/IInvoiceService";
 import { IInvoiceRepository } from "../../repositories/interface/IInvoiceRepository";
 import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
-import {
-  InvoiceEntityType,
-} from "../../types/types";
+import { InvoiceEntityType } from "../../types/types";
 import { StudentEntityType } from "../../types/StudentType";
 import mongoose from "mongoose";
 import Stripe from "stripe";
@@ -28,66 +26,69 @@ export class InvoiceService implements IInvoiceService {
     private _notificationService: INotificationService
   ) {}
 
-  async createInvoice(data: CreateInvoiceDTO, studentIds: string[]): Promise<{ classId: string }> {
-
-    if(data.dueDate && new Date(data.dueDate) < new Date()){
-      throw new CustomError(
-        Messages.DUE_DATE_INVALID,
-        HttpStatus.BAD_REQUEST
-      );
+  async createInvoice(
+    data: CreateInvoiceDTO,
+    studentIds: string[]
+  ): Promise<{ classId: string }> {
+    if (data.dueDate && new Date(data.dueDate) < new Date()) {
+      throw new CustomError(Messages.DUE_DATE_INVALID, HttpStatus.BAD_REQUEST);
     }
-    
-    const studentInvoices: InvoiceEntityType[] = studentIds.map(
-      (id) => {
-        return {
-          student: id,
-          title: data.title,
-          class: data.class,
-          school: data.school,
-          invoiceNumber: `INV-${Math.floor(Math.random() * 100000)}`,
-          dueDate: data.dueDate,
-          feeBreakdown: data.feeBreakdown,
-          totalAmount: data.totalAmount,
-          status: "Unpaid",
-          remarks: data.remarks,
-        };
-      }
-    );
 
-    const invoices: InvoiceEntityType[] = await this._invoiceRepository.createInvoice(studentInvoices);
+    const studentInvoices: InvoiceEntityType[] = studentIds.map((id) => {
+      return {
+        student: id,
+        title: data.title,
+        class: data.class,
+        school: data.school,
+        invoiceNumber: `INV-${Math.floor(Math.random() * 100000)}`,
+        dueDate: data.dueDate,
+        feeBreakdown: data.feeBreakdown,
+        totalAmount: data.totalAmount,
+        status: "Unpaid",
+        remarks: data.remarks,
+      };
+    });
 
-    await this._notificationService.sendNotification({
-      userId: invoices.map((item) => String(item.student)),
-      notificationType: "invoice",
-      message: invoices[0].title
-    })
+    const invoices: InvoiceEntityType[] =
+      await this._invoiceRepository.createInvoice(studentInvoices);
+
+    // await this._notificationService.sendNotification({
+    //   userId: invoices.map((item) => String(item.student)),
+    //   notificationType: "invoice",
+    //   message: invoices[0].title
+    // })
 
     return {
       classId: String(invoices[0].class),
     };
   }
 
-  async findInvoicesByClassId(classId: string): Promise<InvoiceByClassResponseDTO[]> {
-    const invoices = await this._invoiceRepository.findInvoicesByClassId(classId);
+  async findInvoicesByClassId(
+    classId: string
+  ): Promise<InvoiceByClassResponseDTO[]> {
+    const invoices = await this._invoiceRepository.findInvoicesByClassId(
+      classId
+    );
 
-    const invoicesData: InvoiceByClassResponseDTO[] = invoices.map((invoice) => {
-      return {
-        _id: String(invoice._id),
-        student: {
-          fullName: invoice.student.fullName,
-          userId: String(invoice.student.userId),
-        },
-        title: invoice.title,
-        class: String(invoice.class),
-        invoiceNumber: invoice.invoiceNumber,
-        dueDate: invoice.dueDate,
-        status: invoice.status,
-        totalAmount: invoice.totalAmount,
-        createdAt: invoice.createdAt as Date,
-        updatedAt: invoice.updatedAt as Date,
-      };
-    });
-    
+    const invoicesData: InvoiceByClassResponseDTO[] = invoices.map(
+      (invoice) => {
+        return {
+          _id: String(invoice._id),
+          student: {
+            fullName: invoice.student.fullName,
+            userId: String(invoice.student.userId),
+          },
+          title: invoice.title,
+          class: String(invoice.class),
+          invoiceNumber: invoice.invoiceNumber,
+          dueDate: invoice.dueDate,
+          status: invoice.status,
+          totalAmount: invoice.totalAmount,
+          createdAt: invoice.createdAt as Date,
+          updatedAt: invoice.updatedAt as Date,
+        };
+      }
+    );
 
     return invoicesData;
   }
@@ -150,11 +151,11 @@ export class InvoiceService implements IInvoiceService {
   }
 
   async handleStripeEvent(event: Stripe.Event): Promise<string> {
-    let paymentId
+    let paymentId;
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-        
+
         const lineItems = await stripe.checkout.sessions.listLineItems(
           session.id,
           {
@@ -162,7 +163,7 @@ export class InvoiceService implements IInvoiceService {
           }
         );
 
-        const invoiceNumber = lineItems.data[0]?.description; 
+        const invoiceNumber = lineItems.data[0]?.description;
 
         const invoice = await this._invoiceRepository.findInvoiceByNumber(
           invoiceNumber as string
@@ -189,7 +190,7 @@ export class InvoiceService implements IInvoiceService {
           String(invoice._id),
           "Paid"
         );
-        paymentId = payment._id
+        paymentId = payment._id;
         break;
       }
       case "checkout.session.async_payment_failed":
@@ -223,7 +224,7 @@ export class InvoiceService implements IInvoiceService {
           paymentDate: new Date(),
           status: "Failed",
         });
-        paymentId = payment._id
+        paymentId = payment._id;
         break;
       }
 
@@ -274,15 +275,15 @@ export class InvoiceService implements IInvoiceService {
     };
   }
 
-  async deleteInvoice(invoiceId: string): Promise<{ _id: string; }> {
-    const response = this._invoiceRepository.deleteInvoice(invoiceId)
+  async deleteInvoice(invoiceId: string): Promise<{ _id: string }> {
+    const response = this._invoiceRepository.deleteInvoice(invoiceId);
 
-    if(!response){
-      throw new CustomError(Messages.INVOICE_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!response) {
+      throw new CustomError(Messages.INVOICE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     return {
-      _id: invoiceId
-    }
+      _id: invoiceId,
+    };
   }
 }

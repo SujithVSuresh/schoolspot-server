@@ -47,22 +47,22 @@ export class AttendanceController implements IAttendanceController {
     }
   }
 
-  // async updateAttendanceStatus(
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ): Promise<void> {
-  //   try {
-  //     const { attendanceId, status } = req.body;
-  //     const response = await this._attendanceService.updateAttendanceStatus(
-  //       attendanceId,
-  //       status
-  //     );
-  //     res.status(HttpStatus.OK).json(response);
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
+  async updateAttendanceStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { attendanceId, status } = req.body;
+      const response = await this._attendanceService.updateAttendanceStatus(
+        attendanceId,
+        status
+      );
+      res.status(HttpStatus.OK).json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 
   async getAttendanceByMonth(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {

@@ -54,7 +54,9 @@ class AssignmentRepository extends BaseRepository<AssignmentEntityType> implemen
 
     async createAssignmentSubmissions(data: AssignmentSubmissionEntityType[]): Promise<string> {
         try {
+            console.log(data, "dddddddddd")
             const response = await AssignmentSubmission.insertMany(data);
+            console.log(response, "rrrrsssss")
             return response[0].assignmentId.toString();
         } catch (error) {
             console.error("Error creating assignment submissions", error);

@@ -9,10 +9,12 @@ import StudyMaterialRepository from "../repositories/implementaion/StudyMaterial
 import {fileUpload} from '../middlewares/UploadMiddleware'
 import { NotificationService } from "../services/implementation/NotificationService";
 import NotificationRepository from "../repositories/implementaion/NotificationRepository";
+import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository";
+import StudentAcademicProfileRepository from "../repositories/implementaion/StudentAcademicProfileRepository";
 
-const notificationService = new NotificationService(NotificationRepository)
+const notificationService = new NotificationService(NotificationRepository, UserNotificationRepository)
 
-const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository, notificationService);
+const assignmentService = new AssignmentService(AssignmentRepository, StudentRepository, AssignmentSubmissionRepository, StudyMaterialRepository, notificationService, StudentAcademicProfileRepository);
 const assignmentController = new AssignmentController(assignmentService);
 
 const assignmentRouter = Router();

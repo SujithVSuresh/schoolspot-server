@@ -32,6 +32,7 @@ export interface PayloadType {
   exp?: number;
   schoolId: string;
   subscribed?: boolean;
+  token?: string;
 }
 
 export interface CustomRequest extends Request {

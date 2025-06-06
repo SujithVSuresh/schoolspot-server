@@ -55,13 +55,12 @@ class StudentAcademicProfileRepository
     }
   }
 
-  async findAcademicProfilesByClassId(classId: string, academicYear: string): Promise<StudentAcademicProfileEntityType[]> {
+  async findAcademicProfilesByClassId(classId: string, academicYear?: string): Promise<StudentAcademicProfileEntityType[]> {
     try{
       const academicProfile = await StudentAcademicProfile.aggregate([
         {
           $match: {
-            classId: new mongoose.Types.ObjectId(classId),
-            academicYear: new mongoose.Types.ObjectId(academicYear)
+            classId: new mongoose.Types.ObjectId(classId)
           }
         },
         {

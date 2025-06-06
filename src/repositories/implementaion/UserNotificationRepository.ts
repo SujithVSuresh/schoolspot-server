@@ -13,11 +13,10 @@ class UserNotificationRespository
   }
 
   async createUserNotifications(
-    data: UserNotificationEntityType[],
-    options: InsertManyOptions
+    data: UserNotificationEntityType[]
   ): Promise<UserNotificationEntityType[]> {
     try {
-      const notifications = await UserNotification.insertMany(data, options);
+      const notifications = await UserNotification.insertMany(data);
       return notifications;
     } catch (error) {
       console.error("Error creating user notifications", error);
@@ -39,10 +38,12 @@ class UserNotificationRespository
     }
   }
 
-
-  async updateManyNotificationStatus(filter: Partial<UserNotificationEntityType>, data: Partial<UserNotificationEntityType>): Promise<boolean> {
+  async updateManyNotificationStatus(
+    filter: Partial<UserNotificationEntityType>,
+    data: Partial<UserNotificationEntityType>
+  ): Promise<boolean> {
     try {
-      const notifications = await this.updateMany(filter, data)
+      const notifications = await this.updateMany(filter, data);
 
       return notifications.modifiedCount > 0 ? true : false;
     } catch (error) {
@@ -59,7 +60,6 @@ class UserNotificationRespository
       const notifications = UserNotification.aggregate([
         {
           $match: {
-            isRead: false,
             isCleared: false,
             userId: new mongoose.Types.ObjectId(userId),
             academicYear: new mongoose.Types.ObjectId(academicYear),

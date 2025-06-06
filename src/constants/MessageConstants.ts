@@ -51,7 +51,8 @@ const Messages = {
     PAST_DATE_NOT_ALLOWED: "Past dates are not allowed for leave letters.",
     DUE_DATE_INVALID: "Due date must be after the current date.",
     CHAPTER_NOT_FOUND: "Chapter not found",
-    STUDENT_ALREADY_EXIST: "Student is already part of a class"
+    STUDENT_ALREADY_EXIST: "Student is already part of a class",
+    ADMISSION_NO_EXIST: "Student with this admission no already exist"
   };
 
   export default Messages

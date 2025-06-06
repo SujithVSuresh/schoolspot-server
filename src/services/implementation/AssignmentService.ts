@@ -23,7 +23,8 @@ import cloudinary from "../../config/cloudinary";
 import { UploadApiResponse } from "cloudinary";
 import { INotificationService } from "../interface/INotificationService";
 import mongoose from "mongoose";
-import { AssignmentEntityType } from "../../types/types";
+import { AssignmentEntityType, AssignmentSubmissionEntityType } from "../../types/types";
+import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
 
 
 export class AssignmentService implements IAssignmentService {
@@ -32,7 +33,8 @@ export class AssignmentService implements IAssignmentService {
     private _studentRepository: IStudentRepository,
     private _assignmentSubmissionRepository: IAssignmentSubmissionRepository,
     private _studyMaterialRepository: IStudyMaterialRepository,
-    private _notificationService: INotificationService
+    private _notificationService: INotificationService,
+    private _studentAcademicProfileRepository: IStudentAcademicProfileRepository
   ) {}
 
   async createAssignment(
@@ -47,27 +49,29 @@ export class AssignmentService implements IAssignmentService {
     }
     const response = await this._assignmentRepository.createAssignment(data);
 
-    const students = await this._studentRepository.getStudents(
-      { classId: response.classId },
-      response.schoolId as string
-    );
+    // const students = await this._studentRepository.getStudents(
+    //   { classId: response.classId },
+    //   response.schoolId as string
+    // );
 
-    const assignmentSubmissions = students.map((student: any) => {
+    const students = await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(response.classId as string)
+
+    const assignmentSubmissions: AssignmentSubmissionEntityType[] = students.map((student: any) => {
       return {
-        assignmentId: response._id,
-        studentId: student.user._id,
-        schoolId: response.schoolId,
-        status: "Pending",
+        assignmentId: new mongoose.Types.ObjectId(response?._id),
+        studentId: new mongoose.Types.ObjectId(student?.userId),
+        schoolId: new mongoose.Types.ObjectId(response?.schoolId),
+        status: "Pending" as "Pending" | "Submitted" | "Graded",
       };
     });
 
 
     await this._assignmentRepository.createAssignmentSubmissions(
-        assignmentSubmissions
+        assignmentSubmissions 
       );
 
       const studentIds = students.map((student: any) => {
-        return String(student.user._id)
+        return String(student.userId)
     })
 
       await this._notificationService.sendNotification({

@@ -6,9 +6,10 @@ import { AttendanceController } from "../controllers/implementation/AttendanceCo
 import LeaveLetterRepository from "../repositories/implementaion/LeaveLetterRepository";
 import { NotificationService } from "../services/implementation/NotificationService";
 import NotificationRepository from "../repositories/implementaion/NotificationRepository";
+import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository";
 
 
-const notificationService = new NotificationService(NotificationRepository)
+const notificationService = new NotificationService(NotificationRepository, UserNotificationRepository)
 
 
 const attendaceService = new AttendanceService(AttendanceRepository, LeaveLetterRepository, notificationService);
@@ -20,7 +21,7 @@ const attendaceRouter = Router();
 
 attendaceRouter.post('/', protectRoute(["admin", "teacher"]), attendanceController.addAttendance.bind(attendanceController));
 attendaceRouter.get('/', protectRoute(["admin", "teacher"]), attendanceController.findAttendanceByClass.bind(attendanceController));
-// attendaceRouter.put('/status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
+attendaceRouter.put('/status', protectRoute(["admin", "teacher"]), attendanceController.updateAttendanceStatus.bind(attendanceController))
 attendaceRouter.get('/monthly', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceByMonth.bind(attendanceController))
 attendaceRouter.get('/overview', protectRoute(["admin", "student", "teacher"]), attendanceController.getAttendanceOverview.bind(attendanceController))
 

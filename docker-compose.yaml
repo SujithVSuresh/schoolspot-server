@@ -11,6 +11,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     networks:
       - app-network
+
   redis:
     container_name: schoolspot-redis
     image: "redis:7.4"

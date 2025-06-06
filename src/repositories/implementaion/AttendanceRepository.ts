@@ -118,7 +118,7 @@ class AttendanceRepository
 
   async updateAttendanceStatus(
     attendaceId: string,
-    data: AttendanceEntityType
+    data: Partial<AttendanceEntityType>
   ): Promise<AttendanceEntityType | null> {
     try {
       const response = await this.update(attendaceId, data);
