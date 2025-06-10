@@ -50,10 +50,13 @@ import { setSocketManager } from "./utils/socketSingleton";
 class App {
   public app;
   public server;
+  private PORT: number;
 
   constructor() {
     this.app = express(); // Initialize Express app
     this.server = http.createServer(this.app); // Create HTTP server with Express app
+
+    this.PORT = Number(process.env.PORT) || 3000;
 
     this.initializeSocket();        // Set up Socket.io for real-time communication
     this.intitalizeStorage();       // Connect to MongoDB and Redis
@@ -103,6 +106,9 @@ class App {
 
   // All primary route endpoints
   private initializeRouter(): void {
+    this.app.get("/test", (req, res) => {
+        res.status(200).json({ message: "✅ Deployment is successful!" });
+    });
     this.app.use("/auth", authRouter);
     this.app.use("/student", studentRouter);
     this.app.use("/teacher", teacherRouter);
@@ -136,13 +142,11 @@ class App {
   }
 
   // Start the HTTP server
-  public listen(): void {
-    this.server.listen(process.env.PORT, () => {
-      console.log(
-        `🔥 Authentication service listening to port ${process.env.PORT}`
-      );
-    });
-  }
+public listen(): void {
+  this.server.listen(this.PORT, '0.0.0.0', () => {
+    console.log(`🔥 Server running on http://0.0.0.0:${process.env.PORT}`);
+  });
+}
 }
 
 // Instantiate and start the app
