@@ -9,6 +9,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      EC2_USER: ${{ vars.EC2_USER }}
+      EC2_HOST: ${{ vars.EC2_HOST }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -24,8 +28,8 @@ jobs:
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.0
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
+        host: $EC2_HOST
+        username: $EC2_USER
         key: ${{ secrets.EC2_KEY }}
         script: |
           docker pull ${{ secrets.DOCKER_USERNAME }}/schoolspot
