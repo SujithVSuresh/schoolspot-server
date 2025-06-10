@@ -63,6 +63,17 @@ class PlanRepository
     }
   }
 
+    async findPlan(query: Partial<PlanEntityType>): Promise<PlanEntityType | null> {
+    try {
+      const plan = await Plan.findOne({...query})
+      return plan;
+    } catch (error) {
+      console.error("Error finding plans", error);
+      throw new Error("Error finding plans");
+    }
+  }
+
+
   async findPlanById(id: string): Promise<PlanEntityType | null> {
     try {
       const plan = await this.findById(id);

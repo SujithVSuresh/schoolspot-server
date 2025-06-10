@@ -24,6 +24,8 @@ export interface ConversationResponseDTO {
     subjectId: string;
     createdBy: string; 
     createdAt: Date;
+    participants: string[]; 
+
 }
 
 

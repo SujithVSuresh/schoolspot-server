@@ -7,6 +7,7 @@ export interface IPlanRepository {
     updatePlan(id: string, data: Partial<PlanEntityType>): Promise<PlanEntityType | null>
     deletePlan(id: string): Promise<boolean>
     findAllPlans(): Promise<PlanEntityType[]>
+    findPlan(query: Partial<PlanEntityType>): Promise<PlanEntityType | null>
     findPlanByDuration(duration: number): Promise<PlanEntityType | null>
     findPlanById(id: string): Promise<PlanEntityType | null>
 }

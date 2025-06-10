@@ -1,6 +1,7 @@
 import {
   CreateNotificationDTO,
   NotificationResponseDTO,
+  UserNotificationResponseDTO,
 } from "../../dto/NotificationDTO";
 
 export interface INotificationService {
@@ -11,7 +12,7 @@ export interface INotificationService {
   fetchNotifications(
     userId: string,
     academicYear: string
-  ): Promise<NotificationResponseDTO[]>;
+  ): Promise<UserNotificationResponseDTO[]>;
   clearNotification(notificationId: string): Promise<{ _id: string }>;
   clearAllNotifications(userId: string): Promise<{ userId: string }>;
   setReadNotifications(userId: string): Promise<{ userId: string }>;

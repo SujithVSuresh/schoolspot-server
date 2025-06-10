@@ -8,6 +8,7 @@ import {
   CreateNotificationDTO,
   CreateUserNotificationDTO,
   NotificationResponseDTO,
+  UserNotificationResponseDTO,
 } from "../../dto/NotificationDTO";
 import { NotificationTypesType } from "../../types/NotificationType";
 import { CustomError } from "../../utils/CustomError";
@@ -15,6 +16,7 @@ import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { IUserNotificationRepository } from "../../repositories/interface/IUserNotificationRepository";
 import mongoose from "mongoose";
+import { getSocketManager } from "../../utils/socketSingleton";
 
 export class NotificationService implements INotificationService {
   constructor(
@@ -26,49 +28,63 @@ export class NotificationService implements INotificationService {
     data: CreateNotificationDTO,
     users: string[]
   ): Promise<NotificationResponseDTO> {
+    const notificationContent = this.handleNotificationMessage(
+      data.notificationType,
+      data.message
+    );
 
-    console.log(users, "uuusserrrss")
+    const createNotification =
+      await this._notificationRepository.createNotification({
+        ...data,
+        title: notificationContent.title,
+        message: notificationContent.message,
+      });
 
-      const notificationContent = this.handleNotificationMessage(
-        data.notificationType,
-        data.message
-      );
+    const userNotificationData: UserNotificationEntityType[] = users.map(
+      (user) => {
+        return {
+          academicYear: new mongoose.Types.ObjectId(
+            createNotification.academicYear
+          ),
+          notificationId: new mongoose.Types.ObjectId(createNotification._id),
+          userId: new mongoose.Types.ObjectId(user),
+          isCleared: false,
+          isRead: false,
+        };
+      }
+    );
 
-      const createNotification =
-        await this._notificationRepository.createNotification(
-          {
-            ...data,
-            title: notificationContent.title,
-            message: notificationContent.message,
-          },
-        );
-
-      const userNotificationData: UserNotificationEntityType[] = users.map(
-        (user) => {
-          return {
-            academicYear: new mongoose.Types.ObjectId(
-              createNotification.academicYear
-            ),
-            notificationId: new mongoose.Types.ObjectId(createNotification._id),
-            userId: new mongoose.Types.ObjectId(user),
-            isCleared: false,
-            isRead: false,
-          };
-        }
-      );
-
+    const userNotifications =
       await this._userNotificationRepository.createUserNotifications(
-        userNotificationData,
+        userNotificationData
       );
 
-      return {
-        _id: String(createNotification._id),
-        title: createNotification.title,
-        message: createNotification.message,
-        notificationType: createNotification.notificationType,
-        createdAt: createNotification.createdAt as Date,
-      };
+    const socketManager = getSocketManager();
 
+    userNotifications.forEach((notification) => {
+      socketManager.emitNotification(`notification-${notification.userId}`, {
+        _id: String(notification._id),
+        notificationId: {
+          _id: String(createNotification._id),
+          message: createNotification.message,
+          title: createNotification.title,
+          notificationType: createNotification.notificationType,
+          createdAt: createNotification.createdAt as Date,
+        },
+        isCleared: notification.isCleared,
+        isRead: notification.isRead,
+        clearedAt: notification.clearedAt,
+        readAt: notification.readAt,
+      });
+    });
+
+    return {
+      _id: String(createNotification._id),
+      title: createNotification.title,
+      message: createNotification.message,
+      notificationType: createNotification.notificationType,
+      createdAt: createNotification.createdAt as Date,
+    };
   }
 
   private handleNotificationMessage(
@@ -121,23 +137,29 @@ export class NotificationService implements INotificationService {
   async fetchNotifications(
     userId: string,
     academicYear: string
-  ): Promise<NotificationResponseDTO[]> {
+  ): Promise<UserNotificationResponseDTO[]> {
     const response =
       await this._userNotificationRepository.findUserNotifications(
         userId,
         academicYear
       );
 
-    const notifications: NotificationResponseDTO[] = response.map(
+    const notifications: UserNotificationResponseDTO[] = response.map(
       (item: UserNotificationEntityType) => {
         const notification = item.notificationId as NotificationEntityType;
         return {
-          _id: String(notification._id),
-          title: notification.title,
-          message: notification.message,
-          notificationType: notification.notificationType,
-          createdAt: notification.createdAt as Date,
-          userNotificationId: String(item._id),
+          _id: String(item._id),
+          notificationId: {
+            _id: String(notification._id),
+            message: notification.message,
+            title: notification.title,
+            notificationType: notification.notificationType,
+            createdAt: notification.createdAt as Date,
+          },
+          isCleared: item.isCleared,
+          isRead: item.isRead,
+          clearedAt: item.clearedAt,
+          readAt: item.readAt,
         };
       }
     );

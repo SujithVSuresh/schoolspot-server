@@ -32,7 +32,8 @@ export class ChatService implements IChatService {
             status: conversation.status as ConversationStatusType,
             subjectId: String(conversation.subjectId),
             createdBy: String(conversation.createdBy),
-            createdAt: conversation.createdAt as Date
+            createdAt: conversation.createdAt as Date,
+            participants: conversation.participants.map((item) => item.toString())
         }
     }
 
@@ -51,7 +52,9 @@ export class ChatService implements IChatService {
             status: conversation.status as ConversationStatusType,
             subjectId: String(conversation.subjectId),
             createdBy: String(conversation.createdBy),
-            createdAt: conversation.createdAt as Date
+            createdAt: conversation.createdAt as Date,
+            participants: conversation.participants.map((item) => item.toString())
+
         }
     }
 

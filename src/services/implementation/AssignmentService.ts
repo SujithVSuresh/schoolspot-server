@@ -74,11 +74,17 @@ export class AssignmentService implements IAssignmentService {
         return String(student.userId)
     })
 
-      await this._notificationService.sendNotification({
+     const notifications =  await this._notificationService.sendNotification({
         academicYear,
         notificationType: "assignment",
         message: response.title
       }, studentIds)
+
+      console.log(notifications, "is noty done..")
+
+    //   const socketManager = getSocketManager();
+
+    //  socketManager.emitNotification(["room1"], { text: "Hello from another file!" });
 
     return {
       _id: String(response._id),

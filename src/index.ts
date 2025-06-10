@@ -44,6 +44,8 @@ import studentAcademicProfileRouter from "./routes/StudentAcademicProfileRouter"
 // Socket.io manager
 import { SocketManager } from "./socket/socket";
 
+import { setSocketManager } from "./utils/socketSingleton";
+
 // Main application class
 class App {
   public app;
@@ -78,6 +80,9 @@ class App {
 
     const socketManager = new SocketManager(io);
     socketManager.initialize(); // Set up all socket event listeners
+
+    setSocketManager(socketManager); 
+
   }
 
   // Middleware configuration

@@ -27,6 +27,12 @@ export class SubscriptionService implements ISubscriptionService {
   async createPlan(data: CreatePlanDTO): Promise<PlanResponseDTO> {
     const response = await this._planRepository.createPlan(data);
 
+    const planExist = await this._planRepository.findPlan({name: data.name})
+
+    if(planExist){
+      throw new CustomError("Plan already exist", HttpStatus.CONFLICT)
+    }
+
     return {
       _id: String(response._id),
       name: response.name,
@@ -41,7 +47,15 @@ export class SubscriptionService implements ISubscriptionService {
     id: string,
     data: UpdatePlanDTO
   ): Promise<PlanResponseDTO | null> {
+
+    const planExist = await this._planRepository.findPlan({name: data.name})
+
+    if(planExist && String(planExist._id) !== String(id)){
+      throw new CustomError("Plan already exist", HttpStatus.CONFLICT)
+    }
+
     const response = await this._planRepository.updatePlan(id, data);
+
 
     if (!response) {
       throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);

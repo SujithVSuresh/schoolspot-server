@@ -1,3 +1,7 @@
 .env
 node_modules
 dist
+
+# Ignore log files
+src/logs/*.log
+*.log

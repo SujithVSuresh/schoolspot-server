@@ -21,7 +21,6 @@ export interface NotificationResponseDTO {
   message: string;
   metadata?: string | null;
   createdAt: Date;
-  userNotificationId?: string
 }
 
 //---------
@@ -34,4 +33,13 @@ export interface CreateUserNotificationDTO {
   readAt?: Date | null;
   clearedAt?: Date | null;
   academicYear: string;
+}
+
+export interface UserNotificationResponseDTO {
+  _id: string;
+  notificationId: NotificationResponseDTO;
+  isRead: boolean;
+  isCleared: boolean;
+  readAt?: Date | null;
+  clearedAt?: Date | null;
 }
