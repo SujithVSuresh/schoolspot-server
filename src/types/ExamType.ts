@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { StudentProfileEntityType } from "./StudentType";
+import { StudentEntityType } from "./StudentType";
 
 interface ExamTimetableEntry {
     subject: string;
@@ -26,7 +26,7 @@ interface ExamTimetableEntry {
     examId: mongoose.Types.ObjectId | string | ExamEntityType;
     classId: mongoose.Types.ObjectId | string;
     subject: string;
-    studentId: mongoose.Types.ObjectId | string | StudentProfileEntityType;
+    studentId: mongoose.Types.ObjectId | string | StudentEntityType;
     marksObtained: number;
     totalMarks: number;
     grade?: string;

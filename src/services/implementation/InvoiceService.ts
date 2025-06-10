@@ -249,7 +249,7 @@ export class InvoiceService implements IInvoiceService {
         _id: String(invoice.user._id),
         fullName: invoice.studentProfile.fullName,
         email: invoice.user.email,
-        contactNumber: invoice.studentProfile.contactNumber,
+        contactNumber: invoice.studentProfile.parentContactNumber,
       },
       class: {
         _id: String(invoice.class._id),

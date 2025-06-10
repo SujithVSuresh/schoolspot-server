@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import { Request } from "express";
-import { StudentProfileEntityType } from "./StudentType";
+import { StudentEntityType } from "./StudentType";
 import { SchoolProfileEntityType } from "./SchoolProfileType";
+import { ClassEntityType } from "./ClassType";
 
 export interface BaseUser {
   email: string;
@@ -297,7 +298,7 @@ export interface InvoiceEntityType {
 export interface InvoiceWithUserEntityType {
   _id?: mongoose.Types.ObjectId | string;
   title: string;
-  student: StudentProfileEntityType;
+  student: StudentEntityType;
   class: mongoose.Types.ObjectId | string;
   school: mongoose.Types.ObjectId | string;
   invoiceNumber: string;
@@ -325,7 +326,7 @@ export interface InvoiceDetailsEntityType {
   remarks: string;
   createdAt: Date;
   updatedAt: Date;
-  studentProfile: StudentProfileEntityType;
+  studentProfile: StudentEntityType;
   user: UserEntityType;
 }
 
