@@ -128,7 +128,9 @@ export class AuthService implements IAuthService {
 
     const plan = await this._planRepository.findPlanByDuration(30);
 
-    console.log(plan, "this is the plan")
+    const allPlans = await this._planRepository.findAllPlans()
+
+    console.log(plan, "this is the plan", allPlans)
 
     if (!plan) {
       throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
