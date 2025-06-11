@@ -1,12 +1,15 @@
+import { config } from 'dotenv'
+config()
 import {createClient, RedisClientType} from "redis"
 
 let redisClient: RedisClientType;
 
 function connectRedis() {
+  const redisHost = process.env.REDIS_HOST || 'localhost';
 
   redisClient = createClient({
     socket: {
-      host: 'localhost',
+      host: redisHost,
       port: 6379,
       reconnectStrategy(retries) {
         if (retries > 5) {
