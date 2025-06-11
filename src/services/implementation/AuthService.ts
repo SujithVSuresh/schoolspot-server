@@ -23,7 +23,6 @@ import { CreateSchoolProfileDTO } from "../../dto/SchoolDTO";
 import { ISchoolService } from "../interface/ISchoolService";
 import { CreateUserDTO, UserResponseDTO } from "../../dto/UserDTO";
 import { IAcademicYearService } from "../interface/IAcademicYearService";
-import { blacklistToken } from "../../utils/BlacklistToken";
 
 export class AuthService implements IAuthService {
   constructor(
