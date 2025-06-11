@@ -1,15 +1,22 @@
-import mongoose from "mongoose";
+import { config } from 'dotenv';
+config();
 
-
-// const MONGO_URI = process.env.MONGO_URI as string
+import mongoose from 'mongoose';
 
 const connectDB = async () => {
-    try{
-        await mongoose.connect('mongodb://admin:password@localhost:27017/SCHOOLSPOT?authSource=admin')
-        console.log(`🍃 Mongodb connected to Authentication Service`)
-    }catch(error){
-        console.log(`Error: ${error}`)
-    }
-}
+  try {
+    const mongoUri = process.env.MONGO_URI as string;
 
-export default connectDB
+    if (!mongoUri) {
+      throw new Error('MONGO_URI is not defined in the environment variables');
+    }
+
+    await mongoose.connect(mongoUri);
+    console.log(`🍃 MongoDB connected to Authentication Service`);
+  } catch (error) {
+    console.error(`❌ MongoDB connection error:`, error);
+    process.exit(1); // Optionally exit the process on failure
+  }
+};
+
+export default connectDB;

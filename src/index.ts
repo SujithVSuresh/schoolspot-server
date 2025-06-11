@@ -106,30 +106,30 @@ class App {
 
   // All primary route endpoints
   private initializeRouter(): void {
-    this.app.get("/test", (req, res) => {
+    this.app.get("/api/test", (req, res) => {
         res.status(200).json({ message: "✅ Deployment is successful!" });
     });
-    this.app.use("/auth", authRouter);
-    this.app.use("/student", studentRouter);
-    this.app.use("/teacher", teacherRouter);
-    this.app.use("/class", classRouter);
-    this.app.use("/attendance", attendaceRouter);
-    this.app.use("/school", schoolRouter);
-    this.app.use("/admin", adminRouter);
-    this.app.use("/assignment", assignmentRouter);
-    this.app.use("/subject", subjectRouter);
-    this.app.use("/invoice", invoiceRouter);
-    this.app.use("/payment", paymentRouter);
-    this.app.use("/chat", chatRouter);
-    this.app.use("/notification", notificationRouter);
-    this.app.use("/exam", examRouter);
-    this.app.use("/examResult", examResultRouter);
-    this.app.use("/timetable", timetableRouter);
-    this.app.use("/subscription", subscriptionRouter);
-    this.app.use("/academicYear", academicYearRouter);
-    this.app.use("/plan", planRouter);
-    this.app.use("/chapter", chapterRouter);
-    this.app.use("/academicProfile", studentAcademicProfileRouter);
+    this.app.use("/api/auth", authRouter);
+    this.app.use("/api/student", studentRouter);
+    this.app.use("/api/teacher", teacherRouter);
+    this.app.use("/api/class", classRouter);
+    this.app.use("/api/attendance", attendaceRouter);
+    this.app.use("/api/school", schoolRouter);
+    this.app.use("/api/admin", adminRouter);
+    this.app.use("/api/assignment", assignmentRouter);
+    this.app.use("/api/subject", subjectRouter);
+    this.app.use("/api/invoice", invoiceRouter);
+    this.app.use("/api/payment", paymentRouter);
+    this.app.use("/api/chat", chatRouter);
+    this.app.use("/api/notification", notificationRouter);
+    this.app.use("/api/exam", examRouter);
+    this.app.use("/api/examResult", examResultRouter);
+    this.app.use("/api/timetable", timetableRouter);
+    this.app.use("/api/subscription", subscriptionRouter);
+    this.app.use("/api/academicYear", academicYearRouter);
+    this.app.use("/api/plan", planRouter);
+    this.app.use("/api/chapter", chapterRouter);
+    this.app.use("/api/academicProfile", studentAcademicProfileRouter);
 
     // Centralized error handling middleware
     this.app.use(errorHandler);
@@ -137,8 +137,8 @@ class App {
 
   // Webhook-specific routes (e.g., Stripe webhooks)
   private initializeWebhookRouter(): void {
-    this.app.use("/invoice", invoiceWebhookRouter);
-    this.app.use("/subscription", subscriptionWebhookRouter);
+    this.app.use("/api/invoice", invoiceWebhookRouter);
+    this.app.use("/api/subscription", subscriptionWebhookRouter);
   }
 
   // Start the HTTP server
