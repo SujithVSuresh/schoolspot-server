@@ -45,6 +45,7 @@ import studentAcademicProfileRouter from "./routes/StudentAcademicProfileRouter"
 import { SocketManager } from "./socket/socket";
 
 import { setSocketManager } from "./utils/socketSingleton";
+import webhookRouter from "./routes/WebhookRouter";
 
 // Main application class
 class App {
@@ -138,6 +139,7 @@ class App {
 
   // Webhook-specific routes (e.g., Stripe webhooks)
   private initializeWebhookRouter(): void {
+    // this.app.use("/api/webhook", webhookRouter);
     this.app.use("/api/invoice", invoiceWebhookRouter);
     this.app.use("/api/subscription", subscriptionWebhookRouter);
   }

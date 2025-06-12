@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import {
   CreateInvoiceDTO,
   InvoiceByClassResponseDTO,
@@ -18,6 +20,7 @@ import HttpStatus from "../../constants/StatusConstants";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
 import { INotificationRepository } from "../../repositories/interface/INotificationRepository";
 import { INotificationService } from "../interface/INotificationService";
+
 
 export class InvoiceService implements IInvoiceService {
   constructor(
@@ -121,34 +124,36 @@ export class InvoiceService implements IInvoiceService {
     return invoicesData;
   }
 
-  async createInvoiceSession(
-    invoiceId: string,
-    amount: number
-  ): Promise<Stripe.Checkout.Session> {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: { name: invoiceId },
-            unit_amount: Math.round(amount * 100),
-          },
-          quantity: 1,
+async createInvoiceSession(
+  invoiceId: string,
+  amount: number
+): Promise<Stripe.Checkout.Session> {
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "inr",
+          product_data: { name: invoiceId },
+          unit_amount: Math.round(amount * 100),
         },
-      ],
-      payment_intent_data: {
-        metadata: {
-          invoiceNumber: invoiceId,
-        },
+        quantity: 1,
       },
-      mode: "payment",
-      success_url: "http://localhost:5173/student/invoices",
-      cancel_url: "http://localhost:5173/student/invoices",
-    });
+    ],
+    payment_intent_data: {
+      metadata: {
+        invoiceNumber: invoiceId,
+        type: "fee", 
+      },
+    },
+    mode: "payment",
+    success_url: `${process.env.FRONTEND_URL}/student/invoices`,
+    cancel_url: `${process.env.FRONTEND_URL}/student/invoices`,
+  });
 
-    return session;
-  }
+  return session;
+}
+
 
   async handleStripeEvent(event: Stripe.Event): Promise<string> {
     let paymentId;
