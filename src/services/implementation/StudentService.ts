@@ -220,6 +220,8 @@ export class StudentService implements IStudentService {
       schoolId
     );
 
+    console.log(studentsData, "students data");
+
     const totalStudents =
       await this._studentRepository.findStudentsCountBySchool(schoolId);
 

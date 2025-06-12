@@ -213,7 +213,7 @@ export class AuthService implements IAuthService {
     role: string
   ): Promise<UserResponseDTO> {
     const user = await this._userRepository.findByEmail(email);
-    console.log(String(user?.schoolId), "user");
+    console.log(user, "user");
 
     if (!user || (user && !user.password)) {
       throw new CustomError(

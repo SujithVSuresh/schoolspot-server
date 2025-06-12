@@ -74,8 +74,9 @@ class App {
   // Configure and initialize WebSocket (Socket.IO)
   private initializeSocket(): void {
     const io = new Server(this.server, {
+      path: "/socket.io",
       cors: {
-        origin: 'http://localhost:5173', // Allow frontend origin
+        origin: process.env.FRONTEND_URL, // Allow frontend origin
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true,
       }
@@ -92,7 +93,7 @@ class App {
   private initializeMiddleware(): void {
     this.app.use(
       cors({
-        origin: ["http://localhost:3000", "http://localhost:5173"], // Allow multiple frontends
+        origin: [process.env.FRONTEND_URL || "http://localhost:5173"], // Allow multiple frontends
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true,
       })
