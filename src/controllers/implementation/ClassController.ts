@@ -32,25 +32,26 @@ export class ClassController implements IClassController {
   }
 
 
-  // async updateClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
-  //   try {
-  //     const {classId} = req.params
-  //     const {schoolId} = req.user as PayloadType
+  async updateClass(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {classId} = req.params
+      const {schoolId} = req.user as PayloadType
 
-  //     const updateClass: UpdateClassDTO = {
-  //       name: req.body.name,
-  //       section: req.body.section,
-  //       teacher: req.body.teacher,
-  //       schoolId: schoolId
-  //     };
+      const updateClass: UpdateClassDTO = {
+        name: req.body.name,
+        section: req.body.section,
+        teacher: req.body.teacher,
+        schoolId: schoolId,
+        academicYear: req.academicYear as string
+      };
 
-  //     const newClass = await this._classService.updateClass(classId, updateClass);
+      const newClass = await this._classService.updateClass(classId, updateClass);
 
-  //     res.status(HttpStatus.CREATED).json(newClass);
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
+      res.status(HttpStatus.CREATED).json(newClass);
+    } catch (err) {
+      next(err);
+    }
+  }
 
   async deleteClass(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

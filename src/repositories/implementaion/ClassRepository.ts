@@ -27,17 +27,17 @@ class ClassRepository
     }
   }
 
-  // async updateClass(classId: string, data: ClassEntityType): Promise<ClassEntityType | null> {
-  //   try{
-  //     return await this.update(classId, {
-  //       ...data,
-  //       teacher: new mongoose.Types.ObjectId(data.teacher)
-  //     })
-  //   }catch(error){
-  //     console.error("Error updating class", error);
-  //     throw new Error("Error updating class");
-  //   }
-  // }
+  async updateClass(classId: string, data: ClassEntityType): Promise<ClassEntityType | null> {
+    try{
+      return await this.update(classId, {
+        ...data,
+        teacher: new mongoose.Types.ObjectId(data.teacher)
+      })
+    }catch(error){
+      console.error("Error updating class", error);
+      throw new Error("Error updating class");
+    }
+  }
 
   async updateClassStrength(classId: string, value: 1 | -1): Promise<boolean> {
     try {
@@ -69,12 +69,14 @@ class ClassRepository
     name: string;
     section: string;
     school: string;
+    academicYear: string;
   }): Promise<ClassEntityType | null> {
     try {
       return await this.findOne({
         name: data.name,
         section: data.section,
-        school: new mongoose.Types.ObjectId(data.school)
+        school: new mongoose.Types.ObjectId(data.school),
+        academicYear: new mongoose.Types.ObjectId(data.academicYear)
       });
     } catch (error) {
       console.error("Error finding class", error);

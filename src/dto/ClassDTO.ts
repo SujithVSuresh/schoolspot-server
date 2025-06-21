@@ -16,6 +16,7 @@ export interface UpdateClassDTO {
       section: string;
       teacher: string;
       schoolId: string;
+      academicYear: string;
 }
 
 export interface ClassResponseDTO {

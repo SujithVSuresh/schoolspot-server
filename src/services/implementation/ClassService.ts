@@ -41,6 +41,7 @@ export class ClassService implements IClassService {
       name: classEntity.name,
       section: classEntity.section,
       school: String(classEntity.school),
+      academicYear: String(classEntity.academicYear)
     });
 
     if (classExist) {
@@ -58,38 +59,40 @@ export class ClassService implements IClassService {
     };
   }
 
-  // async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
-  //   const classEntity = {
-  //     name: dto.name,
-  //     section: dto.section.toUpperCase(),
-  //     teacher: dto.teacher,
-  //     school: dto.schoolId
-  //   };
+  async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
+    const classEntity = {
+      name: dto.name,
+      section: dto.section.toUpperCase(),
+      teacher: dto.teacher,
+      school: dto.schoolId,
+      academicYear: dto.academicYear
+    };
 
-  //   const classExist = await this._classRepository.findClass({
-  //     name: classEntity.name,
-  //     section: classEntity.section,
-  //     school: classEntity.school,
-  //   });
+    const classExist = await this._classRepository.findClass({
+      name: classEntity.name,
+      section: classEntity.section,
+      school: classEntity.school,
+      academicYear: classEntity.academicYear
+    });
 
-  //   if (classExist) {
-  //     throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
-  //   }
+    if (classExist && classExist._id != classId) {
+      throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
+    }
 
-  //   const response = await this._classRepository.updateClass(classId, classEntity);
+    const response = await this._classRepository.updateClass(classId, classEntity);
 
-  //   if(!response){
-  //     throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
-  //   }
+    if(!response){
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+    }
 
-  //   return {
-  //     _id: response._id,
-  //     name: response.name,
-  //     section: response.section,
-  //     strength: response.strength,
-  //     createdAt: response.createdAt,
-  //   };
-  // }
+    return {
+      _id: String(response._id),
+      name: response.name,
+      section: response.section,
+      strength: response.strength,
+      createdAt: response.createdAt,
+    };
+  }
 
   async deleteClass(classId: string): Promise<{ _id: string; }> {
     const response = await this._classRepository.deleteClass(classId)

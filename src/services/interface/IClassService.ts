@@ -5,7 +5,7 @@ type userRole =  "superadmin" | "admin" | "teacher" | "student";
 
 export interface IClassService{
     createClass(dto: CreateClassDTO): Promise<ClassResponseDTO>
-    // updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO>
+    updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO>
     deleteClass(classId: string): Promise<{_id: string}>
     findAllClasses(schoolId: string, academicYear: string): Promise<ClassResponseDTO[]>
     findClassById(classId: string, userId: string, userType: string): Promise<ClassByIdResponseDTO>
