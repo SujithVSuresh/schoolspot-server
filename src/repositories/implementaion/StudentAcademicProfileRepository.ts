@@ -55,7 +55,7 @@ class StudentAcademicProfileRepository
     }
   }
 
-  async findAcademicProfilesByClassId(classId: string, academicYear?: string): Promise<StudentAcademicProfileEntityType[]> {
+  async findAcademicProfilesByClassId(classId: string): Promise<StudentAcademicProfileEntityType[]> {
     try{
       const academicProfile = await StudentAcademicProfile.aggregate([
         {

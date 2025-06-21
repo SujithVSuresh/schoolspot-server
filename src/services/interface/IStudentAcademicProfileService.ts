@@ -4,6 +4,6 @@ import { CreateStudentAcademicProfileDTO, StudentAcademicProfileResponseDTO, Stu
 
 export interface IStudentAcademicProfileService {
     createAcademicProfile(data: CreateStudentAcademicProfileDTO, admissionNo: string, schoolId: string): Promise<StudentAcademicProfileResponseDTO>
-    fetchStudentProfileByUserId(userId: string, academicYear: string): Promise<StudentAcademicProfileWithClassResponseDTO>
-    fetchAcademicProfilesByClassId(classId: string, academicYear: string): Promise<StudentAcademicProfileWithProfileResponseDTO[]>
+    fetchStudentProfileByUserId(userId: string): Promise<StudentAcademicProfileWithClassResponseDTO>
+    fetchAcademicProfilesByClassId(classId: string): Promise<StudentAcademicProfileWithProfileResponseDTO[]>
 }

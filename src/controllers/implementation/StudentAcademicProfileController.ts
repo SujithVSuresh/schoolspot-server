@@ -35,7 +35,7 @@ export class StudentAcademicProfileController implements IStudentAcademicProfile
         try{
             const {userId} = req.params
 
-            const academicStudentProfile = await this._studentAcademicProfileService.fetchStudentProfileByUserId(userId, req.academicYear as string)
+            const academicStudentProfile = await this._studentAcademicProfileService.fetchStudentProfileByUserId(userId)
 
             res.status(HttpStatus.OK).json(academicStudentProfile)
         }catch(err){
@@ -47,7 +47,7 @@ export class StudentAcademicProfileController implements IStudentAcademicProfile
         try{
             const {classId} = req.params
 
-            const academicProfiles = await this._studentAcademicProfileService.fetchAcademicProfilesByClassId(classId, req.academicYear as string)
+            const academicProfiles = await this._studentAcademicProfileService.fetchAcademicProfilesByClassId(classId)
 
             res.status(HttpStatus.OK).json(academicProfiles)
         }catch(err){

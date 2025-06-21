@@ -77,12 +77,12 @@ export class StudentAcadmicProfileService
 
   async fetchStudentProfileByUserId(
     userId: string,
-    academicYear: string
   ): Promise<StudentAcademicProfileWithClassResponseDTO> {
+
     const studentAcademicProfile = await this._studentAcademicProfileRepository.findAcademicProfile({
         userId: new mongoose.Types.ObjectId(userId),
-        academicYear: new mongoose.Types.ObjectId(academicYear)
       });
+
 
     if (!studentAcademicProfile) {
       throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -104,8 +104,8 @@ export class StudentAcadmicProfileService
   }
 
 
-  async fetchAcademicProfilesByClassId(classId: string, academicYear: string): Promise<StudentAcademicProfileWithProfileResponseDTO[]> {
-    const response = await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(classId, academicYear)
+  async fetchAcademicProfilesByClassId(classId: string): Promise<StudentAcademicProfileWithProfileResponseDTO[]> {
+    const response = await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(classId)
 
     const academicProfiles: StudentAcademicProfileWithProfileResponseDTO[] = response.map((item) => {
       const student = item.studentId as StudentEntityType
