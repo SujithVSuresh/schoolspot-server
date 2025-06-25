@@ -8,25 +8,19 @@ import {
 } from "../../dto/InvoiceDTO";
 import { IInvoiceService } from "../interface/IInvoiceService";
 import { IInvoiceRepository } from "../../repositories/interface/IInvoiceRepository";
-import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { InvoiceEntityType } from "../../types/types";
-import { StudentEntityType } from "../../types/StudentType";
-import mongoose from "mongoose";
 import Stripe from "stripe";
 import stripe from "../../config/stripe";
 import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
-import { INotificationRepository } from "../../repositories/interface/INotificationRepository";
 import { INotificationService } from "../interface/INotificationService";
-
 
 export class InvoiceService implements IInvoiceService {
   constructor(
     private _invoiceRepository: IInvoiceRepository,
     private _paymentRepository: IPaymentRepository,
-    private _notificationService: INotificationService
   ) {}
 
   async createInvoice(
@@ -124,39 +118,44 @@ export class InvoiceService implements IInvoiceService {
     return invoicesData;
   }
 
-async createInvoiceSession(
-  invoiceId: string,
-  amount: number
-): Promise<Stripe.Checkout.Session> {
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "inr",
-          product_data: { name: invoiceId },
-          unit_amount: Math.round(amount * 100),
+  async createInvoiceSession(
+    invoiceId: string,
+    amount: number
+  ): Promise<Stripe.Checkout.Session> {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: { name: invoiceId },
+            unit_amount: Math.round(amount * 100),
+          },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    payment_intent_data: {
+      ],
+
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/student/invoices`,
+      cancel_url: `${process.env.FRONTEND_URL}/student/invoices`,
       metadata: {
         invoiceNumber: invoiceId,
-        type: "fee", 
+        type: "fee",
       },
-    },
-    mode: "payment",
-    success_url: `${process.env.FRONTEND_URL}/student/invoices`,
-    cancel_url: `${process.env.FRONTEND_URL}/student/invoices`,
-  });
+      payment_intent_data: {
+        metadata: {
+          invoiceNumber: invoiceId,
+          type: "fee",
+        },
+      },
+    });
 
-  return session;
-}
-
+    return session;
+  }
 
   async handleStripeEvent(event: Stripe.Event): Promise<string> {
     let paymentId;
+    console.log(event.type, "this is stripe event type");
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;

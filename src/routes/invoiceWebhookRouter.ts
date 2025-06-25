@@ -4,14 +4,12 @@ import { InvoiceController } from "../controllers/implementation/InvoiceControll
 import { Router } from "express"
 import express from 'express'
 import PaymentRepository from "../repositories/implementaion/PaymentRepository"
-import { NotificationService } from "../services/implementation/NotificationService"
-import NotificationRepository from "../repositories/implementaion/NotificationRepository"
-import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository"
+// import { NotificationService } from "../services/implementation/NotificationService"
+// import NotificationRepository from "../repositories/implementaion/NotificationRepository"
+// import UserNotificationRepository from "../repositories/implementaion/UserNotificationRepository"
 
 
-const notificationService = new NotificationService(NotificationRepository, UserNotificationRepository)
-
-const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository, notificationService)
+const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository)
 
 const invoiceController = new InvoiceController(invoiceService)
 

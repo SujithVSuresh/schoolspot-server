@@ -236,14 +236,20 @@ export class SubscriptionService implements ISubscriptionService {
           quantity: 1,
         },
       ],
+
+      mode: "payment",
+      success_url: `${process.env.FRONTEND_URL}/profile/subscription`,
+      cancel_url: `${process.env.FRONTEND_URL}/profile/subscription`,
+      metadata: {
+        subscriptionId: String(createSubscription._id),
+        type: "subscription",
+      },
       payment_intent_data: {
         metadata: {
           subscriptionId: String(createSubscription._id),
+          type: "subscription",
         },
-      },
-      mode: "payment",
-      success_url: "http://localhost:5173/profile/subscription",
-      cancel_url: "http://localhost:5173/profile/subscription",
+      }
     });
 
     return session;
@@ -261,6 +267,8 @@ export class SubscriptionService implements ISubscriptionService {
             limit: 1,
           }
         );
+
+        console.log(session, lineItems, "hey this is the subscription.....")
 
         const subscriptionId = lineItems.data[0]?.description;
 

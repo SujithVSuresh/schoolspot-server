@@ -15,6 +15,7 @@ import TeacherRepository from "../repositories/implementaion/TeacherRepository";
 import StudentRepository from "../repositories/implementaion/StudentRepository";
 import ClassRepository from "../repositories/implementaion/ClassRepository";
 import AdminRepository from "../repositories/implementaion/AdminRepository";
+import StudentAcademicProfileRepository from "../repositories/implementaion/StudentAcademicProfileRepository";
 
 const schoolService = new SchoolService(SchoolRepository, TeacherRepository, StudentRepository, ClassRepository, AdminRepository, SubscriptionRepository);
 
@@ -34,7 +35,9 @@ const authService = new AuthService(
   subscriptionService,
   PlanRepository,
   schoolService,
-  academicYearService
+  academicYearService,
+  StudentAcademicProfileRepository
+
 );
 
 const authController = new AuthController(authService);

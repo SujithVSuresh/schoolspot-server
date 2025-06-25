@@ -26,6 +26,7 @@ export class WebhookController implements IWebhookController {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
 
       const eventObject = event.data.object;
+      console.log(eventObject, "this is the event object......???")
 
       if (
         "metadata" in eventObject &&
@@ -37,6 +38,7 @@ export class WebhookController implements IWebhookController {
         let response;
 
         if (type === "fee") {
+          console.log("feee success")
           response = await this._invoiceService.handleStripeEvent(event);
         } else if (type === "subscription") {
           response = await this._subscriptionService.handleStripeEvent(event);

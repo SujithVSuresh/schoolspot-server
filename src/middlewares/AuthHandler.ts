@@ -22,7 +22,7 @@ export const protectRoute = (
 
       const token = authHeader.split(" ")[1];
 
-        let role = req.headers["x-user-role"];
+      let role = req.headers["x-user-role"];
 
       try {
         const decoded = jwt.verify(
@@ -30,16 +30,20 @@ export const protectRoute = (
           process.env.ACCESS_TOKEN_SECRET as string
         ) as PayloadType;
 
-        const isBlacklisted = await redisClient.get(`blocked:${decoded?.userId}`);
-      console.log(isBlacklisted, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-      if (isBlacklisted) {
-        res
-          .status(403)
-          .json({ message: "Token has been revoked", code: "BLOCKED", role: role });
-        return;
-      }
+        const isBlacklisted = await redisClient.get(
+          `blocked:${decoded?.userId}`
+        );
+        if (isBlacklisted) {
+          res
+            .status(403)
+            .json({
+              message: "Token has been revoked",
+              code: "BLOCKED",
+              role: role,
+            });
+          return;
+        }
 
-        console.log(decoded, authHeader);
         decoded.token = token;
 
         if (!allowedRole.includes(decoded.role)) {
@@ -51,13 +55,11 @@ export const protectRoute = (
         }
 
         if (decoded?.exp && decoded.exp * 1000 < Date.now()) {
-          res
-            .status(401)
-            .json({
-              message: "Token has expired",
-              code: "EXPIRED",
-              role: role,
-            });
+          res.status(401).json({
+            message: "Token has expired",
+            code: "EXPIRED",
+            role: role,
+          });
           return;
         }
 
@@ -68,13 +70,11 @@ export const protectRoute = (
         next();
       } catch (jwtError: any) {
         if (jwtError.name === "TokenExpiredError") {
-          res
-            .status(401)
-            .json({
-              message: "Token has expired",
-              code: "EXPIRED",
-              role: role,
-            });
+          res.status(401).json({
+            message: "Token has expired",
+            code: "EXPIRED",
+            role: role,
+          });
         } else {
           res.status(403).json({ message: "Invalid token" });
         }

@@ -79,9 +79,13 @@ export class TeacherController implements ITeacherController {
         try{
             const {schoolId} = req.user as PayloadType
 
-            const teachers = await this._teacherService.getTeachers(req.query, schoolId)
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const search = (req.query.search as string) || "";
 
-              res.status(HttpStatus.OK).json(teachers)
+            const teachers = await this._teacherService.getTeachers({page, limit, search}, schoolId)
+
+            res.status(HttpStatus.OK).json(teachers)
               
         }catch(err){
             next(err)

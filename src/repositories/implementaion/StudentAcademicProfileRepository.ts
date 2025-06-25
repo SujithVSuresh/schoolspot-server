@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import StudentAcademicProfile from "../../models/StudentAcademicProfile";
 import { StudentAcademicProfileEntityType } from "../../types/StudentType";
 import { IStudentAcademicProfileRepository } from "../interface/IStudentAcademicProfileRepository";
@@ -55,13 +55,15 @@ class StudentAcademicProfileRepository
     }
   }
 
-  async findAcademicProfilesByClassId(classId: string): Promise<StudentAcademicProfileEntityType[]> {
-    try{
+  async findAcademicProfilesByClassId(
+    classId: string
+  ): Promise<StudentAcademicProfileEntityType[]> {
+    try {
       const academicProfile = await StudentAcademicProfile.aggregate([
         {
           $match: {
-            classId: new mongoose.Types.ObjectId(classId)
-          }
+            classId: new mongoose.Types.ObjectId(classId),
+          },
         },
         {
           $lookup: {
@@ -74,11 +76,32 @@ class StudentAcademicProfileRepository
         { $unwind: "$studentId" },
       ]);
 
-      return academicProfile
-
+      return academicProfile;
     } catch (error) {
       console.error("Error finding academic profile", error);
       throw new Error("Error finding academic profile");
+    }
+  }
+
+  async deleteAcademicProfile(id: string): Promise<boolean | null> {
+    try {
+      const response = await this.delete(id);
+      return response;
+    } catch (error) {
+      console.error("Error deleting academic profile", error);
+      throw new Error("Error deleting academic profile");
+    }
+  }
+
+  async deleteAcademicProfilesByClass(classId: string): Promise<boolean | null> {
+        try {
+      const response = await StudentAcademicProfile.deleteMany({
+        classId: new mongoose.Types.ObjectId(classId)
+      })
+      return response.deletedCount > 0 ? true : false;
+    } catch (error) {
+      console.error("Error deleting academic profile", error);
+      throw new Error("Error deleting academic profile");
     }
   }
 }

@@ -16,15 +16,15 @@ import HttpStatus from "../../constants/StatusConstants";
 import { IAnnouncementRepository } from "../../repositories/interface/IAnnouncementRepository";
 import { AnnouncementDTO, AnnouncementResponseDTO } from "../../dto/ClassDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
-import { IStudentRepository } from "../../repositories/interface/IStudentRepository";
 import { ISubjectRepository } from "../../repositories/interface/ISubjectRepository";
+import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
 
 export class ClassService implements IClassService {
   constructor(
     private _classRepository: IClassRepository,
     private _announcementRepository: IAnnouncementRepository,
     private _attendanceRepository: IAttendanceRepository,
-    private _studentRepository: IStudentRepository,
+    private _studentAcademicProfileRepository: IStudentAcademicProfileRepository,
     private _subjectRepository: ISubjectRepository
   ) {}
 
@@ -34,14 +34,14 @@ export class ClassService implements IClassService {
       section: dto.section.toUpperCase(),
       teacher: dto.teacher,
       school: dto.school,
-      academicYear: dto.academicYear
+      academicYear: dto.academicYear,
     };
 
     const classExist = await this._classRepository.findClass({
       name: classEntity.name,
       section: classEntity.section,
       school: String(classEntity.school),
-      academicYear: String(classEntity.academicYear)
+      academicYear: String(classEntity.academicYear),
     });
 
     if (classExist) {
@@ -59,30 +59,36 @@ export class ClassService implements IClassService {
     };
   }
 
-  async updateClass(classId: string, dto: UpdateClassDTO): Promise<ClassResponseDTO> {
+  async updateClass(
+    classId: string,
+    dto: UpdateClassDTO
+  ): Promise<ClassResponseDTO> {
     const classEntity = {
       name: dto.name,
       section: dto.section.toUpperCase(),
       teacher: dto.teacher,
       school: dto.schoolId,
-      academicYear: dto.academicYear
+      academicYear: dto.academicYear,
     };
 
     const classExist = await this._classRepository.findClass({
       name: classEntity.name,
       section: classEntity.section,
       school: classEntity.school,
-      academicYear: classEntity.academicYear
+      academicYear: classEntity.academicYear,
     });
 
     if (classExist && classExist._id != classId) {
       throw new CustomError(Messages.CLASS_EXIST, HttpStatus.CONFLICT);
     }
 
-    const response = await this._classRepository.updateClass(classId, classEntity);
+    const response = await this._classRepository.updateClass(
+      classId,
+      classEntity
+    );
 
-    if(!response){
-      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+    if (!response) {
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
     }
 
     return {
@@ -94,33 +100,50 @@ export class ClassService implements IClassService {
     };
   }
 
-  async deleteClass(classId: string): Promise<{ _id: string; }> {
-    const response = await this._classRepository.deleteClass(classId)
+  async deleteClass(classId: string): Promise<{ _id: string }> {
+    const classStudents =
+      await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(
+        classId
+      );
 
-    if(!response){
-      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND)
+    if (classStudents.length > 0) {
+      const deleteStudents = await this._studentAcademicProfileRepository.deleteAcademicProfilesByClass(classId);
+
+      if (!deleteStudents) {
+        throw new CustomError(Messages.SERVER_ERROR, HttpStatus.NOT_FOUND);
+      }
+    }
+    const response = await this._classRepository.deleteClass(classId);
+
+    if (!response) {
+      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
     }
 
     return {
-      _id: classId
-    }
+      _id: classId,
+    };
   }
 
-  async findAllClasses(schoolId: string, academicYear: string): Promise<ClassResponseDTO[]> {
-    const response = await this._classRepository.findAllClasses(schoolId, academicYear);
+  async findAllClasses(
+    schoolId: string,
+    academicYear: string
+  ): Promise<ClassResponseDTO[]> {
+    const response = await this._classRepository.findAllClasses(
+      schoolId,
+      academicYear
+    );
 
     const classesData: ClassResponseDTO[] = response.map((item) => {
-
       return {
-            _id: String(item._id),
-            name: item.name,
-            section: item.section,
-            teacher: String(item.teacher),
-            strength: item.strength,
-      }
+        _id: String(item._id),
+        name: item.name,
+        section: item.section,
+        teacher: String(item.teacher),
+        strength: item.strength,
+      };
     });
 
-    return classesData
+    return classesData;
   }
 
   async findClassById(
@@ -195,23 +218,23 @@ export class ClassService implements IClassService {
     return data;
   }
 
-  async findAllClassesByTeacherId(
-    teacherId: string
-  ): Promise<any> {
-    const response = await this._subjectRepository.findClassesByTeacherIdUsingSubjects(teacherId)
+  async findAllClassesByTeacherId(teacherId: string): Promise<any> {
+    const response =
+      await this._subjectRepository.findClassesByTeacherIdUsingSubjects(
+        teacherId
+      );
 
     const data: ClassListResponseDTO[] = response.map((item) => {
       return {
         _id: String(item.class._id),
         name: item.class.name,
-        section: item.class.section, 
-        strength: item.class.strength
+        section: item.class.section,
+        strength: item.class.strength,
       };
     });
 
     return data;
   }
-
 
   async addAnnouncement(
     data: AnnouncementDTO
@@ -282,7 +305,6 @@ export class ClassService implements IClassService {
     userId: string,
     status: "pin" | "unpin"
   ): Promise<AnnouncementDetailsResponseDTO> {
-
     // const announcements = await this._announcementRepository.findAnnouncements(
     //   null,
     //   null,
@@ -322,13 +344,13 @@ export class ClassService implements IClassService {
       content: response.content,
       author: String(response.author),
       createdAt: response.createdAt,
-      isPinned: status == "pin" ? true : false
+      isPinned: status == "pin" ? true : false,
     };
   }
 
   async findAnnouncements(
     schoolId?: string | null,
-    classId?: string,
+    classId?: string
   ): Promise<AnnouncementResponseDTO[]> {
     const response = await this._announcementRepository.findAnnouncements(
       !classId ? schoolId : null,
@@ -351,17 +373,25 @@ export class ClassService implements IClassService {
     return announcements;
   }
 
-  async findAnnouncementDetails(announcementId: string, userId: string): Promise<AnnouncementDetailsResponseDTO> {
-    const response = await this._announcementRepository.findAnnouncementById(announcementId)
+  async findAnnouncementDetails(
+    announcementId: string,
+    userId: string
+  ): Promise<AnnouncementDetailsResponseDTO> {
+    const response = await this._announcementRepository.findAnnouncementById(
+      announcementId
+    );
 
-    if(!response){
-      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!response) {
+      throw new CustomError(
+        Messages.ANNOUNCEMENT_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     }
 
-    let isPinned = false
+    let isPinned = false;
 
-    if(response.pinned?.includes(new mongoose.Types.ObjectId(userId))){
-      isPinned = true
+    if (response.pinned?.includes(new mongoose.Types.ObjectId(userId))) {
+      isPinned = true;
     }
 
     return {
@@ -371,35 +401,47 @@ export class ClassService implements IClassService {
       author: String(response.author),
       createdAt: response.createdAt,
       isPinned: isPinned,
-      sendTo: response.sendTo
-    }
+      sendTo: response.sendTo,
+    };
   }
 
-  async findAnnouncementsByAuthor(userId: string): Promise<AnnouncementResponseDTO[]> {
-    const response = await this._announcementRepository.findAnnouncementsByAuthor(userId)
+  async findAnnouncementsByAuthor(
+    userId: string
+  ): Promise<AnnouncementResponseDTO[]> {
+    const response =
+      await this._announcementRepository.findAnnouncementsByAuthor(userId);
 
-    if(!response){
-      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!response) {
+      throw new CustomError(
+        Messages.ANNOUNCEMENT_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     }
 
-    const announcements: AnnouncementResponseDTO[] = response.map((announcement) => {
-      return {
-        _id: String(announcement._id),
-        title: announcement.title,
-        content: announcement.content,
-        author: String(announcement.author),
-        sendTo: announcement.sendTo.map((classId) => {
-          return String(classId)
-        }),
-        createdAt: announcement.createdAt
+    const announcements: AnnouncementResponseDTO[] = response.map(
+      (announcement) => {
+        return {
+          _id: String(announcement._id),
+          title: announcement.title,
+          content: announcement.content,
+          author: String(announcement.author),
+          sendTo: announcement.sendTo.map((classId) => {
+            return String(classId);
+          }),
+          createdAt: announcement.createdAt,
+        };
       }
-    })
+    );
 
-    return announcements
+    return announcements;
   }
 
-  async findPinnedAnnouncements(userId: string): Promise<AnnouncementResponseDTO[]>{
-    const response = await this._announcementRepository.findPinnedAnnouncements(userId)
+  async findPinnedAnnouncements(
+    userId: string
+  ): Promise<AnnouncementResponseDTO[]> {
+    const response = await this._announcementRepository.findPinnedAnnouncements(
+      userId
+    );
 
     const announcements: AnnouncementResponseDTO[] = response.map(
       (announcement) => {
@@ -412,18 +454,26 @@ export class ClassService implements IClassService {
           pinned: announcement.pinned,
         };
       }
-    )
+    );
 
-      return announcements
-
+    return announcements;
   }
 
+  async findAnnouncementsByCount(
+    classId: string,
+    count: number
+  ): Promise<AnnouncementResponseDTO[]> {
+    const response =
+      await this._announcementRepository.findAnnouncementsByCount(
+        classId,
+        count
+      );
 
-  async findAnnouncementsByCount(classId: string, count: number): Promise<AnnouncementResponseDTO[]> {
-    const response = await this._announcementRepository.findAnnouncementsByCount(classId, count)
-
-    if(!response){
-      throw new CustomError(Messages.ANNOUNCEMENT_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!response) {
+      throw new CustomError(
+        Messages.ANNOUNCEMENT_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     }
 
     const announcements: AnnouncementResponseDTO[] = response.map(
@@ -437,10 +487,8 @@ export class ClassService implements IClassService {
           pinned: announcement.pinned,
         };
       }
-    )
+    );
 
-    return announcements
+    return announcements;
   }
-
-  
 }

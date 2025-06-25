@@ -13,7 +13,12 @@ import {
   GetTeacherParamsType,
   GetTeacherResponseType,
 } from "../../types/types";
-import { TeacherBySchoolResponseDTO, TeacherProfileResponseDTO, UpdateTeacherDTO } from "../../dto/TeacherDTO";
+import {
+  TeacherBySchoolResponseDTO,
+  TeacherProfileResponseDTO,
+  TeachersWithPagenationResponseDTO,
+  UpdateTeacherDTO,
+} from "../../dto/TeacherDTO";
 
 export class TeacherService implements ITeacherService {
   constructor(
@@ -38,7 +43,7 @@ export class TeacherService implements ITeacherService {
       role: "teacher",
       status: "active",
       schoolId: new mongoose.Types.ObjectId(schoolId),
-      authProvider: "email"
+      authProvider: "email",
     });
 
     let profilePhotoURL = null;
@@ -52,9 +57,9 @@ export class TeacherService implements ITeacherService {
             { folder: "student_profiles" },
             (error, result) => {
               if (error) {
-                reject(error); 
+                reject(error);
               } else if (result) {
-                resolve(result); 
+                resolve(result);
               } else {
                 reject(new Error("Cloudinary upload failed"));
               }
@@ -82,12 +87,11 @@ export class TeacherService implements ITeacherService {
     return user.email;
   }
 
-
   async updateTeacher(
     userId: string,
     data: UpdateTeacherDTO,
-    file: Express.Multer.File,
-  ): Promise<{email: string; userId: string}> {
+    file: Express.Multer.File
+  ): Promise<{ email: string; userId: string }> {
     const existingUser = await this._userRepository.findByEmail(data.email);
     if (existingUser && String(existingUser._id) != userId) {
       throw new CustomError(Messages.USER_EXIST, HttpStatus.CONFLICT);
@@ -97,12 +101,11 @@ export class TeacherService implements ITeacherService {
       email: data.email,
     });
 
-
-    if(!user){
-      throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!user) {
+      throw new CustomError(Messages.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
-    const teacher = await this._teacherRepository.findTeacherProfile(userId)
+    const teacher = await this._teacherRepository.findTeacherProfile(userId);
 
     let profilePhotoURL = null;
 
@@ -115,9 +118,9 @@ export class TeacherService implements ITeacherService {
             { folder: "student_profiles" },
             (error, result) => {
               if (error) {
-                reject(error); 
+                reject(error);
               } else if (result) {
-                resolve(result); 
+                resolve(result);
               } else {
                 reject(new Error("Cloudinary upload failed"));
               }
@@ -131,17 +134,20 @@ export class TeacherService implements ITeacherService {
       profilePhotoURL = uploadResult.secure_url;
     }
 
-    let teacherProfile = await this._teacherRepository.updateTeacherProfile(String(teacher?._id), {
-      fullName: data.fullName,
-      phoneNumber: data.phoneNumber,
-      subjectSpecialized: data.subjectSpecialized,
-      qualification: data.qualification,
-      experience: data.experience,
-      profilePhoto: profilePhotoURL ? profilePhotoURL : teacher?.profilePhoto,
-    });
+    let teacherProfile = await this._teacherRepository.updateTeacherProfile(
+      String(teacher?._id),
+      {
+        fullName: data.fullName,
+        phoneNumber: data.phoneNumber,
+        subjectSpecialized: data.subjectSpecialized,
+        qualification: data.qualification,
+        experience: data.experience,
+        profilePhoto: profilePhotoURL ? profilePhotoURL : teacher?.profilePhoto,
+      }
+    );
 
-    if(!teacherProfile){
-      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND)
+    if (!teacherProfile) {
+      throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     return {
@@ -153,42 +159,56 @@ export class TeacherService implements ITeacherService {
   async getTeachers(
     data: GetTeacherParamsType,
     schoolId: string
-  ): Promise<TeacherProfileResponseDTO[]> {
+  ): Promise<TeachersWithPagenationResponseDTO> {
+    const skip = (data.page - 1) * data.limit;
     const teachers = await this._teacherRepository.getAllTeachers(
-      {
-        search: data.search ? data.search : "",
-      },
+      { skip, limit: data.limit, search: data.search },
       schoolId
     );
 
-    return teachers.map((teacher) => {
-      return {
-        _id: String(teacher._id),
-        fullName: teacher.fullName,
-        phoneNumber: teacher.phoneNumber,
-        subjectSpecialized: teacher.subjectSpecialized,
-        qualification: teacher.qualification,
-        experience: teacher.experience,
-        profilePhoto: teacher.profilePhoto ? teacher.profilePhoto : "",
-        schoolId: String(teacher.schoolId),
-        user: {
-          _id: String(teacher.user?._id),
-          email: teacher.user.email,
-          status: teacher.user.status,
-        }
-      }
-    });
+    const teacherCount = await this._teacherRepository.teachersCount(
+      { search: data.search },
+      schoolId
+    );
+
+    return {
+      data: teachers.map((teacher) => {
+        return {
+          _id: String(teacher._id),
+          fullName: teacher.fullName,
+          phoneNumber: teacher.phoneNumber,
+          subjectSpecialized: teacher.subjectSpecialized,
+          qualification: teacher.qualification,
+          experience: teacher.experience,
+          profilePhoto: teacher.profilePhoto ? teacher.profilePhoto : "",
+          schoolId: String(teacher.schoolId),
+          user: {
+            _id: String(teacher.user?._id),
+            email: teacher.user.email,
+            status: teacher.user.status,
+          },
+        };
+      }),
+      currentPage: data.page,
+      pageSize: data.limit,
+      totalItems: teacherCount.totalItems,
+      totalPages: Math.ceil(teacherCount.totalItems / data.limit),
+    };
   }
 
-  async getTeacherBySchool(schoolId: string): Promise<TeacherBySchoolResponseDTO[]> {
-    const teachers = await this._teacherRepository.getTeacherBySchool(schoolId)
-    return teachers
+  async getTeacherBySchool(
+    schoolId: string
+  ): Promise<TeacherBySchoolResponseDTO[]> {
+    const teachers = await this._teacherRepository.getTeacherBySchool(schoolId);
+    return teachers;
   }
 
   async getTeacherProfile(userId: string): Promise<TeacherProfileResponseDTO> {
-    const teacherProfile = await this._teacherRepository.findTeacherProfile(userId);
+    const teacherProfile = await this._teacherRepository.findTeacherProfile(
+      userId
+    );
 
-    if(!teacherProfile) {
+    if (!teacherProfile) {
       throw new CustomError(Messages.PROFILE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
@@ -199,13 +219,15 @@ export class TeacherService implements ITeacherService {
       subjectSpecialized: teacherProfile.subjectSpecialized,
       qualification: teacherProfile.qualification,
       experience: teacherProfile.experience,
-      profilePhoto: teacherProfile.profilePhoto ? teacherProfile.profilePhoto : "",
+      profilePhoto: teacherProfile.profilePhoto
+        ? teacherProfile.profilePhoto
+        : "",
       schoolId: String(teacherProfile.schoolId),
       user: {
         _id: String(teacherProfile.user?._id),
         email: teacherProfile.user.email,
         status: teacherProfile.user.status,
-      }
-    }
+      },
+    };
   }
 }

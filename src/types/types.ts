@@ -53,12 +53,9 @@ export interface GetParamsType {
 }
 
 export interface GetTeacherParamsType {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  status?: "active" | "inactive" | "deleted" | "blocked" | "";
+  page: number;
+  limit: number;
+  search: string;
 }
 
 

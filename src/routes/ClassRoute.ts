@@ -5,12 +5,12 @@ import ClassRepository from "../repositories/implementaion/ClassRepository";
 import { ClassController } from "../controllers/implementation/ClassController";
 import AnnouncementRepository from "../repositories/implementaion/AnnouncementRepository";
 import AttendanceRepository from "../repositories/implementaion/AttendanceRepository";
-import StudentRepository from "../repositories/implementaion/StudentRepository";
 import SubjectRepository from "../repositories/implementaion/SubjectRepository";
+import StudentAcademicProfileRepository from "../repositories/implementaion/StudentAcademicProfileRepository";
 
 
 
-const classService = new ClassService(ClassRepository, AnnouncementRepository, AttendanceRepository, StudentRepository, SubjectRepository);
+const classService = new ClassService(ClassRepository, AnnouncementRepository, AttendanceRepository, StudentAcademicProfileRepository, SubjectRepository);
 
 const classController = new ClassController(classService);
 

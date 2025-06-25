@@ -109,7 +109,7 @@ class App {
   // All primary route endpoints
   private initializeRouter(): void {
     this.app.get("/api/test", (req, res) => {
-        res.status(200).json({ message: "✅ Deployment is successful!" });
+        res.status(200).json({ message: "Deployment is successful!" });
     });
     this.app.use("/api/auth", authRouter);
     this.app.use("/api/student", studentRouter);
@@ -139,8 +139,8 @@ class App {
 
   // Webhook-specific routes (e.g., Stripe webhooks)
   private initializeWebhookRouter(): void {
-    // this.app.use("/api/webhook", webhookRouter);
-    this.app.use("/api/invoice", invoiceWebhookRouter);
+    this.app.use("/api/webhook", webhookRouter);
+    // this.app.use("/api/invoice", invoiceWebhookRouter);
     this.app.use("/api/subscription", subscriptionWebhookRouter);
   }
 

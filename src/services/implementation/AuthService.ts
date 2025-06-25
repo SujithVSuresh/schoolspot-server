@@ -23,6 +23,10 @@ import { CreateSchoolProfileDTO } from "../../dto/SchoolDTO";
 import { ISchoolService } from "../interface/ISchoolService";
 import { CreateUserDTO, UserResponseDTO } from "../../dto/UserDTO";
 import { IAcademicYearService } from "../interface/IAcademicYearService";
+import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
+import mongoose from "mongoose";
+import { ClassEntityType } from "../../types/ClassType";
+import { AcademicYearEntityType } from "../../types/AcademicYearType";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -32,7 +36,8 @@ export class AuthService implements IAuthService {
     private _subscriptionService: ISubscriptionService,
     private _planRepository: IPlanRepository,
     private _schoolService: ISchoolService,
-    private _academicYearService: IAcademicYearService
+    private _academicYearService: IAcademicYearService,
+    private _studentAcademicProfileRepository: IStudentAcademicProfileRepository
   ) {}
 
   async signup(
@@ -71,9 +76,14 @@ export class AuthService implements IAuthService {
       `academicYear-${user.email}`,
       300,
       JSON.stringify({ academicYear })
-    ); 
+    );
 
-    if (!dataResponse || !otpResponse || !schoolDataResponse || !academicYearResponse) {
+    if (
+      !dataResponse ||
+      !otpResponse ||
+      !schoolDataResponse ||
+      !academicYearResponse
+    ) {
       throw new CustomError(
         Messages.SERVER_ERROR,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -95,7 +105,6 @@ export class AuthService implements IAuthService {
       throw new CustomError(Messages.INVALID_OTP, HttpStatus.UNAUTHORIZED);
     }
 
-
     // if (!otpResponse) {
     //   throw new CustomError(
     //     "Your session has expired. Signup again to continue",
@@ -109,13 +118,15 @@ export class AuthService implements IAuthService {
 
     const userDataResponse = await redisClient.get(`userData-${email}`);
 
-
     const { school } = JSON.parse(schoolDataResponse as string);
     const { user } = JSON.parse(userDataResponse as string);
     const { academicYear } = JSON.parse(academicYearResponse as string);
 
-    if(!school || !user || !academicYear){
-      throw new CustomError(Messages.SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR)
+    if (!school || !user || !academicYear) {
+      throw new CustomError(
+        Messages.SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
 
     const schoolData = await this._schoolService.createSchool(school);
@@ -127,9 +138,7 @@ export class AuthService implements IAuthService {
 
     const plan = await this._planRepository.findPlanByDuration(30);
 
-    const allPlans = await this._planRepository.findAllPlans()
-
-    console.log(plan, "this is the plan", allPlans)
+    const allPlans = await this._planRepository.findAllPlans();
 
     if (!plan) {
       throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -145,8 +154,6 @@ export class AuthService implements IAuthService {
       status: "active",
     });
 
-      console.log("2")
-
     const payload: PayloadType = {
       userId: String(userData._id),
       role: "admin",
@@ -155,16 +162,14 @@ export class AuthService implements IAuthService {
     };
 
     const accessToken = authToken.generateAccessToken(payload);
-    
+
     const refreshToken = authToken.generateRefreshToken(payload);
-    
+
     await this._academicYearService.createAcademicYear({
       name: academicYear,
       isActive: true,
-      schoolId: String(schoolData._id)
-    })
-
-      console.log("3", refreshToken)
+      schoolId: String(schoolData._id),
+    });
 
     return {
       _id: String(userData._id),
@@ -213,7 +218,6 @@ export class AuthService implements IAuthService {
     role: string
   ): Promise<UserResponseDTO> {
     const user = await this._userRepository.findByEmail(email);
-    console.log(user, "user");
 
     if (!user || (user && !user.password)) {
       throw new CustomError(
@@ -234,6 +238,24 @@ export class AuthService implements IAuthService {
         "Your account has been blocked",
         HttpStatus.UNAUTHORIZED
       );
+    }
+
+    if (user && user.role == "student") {
+      const academicProfile =
+        await this._studentAcademicProfileRepository.findAcademicProfile({
+          userId: new mongoose.Types.ObjectId(user._id),
+        });
+
+      const classData = academicProfile?.classId as ClassEntityType;
+
+      console.log(classData, "this is the class data")
+
+      if (!classData || String(classData.academicYear) !== "68371d3323a21ebf1850e6d7") {
+        throw new CustomError(
+          "You are not allowed to login right now",
+          HttpStatus.UNAUTHORIZED
+        );
+      }
     }
 
     const pwMatch = await comparePassword(password, user.password as string);
@@ -369,7 +391,7 @@ export class AuthService implements IAuthService {
           role: "admin",
           status: "inactive",
           schoolId: String(school._id),
-          authProvider: "google"
+          authProvider: "google",
         });
 
         // subscription = await this._subscriptionRepository.createSubscription({
@@ -437,7 +459,7 @@ export class AuthService implements IAuthService {
       userId: String(payload.userId),
       role: payload.role,
       schoolId: String(payload.schoolId),
-      subscribed: subscription
+      subscribed: subscription,
     });
 
     return {
@@ -469,13 +491,13 @@ export class AuthService implements IAuthService {
       role: userData.role,
       status: userData.status,
       schoolId: String(userData.schoolId),
-      authProvider: userData.authProvider
+      authProvider: userData.authProvider,
     };
   }
 
   async changeAccountStatus(
     userId: string,
-    status: "active" | "inactive" | "deleted" | "blocked",
+    status: "active" | "inactive" | "deleted" | "blocked"
   ): Promise<{
     userId: string;
     status: "active" | "inactive" | "deleted" | "blocked";
@@ -489,10 +511,10 @@ export class AuthService implements IAuthService {
       status: status,
     });
 
-    if(updateUserStatus?.status == "blocked"){
-    await redisClient.setEx(`blocked:${userId}`, 1296000, 'true');
-    }else if(updateUserStatus?.status == "active"){
-     await redisClient.del(`blocked:${userId}`); 
+    if (updateUserStatus?.status == "blocked") {
+      await redisClient.setEx(`blocked:${userId}`, 1296000, "true");
+    } else if (updateUserStatus?.status == "active") {
+      await redisClient.del(`blocked:${userId}`);
     }
     return {
       userId: String(user._id),

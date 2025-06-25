@@ -95,9 +95,11 @@ export class AuthController implements IAuthController {
     }
   }
 
-  async signin(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async signin(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password, role: userRole } = req.body;
+      const academicYear = req.academicYear
+      
       const {
         _id,
         email: userEmail,

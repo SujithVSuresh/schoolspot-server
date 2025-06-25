@@ -23,6 +23,14 @@ export interface TeacherProfileResponseDTO {
   }
 }
 
+export interface TeachersWithPagenationResponseDTO {
+  data: TeacherBySchoolResponseDTO[],
+  totalItems: number,
+  currentPage: number,
+  totalPages: number,
+  pageSize: number
+}
+
 
 export interface TeacherListResponseDTO {
   _id: string;
