@@ -105,13 +105,6 @@ export class AuthService implements IAuthService {
       throw new CustomError(Messages.INVALID_OTP, HttpStatus.UNAUTHORIZED);
     }
 
-    // if (!otpResponse) {
-    //   throw new CustomError(
-    //     "Your session has expired. Signup again to continue",
-    //     HttpStatus.FORBIDDEN
-    //   );
-    // }
-
     const schoolDataResponse = await redisClient.get(`schoolData-${email}`);
 
     const academicYearResponse = await redisClient.get(`academicYear-${email}`);
@@ -137,8 +130,6 @@ export class AuthService implements IAuthService {
     });
 
     const plan = await this._planRepository.findPlanByDuration(30);
-
-    const allPlans = await this._planRepository.findAllPlans();
 
     if (!plan) {
       throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -248,9 +239,10 @@ export class AuthService implements IAuthService {
 
       const classData = academicProfile?.classId as ClassEntityType;
 
-      console.log(classData, "this is the class data")
-
-      if (!classData || String(classData.academicYear) !== "68371d3323a21ebf1850e6d7") {
+      if (
+        !classData ||
+        String(classData.academicYear) !== "68371d3323a21ebf1850e6d7"
+      ) {
         throw new CustomError(
           "You are not allowed to login right now",
           HttpStatus.UNAUTHORIZED
@@ -361,12 +353,55 @@ export class AuthService implements IAuthService {
     if (payload.email) {
       let userData = await this._userRepository.findByEmail(payload.email);
       let school;
-      let subscription;
+
+      const academicYearResponse = await redisClient.get(
+        `academicYear-${payload.email}`
+      )
+      
+      const { academicYear } = JSON.parse(academicYearResponse as string);
+
+      const tokenPayload: PayloadType = {
+        userId: "",
+        role: "admin",
+        schoolId: "",
+        subscribed: true,
+      };
 
       if (userData?._id) {
+        tokenPayload.userId = String(userData._id);
+        tokenPayload.schoolId = String(userData.schoolId);
+
         school = await this._schoolRepository.findSchoolById(
           String(userData.schoolId)
         );
+
+        if (userData && userData.status == "blocked") {
+          throw new CustomError(
+            "Your account has been blocked",
+            HttpStatus.UNAUTHORIZED
+          );
+        }
+
+        const subscription =
+          await this._subscriptionRepository.findSubscription({
+            schoolId: String(userData?.schoolId),
+            status: "active",
+          });
+
+        if (!subscription) {
+          throw new CustomError(
+            Messages.SUBSCRIPTION_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+
+        const isSubscriptionActive = checkSubscription(
+          String(subscription.endDate)
+        );
+
+        if (isSubscriptionActive !== null) {
+          tokenPayload.subscribed = isSubscriptionActive;
+        }
       } else {
         school = await this._schoolRepository.createSchoolProfile({
           address: {
@@ -394,31 +429,35 @@ export class AuthService implements IAuthService {
           authProvider: "google",
         });
 
-        // subscription = await this._subscriptionRepository.createSubscription({
-        //   userId: String(userData._id),
-        //   schoolId: String(userData.schoolId),
-        //   planId: "dsaf",
-        //   startDate: new Date(),
-        //   endDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
-        //   status: "active",
-        // });
+        const plan = await this._planRepository.findPlanByDuration(30);
+
+        if (!plan) {
+          throw new CustomError(Messages.PLAN_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        await this._subscriptionRepository.createSubscription({
+          userId: String(userData._id),
+          schoolId: String(userData.schoolId),
+          planId: String(plan._id),
+          planPrice: plan.price,
+          startDate: new Date(),
+          endDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
+          status: "active",
+        });
+
+        await this._academicYearService.createAcademicYear({
+          name: academicYear,
+          isActive: true,
+          schoolId: String(school._id),
+        });
       }
 
-      let accessToken = authToken.generateAccessToken({
-        userId: String(userData?._id),
-        role: "admin",
-        schoolId: String(school?._id),
-        // subscribed: checkSubscription(String(subscription?.endDate))
-        subscribed: true,
-      });
+      tokenPayload.userId = String(userData._id);
+      tokenPayload.schoolId = String(userData.schoolId);
 
-      let refreshToken = authToken.generateRefreshToken({
-        userId: String(userData?._id),
-        role: "admin",
-        schoolId: String(school?._id),
-        // subscribed: checkSubscription(String(subscription?.endDate))
-        subscribed: true,
-      });
+      const accessToken = authToken.generateAccessToken(tokenPayload);
+
+      const refreshToken = authToken.generateRefreshToken(tokenPayload);
 
       return {
         _id: String(userData._id),

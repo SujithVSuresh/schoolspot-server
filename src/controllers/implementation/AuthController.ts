@@ -98,7 +98,6 @@ export class AuthController implements IAuthController {
   async signin(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password, role: userRole } = req.body;
-      const academicYear = req.academicYear
       
       const {
         _id,
@@ -182,7 +181,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000
       });
       res.status(HttpStatus.OK).json({
         _id,

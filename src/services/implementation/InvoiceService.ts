@@ -15,7 +15,6 @@ import { CustomError } from "../../utils/CustomError";
 import Messages from "../../constants/MessageConstants";
 import HttpStatus from "../../constants/StatusConstants";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
-import { INotificationService } from "../interface/INotificationService";
 
 export class InvoiceService implements IInvoiceService {
   constructor(
