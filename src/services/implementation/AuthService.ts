@@ -354,11 +354,6 @@ export class AuthService implements IAuthService {
       let userData = await this._userRepository.findByEmail(payload.email);
       let school;
 
-      const academicYearResponse = await redisClient.get(
-        `academicYear-${payload.email}`
-      )
-      
-      const { academicYear } = JSON.parse(academicYearResponse as string);
 
       const tokenPayload: PayloadType = {
         userId: "",
@@ -446,7 +441,7 @@ export class AuthService implements IAuthService {
         });
 
         await this._academicYearService.createAcademicYear({
-          name: academicYear,
+          name: schoolData.academicYear as "2023-24" | "2024-25" | "2025-26",
           isActive: true,
           schoolId: String(school._id),
         });

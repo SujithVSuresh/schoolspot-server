@@ -17,6 +17,7 @@ export interface CreateSchoolProfileDTO {
   totalTeachers: number;
   websiteUrl: string;
   yearEstablished: number;
+  academicYear?: string;
 }
 
 export interface SchoolProfileResponseDTO {
