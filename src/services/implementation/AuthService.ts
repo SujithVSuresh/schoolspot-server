@@ -398,6 +398,7 @@ export class AuthService implements IAuthService {
           tokenPayload.subscribed = isSubscriptionActive;
         }
       } else {
+        console.log(schoolData, "gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         school = await this._schoolRepository.createSchoolProfile({
           address: {
             city: schoolData.address.city,

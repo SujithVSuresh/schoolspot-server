@@ -167,6 +167,7 @@ export class AuthController implements IAuthController {
     try {
       const { credential, clientId } = req.body.payload;
       const schoolData = req.body.schoolData;
+      console.log(schoolData, "controoooooooooooooooooooooooooooooooo")
       const {
         _id,
         email,
