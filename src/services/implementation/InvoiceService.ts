@@ -90,10 +90,11 @@ export class InvoiceService implements IInvoiceService {
   }
 
   async findInvoicesByStudentId(
-    studentId: string
+    studentId: string,
+    classId: string
   ): Promise<InvoiceResponseDTO[]> {
     const invoices: InvoiceEntityType[] =
-      await this._invoiceRepository.findInvoicesByStudentId(studentId);
+      await this._invoiceRepository.findInvoicesByStudentId(studentId, classId);
 
     const invoicesData: InvoiceResponseDTO[] = invoices.map(
       (invoice: InvoiceEntityType) => {

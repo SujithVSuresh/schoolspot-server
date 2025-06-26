@@ -7,7 +7,7 @@ export interface IInvoiceRepository {
     deleteInvoice(invoiceId: string): Promise<boolean | null>
     updateInvoiceStatus(invoiceId: string, status: "Paid" | "Unpaid"): Promise<InvoiceEntityType | null>
     findInvoicesByQuery(query: any): Promise<InvoiceEntityType[]>;
-    findInvoicesByStudentId(studentId: string): Promise<InvoiceEntityType[]>;
+    findInvoicesByStudentId(studentId: string, classId: string): Promise<InvoiceEntityType[]>;
     findInvoicesByClassId(classId: string): Promise<InvoiceWithUserEntityType[]>
     findInvoiceById(invoiceId: string): Promise<InvoiceDetailsEntityType | null>
     findInvoiceByNumber(invoiceNumber: string): Promise<InvoiceEntityType | null>

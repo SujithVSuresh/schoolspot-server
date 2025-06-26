@@ -148,13 +148,15 @@ class InvoiceRepository
   }
 
   async findInvoicesByStudentId(
-    studentId: string
+    studentId: string,
+    classId: string
   ): Promise<InvoiceEntityType[]> {
     try {
       const invoices = Invoice.aggregate([
         {
           $match: {
             student: new mongoose.Types.ObjectId(studentId),
+            class: new mongoose.Types.ObjectId(classId),
           },
         },
         {

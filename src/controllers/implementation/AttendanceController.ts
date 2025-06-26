@@ -67,10 +67,11 @@ export class AttendanceController implements IAttendanceController {
   async getAttendanceByMonth(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const { userId } = req.user as PayloadType;
-      const {date} = req.query;
+      const {date, classId} = req.query;
       const response = await this._attendanceService.getAttendanceByMonth(
         userId,
-        date as string
+        date as string,
+        classId as string
       );
       res.status(HttpStatus.OK).json(response);
     } catch (err) {

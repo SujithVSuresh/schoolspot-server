@@ -55,7 +55,9 @@ export class InvoiceController implements IInvoiceController {
         try{
             const studentId = req.user?.userId
 
-            const invoices = await this._invoiceService.findInvoicesByStudentId(studentId as string)
+             const {classId} = req.query;
+
+            const invoices = await this._invoiceService.findInvoicesByStudentId(studentId as string, classId as string)
 
             res.status(200).json(invoices)
 

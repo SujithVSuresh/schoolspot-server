@@ -160,12 +160,14 @@ export class AttendanceService implements IAttendanceService {
 
   async getAttendanceByMonth(
     userId: string,
-    date: string
+    date: string,
+    classId: string
   ): Promise<AttendaceResponseDTO[]> {
     const { startOfMonth, endOfMonth } = generateMonthRange(new Date(date));
 
     const attendanceData = await this._attendanceRepository.findAttendances({
       student: new mongoose.Types.ObjectId(userId),
+      class: new mongoose.Types.ObjectId(classId),
       createdAt: {
         $gt: startOfMonth,
         $lte: endOfMonth,
