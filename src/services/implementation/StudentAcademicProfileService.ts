@@ -65,8 +65,7 @@ export class StudentAcadmicProfileService
         classId: data.classId,
       });
 
-    await redisClient.del(`blocked:${studentProfile.userId}`);
-
+    await redisClient.del(`deleted:${studentProfile.userId}`);
 
     return {
       _id: String(academicProfile._id),
