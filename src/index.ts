@@ -41,6 +41,15 @@ import planRouter from "./routes/PlanRouter";
 import chapterRouter from "./routes/ChapterRouter";
 import studentAcademicProfileRouter from "./routes/StudentAcademicProfileRouter";
 
+
+import { WebhookController } from "./controllers/implementation/WebhookController";
+import { InvoiceService } from "./services/implementation/InvoiceService"
+import { SubscriptionService } from "./services/implementation/SubscriptionService"
+import PlanRepository from "./repositories/implementaion/PlanRepository"
+import SubscriptionRepository from "./repositories/implementaion/SubscriptionRepository"
+import PaymentRepository from "./repositories/implementaion/PaymentRepository"
+import InvoiceRepository from "./repositories/implementaion/InvoiceRepository"
+
 // Socket.io manager
 import { SocketManager } from "./socket/socket";
 
@@ -139,9 +148,19 @@ class App {
 
   // Webhook-specific routes (e.g., Stripe webhooks)
   private initializeWebhookRouter(): void {
+    const subscriptionService = new SubscriptionService(PlanRepository, SubscriptionRepository, PaymentRepository)    
+    const invoiceService = new InvoiceService(InvoiceRepository, PaymentRepository)
+    
+    const webhookController = new WebhookController(invoiceService, subscriptionService)
+    
     this.app.use("/api/webhook", webhookRouter);
     // this.app.use("/api/invoice", invoiceWebhookRouter);
-    this.app.use("/api/subscription", subscriptionWebhookRouter);
+    // this.app.use("/api/subscription", subscriptionWebhookRouter);
+      this.app.post(
+    "/api/webhook/handle-payment",
+    express.raw({ type: "application/json" }),
+    webhookController.stripeWebhookHandler.bind(webhookController)
+  );
   }
 
   // Start the HTTP server

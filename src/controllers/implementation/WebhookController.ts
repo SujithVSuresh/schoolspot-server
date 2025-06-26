@@ -26,7 +26,6 @@ export class WebhookController implements IWebhookController {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
 
       const eventObject = event.data.object;
-      console.log(eventObject, "this is the event object......???")
 
       if (
         "metadata" in eventObject &&
