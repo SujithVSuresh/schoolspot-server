@@ -18,6 +18,7 @@ import { AnnouncementDTO, AnnouncementResponseDTO } from "../../dto/ClassDTO";
 import { IAttendanceRepository } from "../../repositories/interface/IAttendanceRepository";
 import { ISubjectRepository } from "../../repositories/interface/ISubjectRepository";
 import { IStudentAcademicProfileRepository } from "../../repositories/interface/IStudentAcademicProfileRepository";
+import { redisClient } from "../../config/redis";
 
 export class ClassService implements IClassService {
   constructor(
@@ -100,29 +101,37 @@ export class ClassService implements IClassService {
     };
   }
 
-  async deleteClass(classId: string): Promise<{ _id: string }> {
-    const classStudents =
-      await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(
-        classId
-      );
+async deleteClass(classId: string): Promise<{ _id: string }> {
+  const classStudents =
+    await this._studentAcademicProfileRepository.findAcademicProfilesByClassId(
+      classId
+    );
 
-    if (classStudents.length > 0) {
-      const deleteStudents = await this._studentAcademicProfileRepository.deleteAcademicProfilesByClass(classId);
+  if (classStudents.length > 0) {
+    const deleteStudents =
+      await this._studentAcademicProfileRepository.deleteAcademicProfilesByClass(classId);
 
-      if (!deleteStudents) {
-        throw new CustomError(Messages.SERVER_ERROR, HttpStatus.NOT_FOUND);
-      }
-    }
-    const response = await this._classRepository.deleteClass(classId);
-
-    if (!response) {
-      throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
+    if (!deleteStudents) {
+      throw new CustomError(Messages.SERVER_ERROR, HttpStatus.NOT_FOUND);
     }
 
-    return {
-      _id: classId,
-    };
+    for (const student of classStudents) {
+      const userId = student.userId;
+      await redisClient.setEx(`deleted:${userId}`, 604800, "true");
+    }
   }
+
+  const response = await this._classRepository.deleteClass(classId);
+
+  if (!response) {
+    throw new CustomError(Messages.CLASS_NOT_FOUNT, HttpStatus.NOT_FOUND);
+  }
+
+  return {
+    _id: classId,
+  };
+}
+
 
   async findAllClasses(
     schoolId: string,

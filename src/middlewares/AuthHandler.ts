@@ -44,6 +44,23 @@ export const protectRoute = (
           return;
         }
 
+        const isDeleted = await redisClient.get(
+          `deleted:${decoded?.userId}`
+        );
+
+        if (isDeleted) {
+          res
+            .status(403)
+            .json({
+              message: "Token has been revoked",
+              code: "DELETED",
+              role: role,
+            });
+          return;
+        }
+
+        
+
         decoded.token = token;
 
         if (!allowedRole.includes(decoded.role)) {

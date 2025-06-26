@@ -169,6 +169,7 @@ public listen(): void {
     console.log(`🔥 Server running on http://0.0.0.0:${process.env.PORT}`);
   });
 }
+
 }
 
 // Instantiate and start the app
