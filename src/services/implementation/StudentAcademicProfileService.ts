@@ -13,6 +13,7 @@ import Messages from "../../constants/MessageConstants";
 import mongoose from "mongoose";
 import { StudentEntityType } from "../../types/StudentType";
 import { ClassEntityType } from "../../types/ClassType";
+import { redisClient } from "../../config/redis";
 
 
 export class StudentAcadmicProfileService
@@ -42,8 +43,6 @@ export class StudentAcadmicProfileService
       studentId: studentProfile._id
     });
 
-    console.log(studentExist, "student exist...")
-
     if (studentExist) {
       throw new CustomError(Messages.STUDENT_ALREADY_EXIST, HttpStatus.CONFLICT);
     }
@@ -65,6 +64,9 @@ export class StudentAcadmicProfileService
         roll: data.roll,
         classId: data.classId,
       });
+
+    await redisClient.del(`blocked:${studentProfile.userId}`);
+
 
     return {
       _id: String(academicProfile._id),
