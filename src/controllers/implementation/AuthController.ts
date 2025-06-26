@@ -167,7 +167,26 @@ export class AuthController implements IAuthController {
     try {
       const { credential, clientId } = req.body.payload;
       const schoolData = req.body.schoolData;
-      console.log(schoolData, "controoooooooooooooooooooooooooooooooo")
+
+      const schoolDataToCreate: CreateSchoolProfileDTO  = {
+      schoolName: schoolData.schoolName,
+      phoneNumber: schoolData.phoneNumber,
+      board: schoolData.board,
+      principalName: schoolData.principalName,
+      regNumber: schoolData.regNumber,
+      totalStudents: schoolData.totalStudents,
+      totalTeachers: schoolData.totalTeachers,
+      websiteUrl: schoolData.websiteUrl,
+      yearEstablished: schoolData.yearEstablished,
+      address: {
+        city: schoolData.city,
+        country: schoolData.country,
+        state: schoolData.state,
+        postalCode: schoolData.postalCode
+      },
+      academicYear: schoolData.academicYear
+    }
+
       const {
         _id,
         email,
@@ -176,7 +195,7 @@ export class AuthController implements IAuthController {
         accessToken,
         refreshToken,
         authProvider,
-      } = await this._authService.googleAuth(credential, clientId, schoolData);
+      } = await this._authService.googleAuth(credential, clientId, schoolDataToCreate);
 
       res.cookie(`${role}RefreshToken`, refreshToken, {
         httpOnly: true,
